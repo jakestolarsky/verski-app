@@ -1,0 +1,26 @@
+:root {
+    /* Raw branding palette */
+    --verski-orange: #e96224;
+    --verski-cream: #fffdea;
+    --verski-sand: #efdfc9;
+    --verski-brown: #302522;
+    --verski-charcoal: #302c24;
+    --verski-ink: #0f0e0b;
+
+    /* Interface colors */
+    --verski-background: var(--verski-cream);
+    --verski-surface: var(--verski-sand);
+    --verski-text: var(--verski-ink);
+    --verski-primary: var(--verski-orange);
+}
+
+/* Attach tokens to Pico variables */
+[data-theme='light'],
+:root:not([data-theme='dark']) {
+    --pico-background-color: var(--verski-background);
+    --pico-color: var(--verski-text);
+
+    --pico-h1-color: var(--verski-text);
+    --pico-h2-color: var(--verski-text);
+    --pico-h3-color: var(--verski-text);
+}
