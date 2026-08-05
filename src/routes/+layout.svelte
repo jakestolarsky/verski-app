@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '@picocss/pico/css/pico.min.css';
 	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
