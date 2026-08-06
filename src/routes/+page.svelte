@@ -1,10 +1,24 @@
 <script lang="ts">
+	import {
+		parseReference,
+		type ParseReferenceError,
+		type ParseReferenceResult
+	} from '$lib/domain/parser/parse-reference';
+
+	const errorMessages: Record<ParseReferenceError, string> = {
+		'invalid-format': 'Enter a reference such as John 3:16.',
+		'invalid-structure': 'Chapter and verse numbers must be positive whole numbers.',
+		'unknown-book': 'That Bible book is not available.',
+		'invalid-chapter': 'That chapter does not exist in this Bible book.',
+		'invalid-verse-range': 'The ending verse cannot come before the starting verse.'
+	};
+
 	let referenceInput = $state('');
-	let submittedReference = $state('');
+	let parseResult = $state<ParseReferenceResult | null>(null);
 
 	function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		submittedReference = referenceInput.trim();
+		parseResult = parseReference(referenceInput);
 	}
 </script>
 
@@ -34,12 +48,12 @@
 
 	<section aria-labelledby="passage-heading" aria-live="polite">
 		<h2 id="passage-heading">Passage</h2>
-		{#if submittedReference}
-			<p>
-				A passage for <strong>{submittedReference}</strong> will appear here.
-			</p>
-		{:else}
+		{#if parseResult === null}
 			<p>Enter a Bible reference to begin.</p>
+		{:else if parseResult.ok}
+			<p>Reference recognized. Passage text will appear here once a translation is connected.</p>
+		{:else}
+			<p>{errorMessages[parseResult.error]}</p>
 		{/if}
 	</section>
 </main>
