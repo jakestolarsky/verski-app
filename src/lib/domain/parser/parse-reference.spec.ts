@@ -41,4 +41,16 @@ describe('parseReference', () => {
             }
         });
     });
+
+    it('parses a verse range', () => {
+        expect(parseReference('John 3:16-18')).toEqual({
+            ok: true,
+            reference: {
+                bookId: 'john',
+                chapter: 3,
+                verseStart: 16,
+                verseEnd: 18
+            }
+        });
+    });
 });
