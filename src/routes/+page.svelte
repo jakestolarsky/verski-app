@@ -24,7 +24,7 @@
         <button type="submit">Lookup</button>
     </form>
 
-    <section aria-label="passage-heading" aria-live="polite">
+    <section aria-labelledby="passage-heading" aria-live="polite">
         <h2 id="passage-heading">Passage</h2>
         <p>Enter a Bible reference to begin</p>
     </section>
