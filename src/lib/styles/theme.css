@@ -1,9 +1,11 @@
 :root {
     /* Raw branding palette */
     --verski-orange: #e96224;
+    --verski-orange-hover: #e88757;
     --verski-cream: #fffdea;
     --verski-sand: #efdfc9;
     --verski-brown: #302522;
+    --verski-muted-brown: #8f7c6a;
     --verski-charcoal: #302c24;
     --verski-ink: #0f0e0b;
 
@@ -12,15 +14,88 @@
     --verski-surface: var(--verski-sand);
     --verski-text: var(--verski-ink);
     --verski-primary: var(--verski-orange);
+    --verski-primary-hover: var(--verski-orange-hover);
+    --verski-on-primary: var(--verski-ink);
+}
+
+/* Light theme */
+[data-theme='light'],
+:root:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --verski-background: var(--verski-cream);
+    --verski-surface: var(--verski-sand);
+    --verski-text: var(--verski-ink);
+    --verski-primary: var(--verski-orange);
+
+    --verski-focus: var(--verski-orange);
+
+    --verski-input-background: var(--verski-cream);
+    --verski-input-border: var(--verski-muted-brown);
+    --verski-input-text: var(--verski-ink);
+    --verski-input-placeholder: var(--verski-charcoal);
+}
+
+/* Explicit dark theme */
+[data-theme='dark'] {
+    color-scheme: dark;
+
+    --verski-background: var(--verski-ink);
+    --verski-surface: var(--verski-brown);
+    --verski-text: var(--verski-cream);
+    --verski-primary: var(--verski-orange);
+
+    --verski-focus: var(--verski-orange-hover);
+
+    --verski-input-background: var(--verski-brown);
+    --verski-input-border: var(--verski-muted-brown);
+    --verski-input-text: var(--verski-cream);
+    --verski-input-placeholder: var(--verski-sand);
+}
+
+/* Use dark theme when the operating system requests it */
+@media only screen and (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        color-scheme: dark;
+
+        --verski-background: var(--verski-ink);
+        --verski-surface: var(--verski-brown);
+        --verski-text: var(--verski-cream);
+        --verski-primary: var(--verski-orange);
+
+        --verski-focus: var(--verski-orange-hover);
+
+        --verski-input-background: var(--verski-brown);
+        --verski-input-border: var(--verski-muted-brown);
+        --verski-input-text: var(--verski-cream);
+        --verski-input-placeholder: var(--verski-sand);
+    }
 }
 
 /* Attach tokens to Pico variables */
 [data-theme='light'],
-:root:not([data-theme='dark']) {
-    --pico-background-color: var(--verski-background);
-    --pico-color: var(--verski-text);
+:root:not([data-theme='dark']),
+[data-theme='dark'] {
+	--pico-background-color: var(--verski-background);
+	--pico-color: var(--verski-text);
 
-    --pico-h1-color: var(--verski-text);
-    --pico-h2-color: var(--verski-text);
-    --pico-h3-color: var(--verski-text);
+	--pico-h1-color: var(--verski-text);
+	--pico-h2-color: var(--verski-text);
+	--pico-h3-color: var(--verski-text);
+
+	--pico-primary-background: var(--verski-primary);
+	--pico-primary-border: var(--verski-primary);
+	--pico-primary-hover-background: var(--verski-primary-hover);
+	--pico-primary-hover-border: var(--verski-primary-hover);
+	--pico-primary-focus: var(--verski-focus);
+	--pico-primary-inverse: var(--verski-on-primary);
+
+	--pico-form-element-background-color: var(--verski-input-background);
+	--pico-form-element-border-color: var(--verski-input-border);
+	--pico-form-element-color: var(--verski-input-text);
+	--pico-form-element-placeholder-color: var(--verski-input-placeholder);
+
+	--pico-form-element-active-background-color: var(--verski-input-background);
+	--pico-form-element-active-border-color: var(--verski-primary);
+	--pico-form-element-focus-color: var(--verski-focus);
 }
