@@ -1,6 +1,7 @@
 import { johnBook } from '../bible-book';
 import type { BibleReference } from '../bible-reference';
 import { normalizeReferenceInput } from './normalize-reference-input';
+import { matchBookAlias } from './match-book-alias';
 
 export type ParseReferenceResult =
     | {
@@ -13,6 +14,8 @@ export type ParseReferenceResult =
     };
 
 const strictReferencePattern = /^(\S+) (\d+):(\d+)$/;
+
+const supportedBooks = [johnBook];
 
 export function parseReference(input: string): ParseReferenceResult {
     const normalizedInput = normalizeReferenceInput(input);
@@ -27,17 +30,21 @@ export function parseReference(input: string): ParseReferenceResult {
 
     const [, bookName, chapterText, verseText] = match;
 
-    if (!johnBook.names.includes(bookName)) {
+    const bookMatches = matchBookAlias(bookName, supportedBooks);
+
+    if (bookMatches.length !== 1) {
         return {
             ok: false,
             error: 'invalid-format'
         };
     }
 
+    const [book] = bookMatches;
+
     return {
         ok: true,
         reference: {
-            bookId: johnBook.id,
+            bookId: book.id,
             chapter: Number(chapterText),
             verseStart: Number(verseText)
         }
