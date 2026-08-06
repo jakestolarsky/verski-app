@@ -2,6 +2,15 @@ import { johnBook } from '../bible-book';
 import type { BibleReference } from '../bible-reference';
 import { normalizeReferenceInput } from './normalize-reference-input';
 import { matchBookAlias } from './match-book-alias';
+import {
+    validateReference,
+    type ReferenceValidationError
+} from '../validation/validate-reference';
+
+
+export type ParseReferenceError =
+	| 'invalid-format'
+	| ReferenceValidationError;
 
 export type ParseReferenceResult =
     | {
@@ -10,7 +19,7 @@ export type ParseReferenceResult =
     }
     | {
         ok: false;
-        error: 'invalid-format';
+        error: ParseReferenceError;
     };
 
 const strictReferencePattern = /^(\S+) (\d+)(?::(\d+)(?:-(\d+))?)?$/;
@@ -54,17 +63,5 @@ export function parseReference(input: string): ParseReferenceResult {
         reference.verseEnd = Number(verseEndText);
     }
 
-    return {
-        ok: true,
-        reference
-    };
-
-    return {
-        ok: true,
-        reference: {
-            bookId: book.id,
-            chapter: Number(chapterText),
-            verseStart: Number(verseEndText)
-        }
-    };
+    return validateReference(reference, supportedBooks);
 }

@@ -56,4 +56,18 @@ describe('parseReference', () => {
             }
         });
     });
+
+    it('rejects a chapter beyond the book chapter count', () => {
+        expect(parseReference('John 22')).toEqual({
+            ok: false,
+            error: 'invalid-chapter'
+        });
+    });
+
+    it('rejects a verse range that ends before it starts', () => {
+        expect(parseReference('John 3:18-16')).toEqual({
+            ok: false,
+            error: 'invalid-verse-range'
+        });
+    });
 });
