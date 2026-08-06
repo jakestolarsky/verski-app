@@ -12,5 +12,9 @@ describe('normalizeReferenceInput', () => {
 
     it('returns an empty string for whitespace-only input', () => {
         expect(normalizeReferenceInput('   ')).toBe('');
-    })
+    });
+
+    it('normalizes a comma verse separator to a colon', () => {
+        expect(normalizeReferenceInput('John 3,16')).toBe('John 3:16');
+    });
 });
