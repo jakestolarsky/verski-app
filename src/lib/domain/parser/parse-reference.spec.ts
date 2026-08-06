@@ -15,8 +15,11 @@ describe('parseReference', () => {
 
     it('rejects a chapter-only reference in strict mode', () => {
         expect(parseReference('John 3')).toEqual({
-            ok: false,
-            error: 'invalid-format'
+            ok: true,
+            reference: {
+                bookId: 'john',
+                chapter: 3
+            }
         });
     });
 

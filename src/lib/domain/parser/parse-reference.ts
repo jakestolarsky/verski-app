@@ -13,7 +13,7 @@ export type ParseReferenceResult =
         error: 'invalid-format';
     };
 
-const strictReferencePattern = /^(\S+) (\d+):(\d+)(?:-(\d+))?$/;
+const strictReferencePattern = /^(\S+) (\d+)(?::(\d+)(?:-(\d+))?)?$/;
 
 const supportedBooks = [johnBook];
 
@@ -43,9 +43,12 @@ export function parseReference(input: string): ParseReferenceResult {
 
     const reference: BibleReference = {
         bookId: book.id,
-        chapter: Number(chapterText),
-        verseStart: Number(verseStartText)
+        chapter: Number(chapterText)
     };
+
+    if (verseStartText !== undefined) {
+        reference.verseStart = Number(verseStartText);
+    }
 
     if (verseEndText !== undefined) {
         reference.verseEnd = Number(verseEndText);
