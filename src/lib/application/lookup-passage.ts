@@ -1,4 +1,3 @@
-import { number } from 'zod';
 import type { BibleReference } from '../domain/bible-reference';
 import type { BibleRepository } from '../storage/bible-repository';
 

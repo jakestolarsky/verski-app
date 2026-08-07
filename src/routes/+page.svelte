@@ -1,9 +1,16 @@
 <script lang="ts">
+	import { lookupPassage, type LookupPassageResult } from '$lib/application/lookup-passage';
 	import {
 		parseReference,
 		type ParseReferenceError,
 		type ParseReferenceResult
 	} from '$lib/domain/parser/parse-reference';
+	import { StaticBibleRepository } from '$lib/storage/static-bible-repository';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
+
+	const repository = new StaticBibleRepository(data.translationPackage);
 
 	const errorMessages: Record<ParseReferenceError, string> = {
 		'invalid-format': 'Enter a reference such as John 3:16.',
@@ -15,10 +22,25 @@
 
 	let referenceInput = $state('');
 	let parseResult = $state<ParseReferenceResult | null>(null);
+	let lookupResult = $state<LookupPassageResult | null>(null);
 
-	function handleSubmit(event: SubmitEvent) {
+	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		parseResult = parseReference(referenceInput);
+
+		const nextParseResult = parseReference(referenceInput);
+
+		parseResult = nextParseResult;
+		lookupResult = null;
+
+		if (!nextParseResult.ok) {
+			return;
+		}
+
+		lookupResult = await lookupPassage(
+			repository,
+			data.translationPackage.manifest.id,
+			nextParseResult.reference
+		);
 	}
 </script>
 
@@ -48,12 +70,28 @@
 
 	<section aria-labelledby="passage-heading" aria-live="polite">
 		<h2 id="passage-heading">Passage</h2>
+
 		{#if parseResult === null}
 			<p>Enter a Bible reference to begin.</p>
-		{:else if parseResult.ok}
-			<p>Reference recognized. Passage text will appear here once a translation is connected.</p>
-		{:else}
+		{:else if !parseResult.ok}
 			<p>{errorMessages[parseResult.error]}</p>
+		{:else if lookupResult === null}
+			<p>Loading passage…</p>
+		{:else if !lookupResult.ok}
+			{#if lookupResult.error === 'chapter-not-found'}
+				<p>This chapter is not available in the selected translation.</p>
+			{:else}
+				<p>That verse does not exist in this chapter.</p>
+			{/if}
+		{:else}
+			<p>
+				{#each lookupResult.passage.verses as verse}
+					<span>
+						<sup>{verse.number}</sup>
+						<span>{verse.text}</span>{' '}
+					</span>
+				{/each}
+			</p>
 		{/if}
 	</section>
 </main>
