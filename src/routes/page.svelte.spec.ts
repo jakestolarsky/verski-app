@@ -42,6 +42,13 @@ describe('+page.svelte', () => {
 		await userEvent.keyboard('{Enter}');
 
 		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Copy passage'
+				})
+			)
+			.toBeInTheDocument();
 	});
 
 	it('shows a clear message for an invalid chapter', async () => {

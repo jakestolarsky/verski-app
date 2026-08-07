@@ -7,10 +7,12 @@
 	} from '$lib/domain/parser/parse-reference';
 	import { StaticBibleRepository } from '$lib/storage/static-bible-repository';
 	import type { PageData } from './$types';
+	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
+	import { johnBook } from '$lib/domain/bible-book';
 
 	let { data }: { data: PageData } = $props();
 
-	const repository = new StaticBibleRepository(data.translationPackage);
+	const repository = $derived(new StaticBibleRepository(data.translationPackage));
 
 	const errorMessages: Record<ParseReferenceError, string> = {
 		'invalid-format': 'Enter a reference such as John 3:16.',
@@ -23,6 +25,7 @@
 	let referenceInput = $state('');
 	let parseResult = $state<ParseReferenceResult | null>(null);
 	let lookupResult = $state<LookupPassageResult | null>(null);
+	let copyStatus = $state<'idle' | 'copied' | 'error'>('idle');
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
@@ -41,6 +44,31 @@
 			data.translationPackage.manifest.id,
 			nextParseResult.reference
 		);
+	}
+
+	async function handleCopy() {
+		const currentLookupResult = lookupResult;
+
+		if (!currentLookupResult?.ok) {
+			return;
+		}
+
+		const passage = currentLookupResult.passage;
+
+		const bookName =
+			passage.bookId === johnBook.id ? (johnBook.names[0] ?? johnBook.id) : passage.bookId;
+
+		const text = formatPassageForCopy(passage, {
+			bookName,
+			translationName: data.translationPackage.manifest.name
+		});
+
+		try {
+			await navigator.clipboard.writeText(text);
+			copyStatus = 'copied';
+		} catch {
+			copyStatus = 'error';
+		}
 	}
 </script>
 
@@ -92,6 +120,13 @@
 					</span>
 				{/each}
 			</p>
+			<button type="button" onclick={handleCopy}> Copy passage </button>
+
+			{#if copyStatus === 'copied'}
+				<p>Passage copied.</p>
+			{:else if copyStatus === 'error'}
+				<p>Passage could not be copied.</p>
+			{/if}
 		{/if}
 	</section>
 </main>
