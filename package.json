@@ -15,11 +15,13 @@
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright install && playwright test",
-		"build:translation:engwebp-john": "node --experimental-strip-types scripts/translation/build-engwebp-john.ts"
+		"build:translation:engwebp-john": "node --experimental-strip-types scripts/translation/build-engwebp-john.ts",
+		"build:pwa-icons": "node --experimental-strip-types scripts/pwa/generate-icons.ts"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@playwright/test": "^1.60.0",
+		"@resvg/resvg-js": "^2.6.2",
 		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/kit": "^2.63.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
