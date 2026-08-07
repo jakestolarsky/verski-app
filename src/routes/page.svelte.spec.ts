@@ -12,9 +12,7 @@ describe('+page.svelte', () => {
 		await userEvent.fill(referenceInput, 'J 3,16');
 		await userEvent.keyboard('{Enter}');
 
-		await expect
-			.element(page.getByText(/Reference recognized/))
-			.toBeInTheDocument();
+		await expect.element(page.getByText(/Reference recognized/)).toBeInTheDocument();
 	});
 
 	it('shows a clear message for an invalid chapter', async () => {
@@ -26,9 +24,7 @@ describe('+page.svelte', () => {
 		await userEvent.keyboard('{Enter}');
 
 		await expect
-			.element(
-				page.getByText('That chapter does not exist in this Bible book.')
-			)
+			.element(page.getByText('That chapter does not exist in this Bible book.'))
 			.toBeInTheDocument();
 	});
 });

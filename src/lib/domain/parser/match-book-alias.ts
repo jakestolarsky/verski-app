@@ -6,8 +6,6 @@ export function matchBookAlias(alias: string, books: BibleBook[]): BibleBook[] {
 	return books.filter((book) => {
 		const aliases = [...book.names, ...book.abbreviations];
 
-		return aliases.some(
-			(candidate) => candidate.toLowerCase() === normalizedAlias
-		);
+		return aliases.some((candidate) => candidate.toLowerCase() === normalizedAlias);
 	});
 }

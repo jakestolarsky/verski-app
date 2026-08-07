@@ -1,7 +1,6 @@
 export type BibleReference = {
-    bookId: string;
-    chapter: number;
-    verseStart?: number;
-    verseEnd?: number;
+	bookId: string;
+	chapter: number;
+	verseStart?: number;
+	verseEnd?: number;
 };
-

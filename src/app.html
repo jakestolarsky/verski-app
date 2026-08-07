@@ -1,29 +1,27 @@
 <!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
 
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta name="text-scale" content="scale" />
+		<!-- Apply the stored theme before styles load -->
+		<script>
+			try {
+				const storedTheme = localStorage.getItem('verski-theme');
 
-	<!-- Apply the stored theme before styles load -->
-	<script>
-		try {
-			const storedTheme = localStorage.getItem('verski-theme');
-
-			if (storedTheme === 'light' || storedTheme === 'dark') {
-				document.documentElement.dataset.theme = storedTheme;
+				if (storedTheme === 'light' || storedTheme === 'dark') {
+					document.documentElement.dataset.theme = storedTheme;
+				}
+			} catch {
+				// Fall back to the system theme when storage is unavailable.
 			}
-		} catch {
-			// Fall back to the system theme when storage is unavailable.
-		}
-	</script>
+		</script>
 
-	%sveltekit.head%
-</head>
+		%sveltekit.head%
+	</head>
 
-<body data-sveltekit-preload-data="hover">
-	<div style="display: contents">%sveltekit.body%</div>
-</body>
-
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
 </html>

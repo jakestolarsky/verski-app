@@ -5,7 +5,6 @@
 
 	import ThemeSelector from '$lib/components/ThemeSelector.svelte';
 
-
 	let { children } = $props();
 </script>
 

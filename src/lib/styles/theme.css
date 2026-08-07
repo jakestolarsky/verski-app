@@ -1,75 +1,75 @@
 :root {
-    /* Raw branding palette */
-    --verski-orange: #e96224;
-    --verski-orange-hover: #e88757;
-    --verski-cream: #fffdea;
-    --verski-sand: #efdfc9;
-    --verski-brown: #302522;
-    --verski-muted-brown: #8f7c6a;
-    --verski-charcoal: #302c24;
-    --verski-ink: #0f0e0b;
+	/* Raw branding palette */
+	--verski-orange: #e96224;
+	--verski-orange-hover: #e88757;
+	--verski-cream: #fffdea;
+	--verski-sand: #efdfc9;
+	--verski-brown: #302522;
+	--verski-muted-brown: #8f7c6a;
+	--verski-charcoal: #302c24;
+	--verski-ink: #0f0e0b;
 
-    /* Interface colors */
-    --verski-background: var(--verski-cream);
-    --verski-surface: var(--verski-sand);
-    --verski-text: var(--verski-ink);
-    --verski-primary: var(--verski-orange);
-    --verski-primary-hover: var(--verski-orange-hover);
-    --verski-on-primary: var(--verski-ink);
+	/* Interface colors */
+	--verski-background: var(--verski-cream);
+	--verski-surface: var(--verski-sand);
+	--verski-text: var(--verski-ink);
+	--verski-primary: var(--verski-orange);
+	--verski-primary-hover: var(--verski-orange-hover);
+	--verski-on-primary: var(--verski-ink);
 }
 
 /* Light theme */
 [data-theme='light'],
 :root:not([data-theme='dark']) {
-    color-scheme: light;
+	color-scheme: light;
 
-    --verski-background: var(--verski-cream);
-    --verski-surface: var(--verski-sand);
-    --verski-text: var(--verski-ink);
-    --verski-primary: var(--verski-orange);
+	--verski-background: var(--verski-cream);
+	--verski-surface: var(--verski-sand);
+	--verski-text: var(--verski-ink);
+	--verski-primary: var(--verski-orange);
 
-    --verski-focus: var(--verski-orange);
+	--verski-focus: var(--verski-orange);
 
-    --verski-input-background: var(--verski-cream);
-    --verski-input-border: var(--verski-muted-brown);
-    --verski-input-text: var(--verski-ink);
-    --verski-input-placeholder: var(--verski-charcoal);
+	--verski-input-background: var(--verski-cream);
+	--verski-input-border: var(--verski-muted-brown);
+	--verski-input-text: var(--verski-ink);
+	--verski-input-placeholder: var(--verski-charcoal);
 }
 
 /* Explicit dark theme */
 [data-theme='dark'] {
-    color-scheme: dark;
+	color-scheme: dark;
 
-    --verski-background: var(--verski-ink);
-    --verski-surface: var(--verski-brown);
-    --verski-text: var(--verski-cream);
-    --verski-primary: var(--verski-orange);
+	--verski-background: var(--verski-ink);
+	--verski-surface: var(--verski-brown);
+	--verski-text: var(--verski-cream);
+	--verski-primary: var(--verski-orange);
 
-    --verski-focus: var(--verski-orange-hover);
+	--verski-focus: var(--verski-orange-hover);
 
-    --verski-input-background: var(--verski-brown);
-    --verski-input-border: var(--verski-muted-brown);
-    --verski-input-text: var(--verski-cream);
-    --verski-input-placeholder: var(--verski-sand);
+	--verski-input-background: var(--verski-brown);
+	--verski-input-border: var(--verski-muted-brown);
+	--verski-input-text: var(--verski-cream);
+	--verski-input-placeholder: var(--verski-sand);
 }
 
 /* Use dark theme when the operating system requests it */
 @media only screen and (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
-        color-scheme: dark;
+	:root:not([data-theme]) {
+		color-scheme: dark;
 
-        --verski-background: var(--verski-ink);
-        --verski-surface: var(--verski-brown);
-        --verski-text: var(--verski-cream);
-        --verski-primary: var(--verski-orange);
+		--verski-background: var(--verski-ink);
+		--verski-surface: var(--verski-brown);
+		--verski-text: var(--verski-cream);
+		--verski-primary: var(--verski-orange);
 
-        --verski-focus: var(--verski-orange-hover);
+		--verski-focus: var(--verski-orange-hover);
 
-        --verski-input-background: var(--verski-brown);
-        --verski-input-border: var(--verski-muted-brown);
-        --verski-input-text: var(--verski-cream);
-        --verski-input-placeholder: var(--verski-sand);
-    }
+		--verski-input-background: var(--verski-brown);
+		--verski-input-border: var(--verski-muted-brown);
+		--verski-input-text: var(--verski-cream);
+		--verski-input-placeholder: var(--verski-sand);
+	}
 }
 
 /* Attach tokens to Pico variables */
