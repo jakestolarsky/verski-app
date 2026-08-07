@@ -9,10 +9,17 @@
 	import type { PageData } from './$types';
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
 	import { johnBook } from '$lib/domain/bible-book';
+	import { onMount } from 'svelte';
+	import { ensureTranslationInstalled } from '$lib/application/ensure-translation-installed';
+	import { IndexedDbBibleRepository } from '$lib/storage/indexed-db/indexed-db-bible-repository';
+	import { openBibleDatabase } from '$lib/storage/indexed-db/open-bible-database';
 
 	let { data }: { data: PageData } = $props();
 
-	const repository = $derived(new StaticBibleRepository(data.translationPackage));
+	const staticRepository = $derived(new StaticBibleRepository(data.translationPackage));
+	let indexedDbRepository = $state<IndexedDbBibleRepository | null>(null);
+	const repository = $derived(indexedDbRepository ?? staticRepository);
+	let offlineStorageStatus = $state<'preparing' | 'ready' | 'unavailable'>('preparing');
 
 	const errorMessages: Record<ParseReferenceError, string> = {
 		'invalid-format': 'Enter a reference such as John 3:16.',
@@ -27,6 +34,47 @@
 	let lookupResult = $state<LookupPassageResult | null>(null);
 	let copyStatus = $state<'idle' | 'copied' | 'error'>('idle');
 
+	onMount(() => {
+		let database: IDBDatabase | null = null;
+		let disposed = false;
+
+		async function prepareOfflineStorage() {
+			const openedDatabase = await openBibleDatabase();
+
+			if (disposed) {
+				openedDatabase.close();
+				return;
+			}
+
+			database = openedDatabase;
+
+			const repository = new IndexedDbBibleRepository(openedDatabase);
+
+			await ensureTranslationInstalled(repository, data.translationPackage);
+
+			if (disposed) {
+				return;
+			}
+
+			indexedDbRepository = repository;
+			offlineStorageStatus = 'ready';
+		}
+
+		void prepareOfflineStorage().catch(() => {
+			database?.close();
+			database = null;
+
+			if (!disposed) {
+				offlineStorageStatus = 'unavailable';
+			}
+		});
+
+		return () => {
+			disposed = true;
+			database?.close();
+		};
+	});
+
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
@@ -34,6 +82,7 @@
 
 		parseResult = nextParseResult;
 		lookupResult = null;
+		copyStatus = 'idle';
 
 		if (!nextParseResult.ok) {
 			return;
@@ -95,6 +144,13 @@
 		/>
 		<button type="submit">Lookup</button>
 	</form>
+
+	{#if offlineStorageStatus === 'unavailable'}
+		<p role="status">
+			Offline storage is unavailable. This translation will remain available for the current
+			session.
+		</p>
+	{/if}
 
 	<section aria-labelledby="passage-heading" aria-live="polite">
 		<h2 id="passage-heading">Passage</h2>
