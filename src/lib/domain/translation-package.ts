@@ -8,7 +8,7 @@ export type TranslationManifest = {
 	source: string;
 	sourceChecksum: string;
 	schemaVersion: 1;
-    canonId: string;
+	canonId: string;
 	bookIds: string[];
 };
 
