@@ -1,0 +1,18 @@
+{
+	"name": "Verski - Bible lookup done right",
+	"short_name": "Verski",
+	"description": "Fast, offline-first Bible passage lookup.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#fffdea",
+	"theme_color": "#e96224",
+	"icons": [
+		{
+			"src": "/verski-icon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		}
+	]
+}

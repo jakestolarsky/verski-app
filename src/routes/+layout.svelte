@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '@picocss/pico/css/pico.min.css';
 	import '$lib/styles/theme.css';
-	import favicon from '$lib/assets/favicon.svg';
 
 	import ThemeSelector from '$lib/components/ThemeSelector.svelte';
 
@@ -9,7 +8,16 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link
+		rel="icon"
+		href="/verski-icon.svg"
+		type="image/svg+xml"
+	/>
+	<link
+		rel="manifest"
+		href="/manifest.webmanifest"
+	/>
+	<meta name="theme-color" content="#e96224" />
 </svelte:head>
 
 <ThemeSelector />
