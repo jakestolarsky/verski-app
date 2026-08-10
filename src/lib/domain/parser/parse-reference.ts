@@ -1,4 +1,4 @@
-import { bibleBooks } from '../bible-book';
+import { bibleBooks, type BibleBook } from '../bible-book';
 import type { BibleReference } from '../bible-reference';
 import { normalizeReferenceInput } from './normalize-reference-input';
 import { matchBookAlias } from './match-book-alias';
@@ -16,22 +16,106 @@ export type ParseReferenceResult =
 			error: ParseReferenceError;
 	  };
 
-const strictReferencePattern = /^(\S+) (\d+)(?::(\d+)(?:-(\d+))?)?$/;
+const passagePattern = /^(\d+)(?::(\d+)(?:-(\d+))?)?$/;
+
+type PassageParts = {
+	chapterText: string;
+	verseStartText?: string;
+	verseEndText?: string;
+};
+
+type ReferenceParts = PassageParts & {
+	bookAlias: string;
+};
+
+function parsePassageParts(input: string): PassageParts | null {
+	const match = passagePattern.exec(input);
+
+	if (!match) {
+		return null;
+	}
+
+	const [, chapterText, verseStartText, verseEndText] = match;
+
+	return {
+		chapterText,
+		verseStartText,
+		verseEndText
+	};
+}
+
+function parseReferenceParts(input: string): ReferenceParts | null {
+	const separatorIndex = input.lastIndexOf(' ');
+
+	if (separatorIndex <= 0) {
+		return null;
+	}
+
+	const bookAlias = input.slice(0, separatorIndex);
+	const passageText = input.slice(separatorIndex + 1);
+	const passageParts = parsePassageParts(passageText);
+
+	if (!passageParts) {
+		return null;
+	}
+
+	return {
+		bookAlias,
+		...passageParts
+	};
+}
+
+function parseCompactReferenceParts(input: string, books: BibleBook[]): ReferenceParts | null {
+	const normalizedInput = input.toLowerCase();
+	const matches = new Map<string, ReferenceParts>();
+
+	for (const book of books) {
+		const aliases = [...book.names, ...book.abbreviations];
+
+		for (const alias of aliases) {
+			const compactAlias = alias.replaceAll(' ', '');
+			const normalizedAlias = compactAlias.toLowerCase();
+
+			if (!normalizedInput.startsWith(normalizedAlias)) {
+				continue;
+			}
+
+			const passageText = input.slice(compactAlias.length);
+			const passageParts = parsePassageParts(passageText);
+
+			if (!passageParts) {
+				continue;
+			}
+
+			matches.set(book.id, {
+				bookAlias: alias,
+				...passageParts
+			});
+		}
+	}
+
+	if (matches.size !== 1) {
+		return null;
+	}
+
+	return [...matches.values()][0] ?? null;
+}
 
 export function parseReference(input: string): ParseReferenceResult {
 	const normalizedInput = normalizeReferenceInput(input);
-	const match = strictReferencePattern.exec(normalizedInput);
+	const parts =
+		parseReferenceParts(normalizedInput) ?? parseCompactReferenceParts(normalizedInput, bibleBooks);
 
-	if (!match) {
+	if (!parts) {
 		return {
 			ok: false,
 			error: 'invalid-format'
 		};
 	}
 
-	const [, bookName, chapterText, verseStartText, verseEndText] = match;
+	const { bookAlias, chapterText, verseStartText, verseEndText } = parts;
 
-	const bookMatches = matchBookAlias(bookName, bibleBooks);
+	const bookMatches = matchBookAlias(bookAlias, bibleBooks);
 
 	if (bookMatches.length !== 1) {
 		return {

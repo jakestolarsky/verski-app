@@ -102,4 +102,84 @@ describe('parseReference', () => {
 			}
 		});
 	});
+
+	it.each([
+		{
+			input: '1 Corinthians 13',
+			reference: {
+				bookId: '1-corinthians',
+				chapter: 13
+			}
+		},
+		{
+			input: '1 Kor 13:4-7',
+			reference: {
+				bookId: '1-corinthians',
+				chapter: 13,
+				verseStart: 4,
+				verseEnd: 7
+			}
+		},
+		{
+			input: '1 John 3:16',
+			reference: {
+				bookId: '1-john',
+				chapter: 3,
+				verseStart: 16
+			}
+		},
+		{
+			input: 'Song of Songs 1',
+			reference: {
+				bookId: 'song-of-songs',
+				chapter: 1
+			}
+		}
+	])('parses the multi-word reference $input', ({ input, reference }) => {
+		expect(parseReference(input)).toEqual({
+			ok: true,
+			reference
+		});
+	});
+
+	it.each([
+		{
+			input: 'John3:16',
+			reference: {
+				bookId: 'john',
+				chapter: 3,
+				verseStart: 16
+			}
+		},
+		{
+			input: 'Rdz1:1',
+			reference: {
+				bookId: 'genesis',
+				chapter: 1,
+				verseStart: 1
+			}
+		},
+		{
+			input: 'Hi1:1',
+			reference: {
+				bookId: 'job',
+				chapter: 1,
+				verseStart: 1
+			}
+		},
+		{
+			input: '1Kor13:4-7',
+			reference: {
+				bookId: '1-corinthians',
+				chapter: 13,
+				verseStart: 4,
+				verseEnd: 7
+			}
+		}
+	])('parses the compact reference $input', ({ input, reference }) => {
+		expect(parseReference(input)).toEqual({
+			ok: true,
+			reference
+		});
+	});
 });
