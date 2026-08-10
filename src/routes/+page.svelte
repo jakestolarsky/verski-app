@@ -25,7 +25,6 @@
 		'invalid-format': 'Enter a reference such as John 3:16.',
 		'invalid-structure': 'Chapter and verse numbers must be positive whole numbers.',
 		'unknown-book': 'That Bible book is not available.',
-		'invalid-chapter': 'That chapter does not exist in this Bible book.',
 		'invalid-verse-range': 'The ending verse cannot come before the starting verse.'
 	};
 

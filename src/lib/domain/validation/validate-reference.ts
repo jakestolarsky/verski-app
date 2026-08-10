@@ -3,7 +3,7 @@ import type { BibleReference } from '../bible-reference';
 import { bibleReferenceSchema } from './bible-reference-schema';
 
 export type ReferenceValidationError =
-	'invalid-structure' | 'unknown-book' | 'invalid-chapter' | 'invalid-verse-range';
+	'invalid-structure' | 'unknown-book' | 'invalid-verse-range';
 
 export type ReferenceValidationResult =
 	| {
@@ -32,13 +32,6 @@ export function validateReference(input: unknown, books: BibleBook[]): Reference
 		return {
 			ok: false,
 			error: 'unknown-book'
-		};
-	}
-
-	if (reference.chapter > book.chapterCount) {
-		return {
-			ok: false,
-			error: 'invalid-chapter'
 		};
 	}
 

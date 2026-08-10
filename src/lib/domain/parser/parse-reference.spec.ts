@@ -57,10 +57,13 @@ describe('parseReference', () => {
 		});
 	});
 
-	it('rejects a chapter beyond the book chapter count', () => {
+	it('parses a chapter without imposing translation-specific bounds', () => {
 		expect(parseReference('John 22')).toEqual({
-			ok: false,
-			error: 'invalid-chapter'
+			ok: true,
+			reference: {
+				bookId: 'john',
+				chapter: 22
+			}
 		});
 	});
 

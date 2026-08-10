@@ -51,7 +51,7 @@ describe('+page.svelte', () => {
 			.toBeInTheDocument();
 	});
 
-	it('shows a clear message for an invalid chapter', async () => {
+	it('shows a clear message when a chapter is unavailable in the translation', async () => {
 		render(Page, { data });
 
 		const referenceInput = page.getByLabelText('Bible reference');
@@ -60,7 +60,7 @@ describe('+page.svelte', () => {
 		await userEvent.keyboard('{Enter}');
 
 		await expect
-			.element(page.getByText('That chapter does not exist in this Bible book.'))
+			.element(page.getByText('This chapter is not available in the selected translation.'))
 			.toBeInTheDocument();
 	});
 });

@@ -40,7 +40,7 @@ describe('validateReference', () => {
 		});
 	});
 
-	it('rejects a chapter beyond the book chapter count', () => {
+	it('leaves translation-specific chapter bounds to passage lookup', () => {
 		expect(
 			validateReference(
 				{
@@ -50,8 +50,11 @@ describe('validateReference', () => {
 				books
 			)
 		).toEqual({
-			ok: false,
-			error: 'invalid-chapter'
+			ok: true,
+			reference: {
+				bookId: 'john',
+				chapter: 22
+			}
 		});
 	});
 
