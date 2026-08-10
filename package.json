@@ -15,7 +15,7 @@
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright install && playwright test",
-		"build:translation:engwebp-john": "node --experimental-strip-types scripts/translation/build-engwebp-john.ts",
+		"build:translation:engwebp": "node --experimental-strip-types scripts/translation/build-engwebp.ts",
 		"build:pwa-icons": "node --experimental-strip-types scripts/pwa/generate-icons.ts"
 	},
 	"devDependencies": {
