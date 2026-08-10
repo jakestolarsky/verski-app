@@ -8,7 +8,7 @@
 	import { StaticBibleRepository } from '$lib/storage/static-bible-repository';
 	import type { PageData } from './$types';
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
-	import { johnBook } from '$lib/domain/bible-book';
+	import { bibleBooks } from '$lib/domain/bible-book';
 	import { onMount } from 'svelte';
 	import { ensureTranslationInstalled } from '$lib/application/ensure-translation-installed';
 	import { IndexedDbBibleRepository } from '$lib/storage/indexed-db/indexed-db-bible-repository';
@@ -104,7 +104,7 @@
 		const passage = currentLookupResult.passage;
 
 		const bookName =
-			passage.bookId === johnBook.id ? (johnBook.names[0] ?? johnBook.id) : passage.bookId;
+			bibleBooks.find((book) => book.id === passage.bookId)?.names[0] ?? passage.bookId;
 
 		const text = formatPassageForCopy(passage, {
 			bookName,
@@ -168,10 +168,10 @@
 			{/if}
 		{:else}
 			<p>
-				{#each lookupResult.passage.verses as verse}
+				{#each lookupResult.passage.verses as verse (verse.number)}
 					<span>
 						<sup>{verse.number}</sup>
-						<span>{verse.text}</span>{' '}
+						<span>{verse.text}</span>&#32;
 					</span>
 				{/each}
 			</p>

@@ -73,4 +73,33 @@ describe('parseReference', () => {
 			error: 'invalid-verse-range'
 		});
 	});
+
+	it('parses a reference to Genesis', () => {
+		expect(parseReference('Genesis 1:1')).toEqual({
+			ok: true,
+			reference: {
+				bookId: 'genesis',
+				chapter: 1,
+				verseStart: 1
+			}
+		});
+	});
+
+	it.each([
+		['Rdz', 'genesis'],
+		['Kpł', 'leviticus'],
+		['Hi', 'job'],
+		['Łk', 'luke'],
+		['1Kor', '1-corinthians'],
+		['Ap', 'revelation']
+	])('parses the Polish abbreviation %s', (abbreviation, bookId) => {
+		expect(parseReference(`${abbreviation} 1:1`)).toEqual({
+			ok: true,
+			reference: {
+				bookId,
+				chapter: 1,
+				verseStart: 1
+			}
+		});
+	});
 });
