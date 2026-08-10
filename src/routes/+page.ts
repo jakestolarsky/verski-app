@@ -2,10 +2,11 @@ import { loadStaticTranslationPackage } from '$lib/storage/load-static-translati
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch }) => {
-	const translationPackage = await loadStaticTranslationPackage(
-		fetch,
-		'/translations/engwebp-john.json'
-	);
+	const translationPackage =
+		await loadStaticTranslationPackage(
+			fetch,
+			'/translations/engwebp.json'
+		);
 
 	return {
 		translationPackage

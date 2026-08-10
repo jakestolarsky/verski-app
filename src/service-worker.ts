@@ -8,7 +8,7 @@ const APP_CACHE_PREFIX = 'verski-app-';
 const APP_CACHE = `${APP_CACHE_PREFIX}${version}`;
 const TRANSLATION_CACHE = 'verski-translations';
 
-const translationUrl = `${base}/translations/engwebp-john.json`;
+const translationUrl = `${base}/translations/engwebp.json`;
 
 const appAssets = [
 	...new Set([

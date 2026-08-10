@@ -36,7 +36,7 @@ describe('loadStaticTranslationPackage', () => {
 			}
 		});
 
-		const result = await loadStaticTranslationPackage(fetcher, '/translations/engwebp-john.json');
+		const result = await loadStaticTranslationPackage(fetcher, '/translations/engwebp.json');
 
 		expect(result).toEqual(validPackage);
 	});
