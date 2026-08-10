@@ -13,7 +13,7 @@ describe('parseReference', () => {
 		});
 	});
 
-	it('rejects a chapter-only reference in strict mode', () => {
+	it('parses a chapter-only reference', () => {
 		expect(parseReference('John 3')).toEqual({
 			ok: true,
 			reference: {
