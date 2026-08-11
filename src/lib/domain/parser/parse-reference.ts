@@ -4,7 +4,7 @@ import { normalizeReferenceInput } from './normalize-reference-input';
 import { matchBookAlias } from './match-book-alias';
 import { validateReference, type ReferenceValidationError } from '../validation/validate-reference';
 
-export type ParseReferenceError = 'invalid-format' | ReferenceValidationError;
+export type ParseReferenceError = 'invalid-format' | 'ambiguous-book' | ReferenceValidationError;
 
 export type ParseReferenceResult =
 	| {
@@ -101,10 +101,13 @@ function parseCompactReferenceParts(input: string, books: BibleBook[]): Referenc
 	return [...matches.values()][0] ?? null;
 }
 
-export function parseReference(input: string): ParseReferenceResult {
+export function parseReference(
+	input: string,
+	books: BibleBook[] = bibleBooks
+): ParseReferenceResult {
 	const normalizedInput = normalizeReferenceInput(input);
 	const parts =
-		parseReferenceParts(normalizedInput) ?? parseCompactReferenceParts(normalizedInput, bibleBooks);
+		parseReferenceParts(normalizedInput) ?? parseCompactReferenceParts(normalizedInput, books);
 
 	if (!parts) {
 		return {
@@ -115,15 +118,21 @@ export function parseReference(input: string): ParseReferenceResult {
 
 	const { bookAlias, chapterText, verseStartText, verseEndText } = parts;
 
-	const bookMatches = matchBookAlias(bookAlias, bibleBooks);
+	const bookMatches = matchBookAlias(bookAlias, books);
 
-	if (bookMatches.length !== 1) {
+	if (bookMatches.length === 0) {
 		return {
 			ok: false,
-			error: 'invalid-format'
+			error: 'unknown-book'
 		};
 	}
 
+	if (bookMatches.length > 1) {
+		return {
+			ok: false,
+			error: 'ambiguous-book'
+		};
+	}
 	const [book] = bookMatches;
 
 	const reference: BibleReference = {
@@ -139,5 +148,5 @@ export function parseReference(input: string): ParseReferenceResult {
 		reference.verseEnd = Number(verseEndText);
 	}
 
-	return validateReference(reference, bibleBooks);
+	return validateReference(reference, books);
 }

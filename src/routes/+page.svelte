@@ -26,7 +26,8 @@
 		'invalid-format': 'Enter a reference such as John 3:16.',
 		'invalid-structure': 'Chapter and verse numbers must be positive whole numbers.',
 		'unknown-book': 'That Bible book is not available.',
-		'invalid-verse-range': 'The ending verse cannot come before the starting verse.'
+		'invalid-verse-range': 'The ending verse cannot come before the starting verse.',
+		'ambiguous-book': 'That abbreviation matches more than one Bible book. Enter a longer book name.'
 	};
 
 	let referenceInput = $state('');

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseReference } from './parse-reference';
+import type { BibleBook } from '../bible-book';
 
 describe('parseReference', () => {
 	it('parses a strict John chapter and verse reference', () => {
@@ -180,6 +181,33 @@ describe('parseReference', () => {
 		expect(parseReference(input)).toEqual({
 			ok: true,
 			reference
+		});
+	});
+
+	it('reports an unknown book separately from an invalid format', () => {
+		expect(parseReference('Jhn 3:16')).toEqual({
+			ok: false,
+			error: 'unknown-book'
+		});
+	});
+
+	it('reports an ambiguous book alias', () => {
+		const books: BibleBook[] = [
+			{
+				id: 'john',
+				names: ['John'],
+				abbreviations: ['J']
+			},
+			{
+				id: 'james',
+				names: ['James'],
+				abbreviations: ['J']
+			}
+		];
+
+		expect(parseReference('J 1:1', books)).toEqual({
+			ok: false,
+			error: 'ambiguous-book'
 		});
 	});
 });
