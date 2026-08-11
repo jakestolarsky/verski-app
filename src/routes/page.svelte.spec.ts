@@ -91,4 +91,21 @@ describe('+page.svelte', () => {
 		await expect.element(page.getByText('Enter a Bible reference to begin.')).toBeInTheDocument();
 		await expect.element(referenceInput).toHaveFocus();
 	});
+
+	it('clears the current lookup with Escape', async () => {
+		render(Page, { data });
+
+		const referenceInput = page.getByLabelText('Bible reference');
+
+		await userEvent.fill(referenceInput, 'John 1:1');
+		await userEvent.keyboard('{Enter}');
+
+		await expect.element(page.getByText('First verse.')).toBeInTheDocument();
+
+		await userEvent.keyboard('{Escape}');
+
+		await expect.element(referenceInput).toHaveValue('');
+		await expect.element(page.getByText('Enter a Bible reference to begin.')).toBeInTheDocument();
+		await expect.element(referenceInput).toHaveFocus();
+	});
 });

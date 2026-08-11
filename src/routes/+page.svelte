@@ -115,6 +115,14 @@
 			nextParseResult.reference
 		);
 	}
+	function handleReferenceKeydown(event: KeyboardEvent) {
+		if (event.key !== 'Escape') {
+			return;
+		}
+
+		event.preventDefault();
+		handleClear();
+	}
 
 	function handleClear() {
 		referenceInput = '';
@@ -124,6 +132,7 @@
 
 		referenceInputElement?.focus();
 	}
+
 
 	async function handleCopy() {
 		const currentLookupResult = lookupResult;
@@ -174,6 +183,7 @@
 				autocomplete="off"
 				bind:this={referenceInputElement}
 				bind:value={referenceInput}
+				onkeydown={handleReferenceKeydown}
 			/>
 
 			{#if referenceInput}
