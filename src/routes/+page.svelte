@@ -115,8 +115,9 @@
 
 	async function handleCopy() {
 		const currentLookupResult = lookupResult;
+		const currentParseResult = parseResult;
 
-		if (!currentLookupResult?.ok) {
+		if (!currentLookupResult?.ok || !currentParseResult?.ok) {
 			return;
 		}
 
@@ -125,6 +126,7 @@
 		const bookName = getBookName(passage.bookId);
 
 		const text = formatPassageForCopy(passage, {
+			reference: currentParseResult.reference,
 			bookName,
 			translationName: data.translationPackage.manifest.name
 		});
