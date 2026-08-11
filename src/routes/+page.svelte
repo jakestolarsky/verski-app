@@ -27,10 +27,12 @@
 		'invalid-structure': 'Chapter and verse numbers must be positive whole numbers.',
 		'unknown-book': 'That Bible book is not available.',
 		'invalid-verse-range': 'The ending verse cannot come before the starting verse.',
-		'ambiguous-book': 'That abbreviation matches more than one Bible book. Enter a longer book name.'
+		'ambiguous-book':
+			'That abbreviation matches more than one Bible book. Enter a longer book name.'
 	};
 
 	let referenceInput = $state('');
+	let referenceInputElement = $state<HTMLInputElement>();
 	let parseResult = $state<ParseReferenceResult | null>(null);
 	let lookupResult = $state<LookupPassageResult | null>(null);
 	let copyStatus = $state<'idle' | 'copied' | 'error'>('idle');
@@ -114,6 +116,15 @@
 		);
 	}
 
+	function handleClear() {
+		referenceInput = '';
+		parseResult = null;
+		lookupResult = null;
+		copyStatus = 'idle';
+
+		referenceInputElement?.focus();
+	}
+
 	async function handleCopy() {
 		const currentLookupResult = lookupResult;
 		const currentParseResult = parseResult;
@@ -154,14 +165,28 @@
 
 	<form onsubmit={handleSubmit}>
 		<label for="reference">Bible reference</label>
-		<input
-			id="reference"
-			name="reference"
-			type="search"
-			placeholder="John 3:16"
-			autocomplete="off"
-			bind:value={referenceInput}
-		/>
+		<div class="reference-search">
+			<input
+				id="reference"
+				name="reference"
+				type="search"
+				placeholder="John 3:16"
+				autocomplete="off"
+				bind:this={referenceInputElement}
+				bind:value={referenceInput}
+			/>
+
+			{#if referenceInput}
+				<button
+					class="reference-search__clear"
+					type="button"
+					aria-label="Clear"
+					onclick={handleClear}
+				>
+					<span aria-hidden="true">×</span>
+				</button>
+			{/if}
+		</div>
 		<button type="submit">Lookup</button>
 	</form>
 
@@ -206,3 +231,48 @@
 		{/if}
 	</section>
 </main>
+
+<style>
+	.reference-search {
+		position: relative;
+		margin-bottom: var(--pico-spacing);
+	}
+
+	.reference-search input {
+		margin-bottom: 0;
+		padding-inline-end: 3.25rem;
+	}
+
+	.reference-search input::-webkit-search-cancel-button {
+		appearance: none;
+	}
+
+	button.reference-search__clear {
+		position: absolute;
+		inset-block-start: 50%;
+		inset-inline-end: 0.25rem;
+		transform: translateY(-50%);
+		display: grid;
+		width: 2.75rem;
+		height: 2.75rem;
+		min-width: 2.75rem;
+		margin: 0;
+		padding: 0;
+		place-items: center;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		color: var(--verski-input-text);
+		font-size: 1.35rem;
+		line-height: 1;
+	}
+
+	button.reference-search__clear:hover {
+		background: var(--verski-surface);
+	}
+
+	button.reference-search__clear:focus-visible {
+		outline: 2px solid var(--verski-focus);
+		outline-offset: -2px;
+	}
+</style>

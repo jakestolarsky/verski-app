@@ -70,4 +70,25 @@ describe('+page.svelte', () => {
 			.element(page.getByText('This chapter is not available in the selected translation.'))
 			.toBeInTheDocument();
 	});
+
+	it('clears the current lookup and returns focus to the input', async () => {
+		render(Page, { data });
+
+		const referenceInput = page.getByLabelText('Bible reference');
+
+		await userEvent.fill(referenceInput, 'John 1:1');
+		await userEvent.keyboard('{Enter}');
+
+		await expect.element(page.getByText('First verse.')).toBeInTheDocument();
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Clear'
+			})
+		);
+
+		await expect.element(referenceInput).toHaveValue('');
+		await expect.element(page.getByText('Enter a Bible reference to begin.')).toBeInTheDocument();
+		await expect.element(referenceInput).toHaveFocus();
+	});
 });
