@@ -21,7 +21,7 @@ describe('formatPassageForCopy', () => {
 			translationName: 'World English Bible'
 		});
 
-		expect(result).toBe('John 3:16 — World English Bible\n\nFor God so loved the world.');
+		expect(result).toBe('John 3:16 (World English Bible)\n\nFor God so loved the world.');
 	});
 
 	it('formats a verse range with verse numbers', () => {
@@ -52,7 +52,7 @@ describe('formatPassageForCopy', () => {
 
 		expect(result).toBe(
 			[
-				'John 3:16-18 — World English Bible',
+				'John 3:16-18 (World English Bible)',
 				'',
 				'16 First selected verse.',
 				'17 Second selected verse.',

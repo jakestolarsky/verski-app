@@ -44,6 +44,13 @@ describe('+page.svelte', () => {
 		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
 		await expect
 			.element(
+				page.getByRole('heading', {
+					name: 'John 1:2 (World English Bible)'
+				})
+			)
+			.toBeInTheDocument();
+		await expect
+			.element(
 				page.getByRole('button', {
 					name: 'Copy passage'
 				})

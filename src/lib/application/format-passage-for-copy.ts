@@ -31,7 +31,7 @@ export function formatPassageForCopy(
 				.join('\n');
 
 	return (
-		`${reference} — ${labels.translationName}` +
+		`${reference} (${labels.translationName})` +
 		`\n\n${passageText}`
 	);
 }

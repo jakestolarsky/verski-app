@@ -13,6 +13,7 @@
 	import { ensureTranslationInstalled } from '$lib/application/ensure-translation-installed';
 	import { IndexedDbBibleRepository } from '$lib/storage/indexed-db/indexed-db-bible-repository';
 	import { openBibleDatabase } from '$lib/storage/indexed-db/open-bible-database';
+	import { formatBibleReference } from '$lib/application/format-bible-reference';
 
 	let { data }: { data: PageData } = $props();
 
@@ -32,6 +33,24 @@
 	let parseResult = $state<ParseReferenceResult | null>(null);
 	let lookupResult = $state<LookupPassageResult | null>(null);
 	let copyStatus = $state<'idle' | 'copied' | 'error'>('idle');
+
+	const passageHeading = $derived.by(() => {
+		const currentParseResult = parseResult;
+		const currentLookupResult = lookupResult;
+
+		if (!currentParseResult?.ok || !currentLookupResult?.ok) {
+			return 'Passage';
+		}
+
+		const bookName = getBookName(currentLookupResult.passage.bookId);
+		const reference = formatBibleReference(currentParseResult.reference, bookName);
+
+		return `${reference} (${data.translationPackage.manifest.name})`;
+	});
+
+	function getBookName(bookId: string): string {
+		return bibleBooks.find((book) => book.id === bookId)?.names[0] ?? bookId;
+	}
 
 	onMount(() => {
 		let database: IDBDatabase | null = null;
@@ -103,8 +122,7 @@
 
 		const passage = currentLookupResult.passage;
 
-		const bookName =
-			bibleBooks.find((book) => book.id === passage.bookId)?.names[0] ?? passage.bookId;
+		const bookName = getBookName(passage.bookId);
 
 		const text = formatPassageForCopy(passage, {
 			bookName,
@@ -152,7 +170,7 @@
 	{/if}
 
 	<section aria-labelledby="passage-heading" aria-live="polite">
-		<h2 id="passage-heading">Passage</h2>
+		<h2 id="passage-heading">{passageHeading}</h2>
 
 		{#if parseResult === null}
 			<p>Enter a Bible reference to begin.</p>
