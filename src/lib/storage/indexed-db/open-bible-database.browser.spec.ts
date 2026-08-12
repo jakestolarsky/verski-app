@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	CHAPTER_STORE_NAME,
 	openBibleDatabase,
+	RECENT_LOOKUP_STORE_NAME,
 	TRANSLATION_STORE_NAME
 } from './open-bible-database';
 
@@ -26,6 +27,14 @@ describe('openBibleDatabase', () => {
 		const translationStore = translationTransaction.objectStore(TRANSLATION_STORE_NAME);
 
 		expect(translationStore.keyPath).toBe('id');
+
+		expect(database.objectStoreNames.contains(RECENT_LOOKUP_STORE_NAME)).toBe(true);
+
+		const recentLookupTransaction = database.transaction(RECENT_LOOKUP_STORE_NAME, 'readonly');
+
+		const recentLookupStore = recentLookupTransaction.objectStore(RECENT_LOOKUP_STORE_NAME);
+
+		expect(recentLookupStore.keyPath).toBe('id');
 		database.close();
 	});
 });

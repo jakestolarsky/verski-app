@@ -14,6 +14,14 @@
 	import { IndexedDbBibleRepository } from '$lib/storage/indexed-db/indexed-db-bible-repository';
 	import { openBibleDatabase } from '$lib/storage/indexed-db/open-bible-database';
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
+	import { addRecentLookup } from '$lib/application/add-recent-lookup';
+	import RecentLookupList from '$lib/components/RecentLookupList.svelte';
+	import type { BibleReference } from '$lib/domain/bible-reference';
+	import type { RecentLookup } from '$lib/domain/recent-lookup';
+	import { clearRecentLookups } from '$lib/application/clear-recent-lookups';
+	import { recordRecentLookup } from '$lib/application/record-recent-lookup';
+	import { IndexedDbRecentLookupStore } from '$lib/storage/indexed-db/indexed-db-recent-lookup-store';
+	import type { RecentLookupStore } from '$lib/storage/recent-lookup-store';
 
 	let { data }: { data: PageData } = $props();
 
@@ -35,6 +43,8 @@
 	let referenceInputElement = $state<HTMLInputElement>();
 	let parseResult = $state<ParseReferenceResult | null>(null);
 	let lookupResult = $state<LookupPassageResult | null>(null);
+	let recentLookups = $state<RecentLookup[]>([]);
+	let recentLookupStore = $state<RecentLookupStore | null>(null);
 	let copyStatus = $state<'idle' | 'copied' | 'error'>('idle');
 
 	const passageHeading = $derived.by(() => {
@@ -69,6 +79,36 @@
 
 			database = openedDatabase;
 
+			const historyStore = new IndexedDbRecentLookupStore(openedDatabase);
+
+			try {
+				const storedLookups = await historyStore.getRecentLookups();
+
+				if (disposed) {
+					return;
+				}
+
+				const sessionLookups = recentLookups;
+				let mergedLookups = storedLookups;
+
+				for (const sessionLookup of [...sessionLookups].reverse()) {
+					mergedLookups = addRecentLookup(mergedLookups, sessionLookup);
+				}
+
+				recentLookups = mergedLookups;
+				recentLookupStore = historyStore;
+
+				if (sessionLookups.length > 0) {
+					await historyStore.replaceRecentLookups(mergedLookups);
+				}
+			} catch {
+				recentLookupStore = null;
+			}
+
+			if (disposed) {
+				return;
+			}
+
 			const repository = new IndexedDbBibleRepository(openedDatabase);
 
 			await ensureTranslationInstalled(repository, data.translationPackage);
@@ -84,6 +124,7 @@
 		void prepareOfflineStorage().catch(() => {
 			database?.close();
 			database = null;
+			recentLookupStore = null;
 
 			if (!disposed) {
 				offlineStorageStatus = 'unavailable';
@@ -96,24 +137,60 @@
 		};
 	});
 
+	async function performLookup(reference: BibleReference) {
+		parseResult = {
+			ok: true,
+			reference
+		};
+		lookupResult = null;
+		copyStatus = 'idle';
+
+		const nextLookupResult = await lookupPassage(
+			repository,
+			data.translationPackage.manifest.id,
+			reference
+		);
+
+		lookupResult = nextLookupResult;
+
+		if (!nextLookupResult.ok) {
+			return;
+		}
+
+		const recentLookup: RecentLookup = {
+			translationId: data.translationPackage.manifest.id,
+			reference,
+			searchedAt: Date.now()
+		};
+
+		const historyStore = recentLookupStore;
+
+		if (historyStore === null) {
+			recentLookups = addRecentLookup(recentLookups, recentLookup);
+			return;
+		}
+
+		try {
+			recentLookups = await recordRecentLookup(historyStore, recentLookup);
+		} catch {
+			recentLookupStore = null;
+			recentLookups = addRecentLookup(recentLookups, recentLookup);
+		}
+	}
+
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
 		const nextParseResult = parseReference(referenceInput);
 
-		parseResult = nextParseResult;
-		lookupResult = null;
-		copyStatus = 'idle';
-
 		if (!nextParseResult.ok) {
+			parseResult = nextParseResult;
+			lookupResult = null;
+			copyStatus = 'idle';
 			return;
 		}
 
-		lookupResult = await lookupPassage(
-			repository,
-			data.translationPackage.manifest.id,
-			nextParseResult.reference
-		);
+		await performLookup(nextParseResult.reference);
 	}
 	function handleReferenceKeydown(event: KeyboardEvent) {
 		if (event.key !== 'Escape') {
@@ -133,6 +210,31 @@
 		referenceInputElement?.focus();
 	}
 
+	async function handleRecentLookupSelect(lookup: RecentLookup) {
+		const bookName = getBookName(lookup.reference.bookId);
+
+		referenceInput = formatBibleReference(lookup.reference, bookName);
+		referenceInputElement?.focus();
+
+		await performLookup(lookup.reference);
+	}
+
+	async function handleClearRecentLookups() {
+		recentLookups = [];
+		referenceInputElement?.focus();
+
+		const historyStore = recentLookupStore;
+
+		if (historyStore === null) {
+			return;
+		}
+
+		try {
+			await clearRecentLookups(historyStore);
+		} catch {
+			recentLookupStore = null;
+		}
+	}
 
 	async function handleCopy() {
 		const currentLookupResult = lookupResult;
@@ -199,6 +301,14 @@
 		</div>
 		<button type="submit">Lookup</button>
 	</form>
+
+	{#if referenceInput === ''}
+		<RecentLookupList
+			lookups={recentLookups}
+			onSelect={handleRecentLookupSelect}
+			onClear={handleClearRecentLookups}
+		/>
+	{/if}
 
 	{#if offlineStorageStatus === 'unavailable'}
 		<p role="status">

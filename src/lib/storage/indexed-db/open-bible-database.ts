@@ -1,7 +1,8 @@
 export const CHAPTER_STORE_NAME = 'chapters';
 export const TRANSLATION_STORE_NAME = 'translations';
+export const RECENT_LOOKUP_STORE_NAME = 'recent-lookups';
 
-const BIBLE_DATABASE_VERSION = 2;
+const BIBLE_DATABASE_VERSION = 3;
 
 export function openBibleDatabase(databaseName = 'verski-bible'): Promise<IDBDatabase> {
 	return new Promise((resolve, reject) => {
@@ -18,6 +19,12 @@ export function openBibleDatabase(databaseName = 'verski-bible'): Promise<IDBDat
 
 			if (!database.objectStoreNames.contains(TRANSLATION_STORE_NAME)) {
 				database.createObjectStore(TRANSLATION_STORE_NAME, {
+					keyPath: 'id'
+				});
+			}
+
+			if (!database.objectStoreNames.contains(RECENT_LOOKUP_STORE_NAME)) {
+				database.createObjectStore(RECENT_LOOKUP_STORE_NAME, {
 					keyPath: 'id'
 				});
 			}
