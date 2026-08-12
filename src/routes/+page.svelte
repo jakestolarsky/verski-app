@@ -1,10 +1,8 @@
 <script lang="ts">
 	import PassageResult from '$lib/components/PassageResult.svelte';
+	import ReferenceSearchForm from '$lib/components/ReferenceSearchForm.svelte';
 	import { lookupPassage, type LookupPassageResult } from '$lib/application/lookup-passage';
-	import {
-		parseReference,
-		type ParseReferenceResult
-	} from '$lib/domain/parser/parse-reference';
+	import { parseReference, type ParseReferenceResult } from '$lib/domain/parser/parse-reference';
 	import { StaticBibleRepository } from '$lib/storage/static-bible-repository';
 	import type { PageData } from './$types';
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
@@ -31,7 +29,12 @@
 	let offlineStorageStatus = $state<'preparing' | 'ready' | 'unavailable'>('preparing');
 
 	let referenceInput = $state('');
-	let referenceInputElement = $state<HTMLInputElement>();
+
+	type ReferenceSearchFormHandle = {
+		focus: () => void;
+	};
+
+	let referenceSearchForm = $state<ReferenceSearchFormHandle>();
 	let parseResult = $state<ParseReferenceResult | null>(null);
 	let lookupResult = $state<LookupPassageResult | null>(null);
 	let recentLookups = $state<RecentLookup[]>([]);
@@ -169,10 +172,8 @@
 		}
 	}
 
-	async function handleSubmit(event: SubmitEvent) {
-		event.preventDefault();
-
-		const nextParseResult = parseReference(referenceInput);
+	async function handleSubmit(input: string) {
+		const nextParseResult = parseReference(input);
 
 		if (!nextParseResult.ok) {
 			parseResult = nextParseResult;
@@ -183,36 +184,25 @@
 
 		await performLookup(nextParseResult.reference);
 	}
-	function handleReferenceKeydown(event: KeyboardEvent) {
-		if (event.key !== 'Escape') {
-			return;
-		}
-
-		event.preventDefault();
-		handleClear();
-	}
 
 	function handleClear() {
-		referenceInput = '';
 		parseResult = null;
 		lookupResult = null;
 		copyStatus = 'idle';
-
-		referenceInputElement?.focus();
 	}
 
 	async function handleRecentLookupSelect(lookup: RecentLookup) {
 		const bookName = getBookName(lookup.reference.bookId);
 
 		referenceInput = formatBibleReference(lookup.reference, bookName);
-		referenceInputElement?.focus();
+		referenceSearchForm?.focus();
 
 		await performLookup(lookup.reference);
 	}
 
 	async function handleClearRecentLookups() {
 		recentLookups = [];
-		referenceInputElement?.focus();
+		referenceSearchForm?.focus();
 
 		const historyStore = recentLookupStore;
 
@@ -265,33 +255,12 @@
 		<h1>Bible lookup done right</h1>
 	</header>
 
-	<form onsubmit={handleSubmit}>
-		<label for="reference">Bible reference</label>
-		<div class="reference-search">
-			<input
-				id="reference"
-				name="reference"
-				type="search"
-				placeholder="John 3:16"
-				autocomplete="off"
-				bind:this={referenceInputElement}
-				bind:value={referenceInput}
-				onkeydown={handleReferenceKeydown}
-			/>
-
-			{#if referenceInput}
-				<button
-					class="reference-search__clear"
-					type="button"
-					aria-label="Clear"
-					onclick={handleClear}
-				>
-					<span aria-hidden="true">×</span>
-				</button>
-			{/if}
-		</div>
-		<button type="submit">Lookup</button>
-	</form>
+	<ReferenceSearchForm
+		bind:this={referenceSearchForm}
+		bind:value={referenceInput}
+		onSubmit={handleSubmit}
+		onClear={handleClear}
+	/>
 
 	{#if referenceInput === ''}
 		<RecentLookupList
@@ -308,14 +277,13 @@
 		</p>
 	{/if}
 
-<PassageResult
-	heading={passageHeading}
-	{parseResult}
-	{lookupResult}
-	{copyStatus}
-	onCopy={handleCopy}
-/>
-
+	<PassageResult
+		heading={passageHeading}
+		{parseResult}
+		{lookupResult}
+		{copyStatus}
+		onCopy={handleCopy}
+	/>
 </main>
 
 <style>
