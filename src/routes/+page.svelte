@@ -1,8 +1,8 @@
 <script lang="ts">
+	import PassageResult from '$lib/components/PassageResult.svelte';
 	import { lookupPassage, type LookupPassageResult } from '$lib/application/lookup-passage';
 	import {
 		parseReference,
-		type ParseReferenceError,
 		type ParseReferenceResult
 	} from '$lib/domain/parser/parse-reference';
 	import { StaticBibleRepository } from '$lib/storage/static-bible-repository';
@@ -29,15 +29,6 @@
 	let indexedDbRepository = $state<IndexedDbBibleRepository | null>(null);
 	const repository = $derived(indexedDbRepository ?? staticRepository);
 	let offlineStorageStatus = $state<'preparing' | 'ready' | 'unavailable'>('preparing');
-
-	const errorMessages: Record<ParseReferenceError, string> = {
-		'invalid-format': 'Enter a reference such as John 3:16.',
-		'invalid-structure': 'Chapter and verse numbers must be positive whole numbers.',
-		'unknown-book': 'That Bible book is not available.',
-		'invalid-verse-range': 'The ending verse cannot come before the starting verse.',
-		'ambiguous-book':
-			'That abbreviation matches more than one Bible book. Enter a longer book name.'
-	};
 
 	let referenceInput = $state('');
 	let referenceInputElement = $state<HTMLInputElement>();
@@ -317,39 +308,14 @@
 		</p>
 	{/if}
 
-	<section aria-labelledby="passage-heading" aria-live="polite">
-		<h2 id="passage-heading">{passageHeading}</h2>
+<PassageResult
+	heading={passageHeading}
+	{parseResult}
+	{lookupResult}
+	{copyStatus}
+	onCopy={handleCopy}
+/>
 
-		{#if parseResult === null}
-			<p>Enter a Bible reference to begin.</p>
-		{:else if !parseResult.ok}
-			<p>{errorMessages[parseResult.error]}</p>
-		{:else if lookupResult === null}
-			<p>Loading passage…</p>
-		{:else if !lookupResult.ok}
-			{#if lookupResult.error === 'chapter-not-found'}
-				<p>This chapter is not available in the selected translation.</p>
-			{:else}
-				<p>That verse does not exist in this chapter.</p>
-			{/if}
-		{:else}
-			<p>
-				{#each lookupResult.passage.verses as verse (verse.number)}
-					<span>
-						<sup>{verse.number}</sup>
-						<span>{verse.text}</span>&#32;
-					</span>
-				{/each}
-			</p>
-			<button type="button" onclick={handleCopy}> Copy passage </button>
-
-			{#if copyStatus === 'copied'}
-				<p>Passage copied.</p>
-			{:else if copyStatus === 'error'}
-				<p>Passage could not be copied.</p>
-			{/if}
-		{/if}
-	</section>
 </main>
 
 <style>
