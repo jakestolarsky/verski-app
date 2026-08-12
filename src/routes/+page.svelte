@@ -1,6 +1,11 @@
 <script lang="ts">
 	import PassageResult from '$lib/components/PassageResult.svelte';
 	import ReferenceSearchForm from '$lib/components/ReferenceSearchForm.svelte';
+	import type { BibleRepository } from '$lib/storage/bible-repository';
+	import {
+		prepareBrowserStorage,
+		type PreparedBrowserStorage
+	} from '$lib/platform/prepare-browser-storage';
 	import { lookupPassage, type LookupPassageResult } from '$lib/application/lookup-passage';
 	import { parseReference, type ParseReferenceResult } from '$lib/domain/parser/parse-reference';
 	import { StaticBibleRepository } from '$lib/storage/static-bible-repository';
@@ -8,9 +13,6 @@
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
 	import { bibleBooks } from '$lib/domain/bible-book';
 	import { onMount } from 'svelte';
-	import { ensureTranslationInstalled } from '$lib/application/ensure-translation-installed';
-	import { IndexedDbBibleRepository } from '$lib/storage/indexed-db/indexed-db-bible-repository';
-	import { openBibleDatabase } from '$lib/storage/indexed-db/open-bible-database';
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
 	import { addRecentLookup } from '$lib/application/add-recent-lookup';
 	import RecentLookupList from '$lib/components/RecentLookupList.svelte';
@@ -18,14 +20,13 @@
 	import type { RecentLookup } from '$lib/domain/recent-lookup';
 	import { clearRecentLookups } from '$lib/application/clear-recent-lookups';
 	import { recordRecentLookup } from '$lib/application/record-recent-lookup';
-	import { IndexedDbRecentLookupStore } from '$lib/storage/indexed-db/indexed-db-recent-lookup-store';
 	import type { RecentLookupStore } from '$lib/storage/recent-lookup-store';
 
 	let { data }: { data: PageData } = $props();
 
 	const staticRepository = $derived(new StaticBibleRepository(data.translationPackage));
-	let indexedDbRepository = $state<IndexedDbBibleRepository | null>(null);
-	const repository = $derived(indexedDbRepository ?? staticRepository);
+	let persistentRepository = $state<BibleRepository | null>(null);
+	const repository = $derived(persistentRepository ?? staticRepository);
 	let offlineStorageStatus = $state<'preparing' | 'ready' | 'unavailable'>('preparing');
 
 	let referenceInput = $state('');
@@ -60,74 +61,33 @@
 	}
 
 	onMount(() => {
-		let database: IDBDatabase | null = null;
+		let preparedStorage: PreparedBrowserStorage | null = null;
 		let disposed = false;
 
-		async function prepareOfflineStorage() {
-			const openedDatabase = await openBibleDatabase();
-
-			if (disposed) {
-				openedDatabase.close();
-				return;
-			}
-
-			database = openedDatabase;
-
-			const historyStore = new IndexedDbRecentLookupStore(openedDatabase);
-
-			try {
-				const storedLookups = await historyStore.getRecentLookups();
-
+		void prepareBrowserStorage(data.translationPackage, recentLookups)
+			.then((storage) => {
 				if (disposed) {
+					storage.close();
 					return;
 				}
 
-				const sessionLookups = recentLookups;
-				let mergedLookups = storedLookups;
-
-				for (const sessionLookup of [...sessionLookups].reverse()) {
-					mergedLookups = addRecentLookup(mergedLookups, sessionLookup);
+				preparedStorage = storage;
+				persistentRepository = storage.bibleRepository;
+				recentLookupStore = storage.recentLookupStore;
+				recentLookups = storage.recentLookups;
+				offlineStorageStatus = 'ready';
+			})
+			.catch(() => {
+				if (!disposed) {
+					persistentRepository = null;
+					recentLookupStore = null;
+					offlineStorageStatus = 'unavailable';
 				}
-
-				recentLookups = mergedLookups;
-				recentLookupStore = historyStore;
-
-				if (sessionLookups.length > 0) {
-					await historyStore.replaceRecentLookups(mergedLookups);
-				}
-			} catch {
-				recentLookupStore = null;
-			}
-
-			if (disposed) {
-				return;
-			}
-
-			const repository = new IndexedDbBibleRepository(openedDatabase);
-
-			await ensureTranslationInstalled(repository, data.translationPackage);
-
-			if (disposed) {
-				return;
-			}
-
-			indexedDbRepository = repository;
-			offlineStorageStatus = 'ready';
-		}
-
-		void prepareOfflineStorage().catch(() => {
-			database?.close();
-			database = null;
-			recentLookupStore = null;
-
-			if (!disposed) {
-				offlineStorageStatus = 'unavailable';
-			}
-		});
+			});
 
 		return () => {
 			disposed = true;
-			database?.close();
+			preparedStorage?.close();
 		};
 	});
 
@@ -285,48 +245,3 @@
 		onCopy={handleCopy}
 	/>
 </main>
-
-<style>
-	.reference-search {
-		position: relative;
-		margin-bottom: var(--pico-spacing);
-	}
-
-	.reference-search input {
-		margin-bottom: 0;
-		padding-inline-end: 3.25rem;
-	}
-
-	.reference-search input::-webkit-search-cancel-button {
-		appearance: none;
-	}
-
-	button.reference-search__clear {
-		position: absolute;
-		inset-block-start: 50%;
-		inset-inline-end: 0.25rem;
-		transform: translateY(-50%);
-		display: grid;
-		width: 2.75rem;
-		height: 2.75rem;
-		min-width: 2.75rem;
-		margin: 0;
-		padding: 0;
-		place-items: center;
-		border: 0;
-		border-radius: 50%;
-		background: transparent;
-		color: var(--verski-input-text);
-		font-size: 1.35rem;
-		line-height: 1;
-	}
-
-	button.reference-search__clear:hover {
-		background: var(--verski-surface);
-	}
-
-	button.reference-search__clear:focus-visible {
-		outline: 2px solid var(--verski-focus);
-		outline-offset: -2px;
-	}
-</style>
