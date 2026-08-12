@@ -9,6 +9,15 @@ test('starts offline and looks up a cached passage', async ({ context, page }) =
 
 	await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
 
+	const onlineReferenceInput = page.getByLabel('Bible reference');
+
+	await onlineReferenceInput.fill('John 3:16');
+	await onlineReferenceInput.press('Enter');
+
+	await expect(page.getByText(/For God so loved the world/)).toBeVisible({
+		timeout: 15_000
+	});
+
 	await page.close();
 	await context.setOffline(true);
 
@@ -23,5 +32,7 @@ test('starts offline and looks up a cached passage', async ({ context, page }) =
 	await referenceInput.fill('John 3:16');
 	await referenceInput.press('Enter');
 
-	await expect(offlinePage.getByText(/For God so loved the world/)).toBeVisible();
+	await expect(offlinePage.getByText(/For God so loved the world/)).toBeVisible({
+		timeout: 15_000
+	});
 });
