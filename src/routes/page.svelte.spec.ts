@@ -278,4 +278,57 @@ describe('+page.svelte', () => {
 			)
 			.toBeInTheDocument();
 	});
+
+	it('applies and restores reading settings from IndexedDB', async () => {
+		const firstRender = render(Page, { data });
+
+		const settingsButton = page.getByRole('button', {
+			name: 'Settings'
+		});
+
+		await expect.element(settingsButton).toBeEnabled();
+		await userEvent.click(settingsButton);
+
+		await userEvent.selectOptions(page.getByLabelText('Text size'), 'large');
+		await userEvent.selectOptions(page.getByLabelText('Line spacing'), 'relaxed');
+		await userEvent.click(page.getByLabelText('Show verse numbers'));
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Close settings'
+			})
+		);
+
+		const referenceInput = page.getByLabelText('Bible reference');
+
+		await userEvent.fill(referenceInput, 'John 1:2');
+		await userEvent.keyboard('{Enter}');
+
+		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
+
+		const firstPassageText = page.getByText('Second verse.').element().closest('.passage-text');
+
+		expect(firstPassageText?.getAttribute('data-font-size')).toBe('large');
+		expect(firstPassageText?.getAttribute('data-line-height')).toBe('relaxed');
+		expect(firstPassageText?.querySelector('sup')).toBeNull();
+
+		await firstRender.unmount();
+
+		render(Page, { data });
+
+		await expect.element(settingsButton).toBeEnabled();
+
+		const restoredReferenceInput = page.getByLabelText('Bible reference');
+
+		await userEvent.fill(restoredReferenceInput, 'John 1:2');
+		await userEvent.keyboard('{Enter}');
+
+		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
+
+		const restoredPassageText = page.getByText('Second verse.').element().closest('.passage-text');
+
+		expect(restoredPassageText?.getAttribute('data-font-size')).toBe('large');
+		expect(restoredPassageText?.getAttribute('data-line-height')).toBe('relaxed');
+		expect(restoredPassageText?.querySelector('sup')).toBeNull();
+	});
 });

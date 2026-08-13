@@ -3,12 +3,13 @@ import { z } from 'zod';
 import {
 	CURRENT_USER_SETTINGS_VERSION,
 	defaultUserSettings,
-	type UserSettings
+	type UserSettings,
+	availableThemes
 } from '$lib/domain/user-settings';
 
 const versionOneSettingsSchema = z.object({
 	version: z.literal(CURRENT_USER_SETTINGS_VERSION),
-	theme: z.enum(['system', 'light', 'dark']).default(defaultUserSettings.theme),
+	theme: z.enum(availableThemes).default(defaultUserSettings.theme),
 	reading: z
 		.object({
 			fontSize: z.enum(['small', 'default', 'large']).default(defaultUserSettings.reading.fontSize),

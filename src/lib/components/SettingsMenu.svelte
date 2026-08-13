@@ -1,10 +1,12 @@
 <script lang="ts">
-	import type {
-		ReadingFontSize,
-		ReadingLineHeight,
-		ReadingSettings,
-		Theme,
-		UserSettings
+	import {
+		availableThemes,
+		isTheme,
+		type ReadingFontSize,
+		type ReadingLineHeight,
+		type ReadingSettings,
+		type Theme,
+		type UserSettings
 	} from '$lib/domain/user-settings';
 	import { applyThemePreference } from '$lib/platform/theme-preference';
 
@@ -13,6 +15,12 @@
 		disabled?: boolean;
 		onChange: (settings: UserSettings) => void | Promise<void>;
 	};
+
+	const themeLabels = {
+		system: 'System',
+		light: 'Light',
+		dark: 'Dark'
+	} satisfies Record<Theme, string>;
 
 	let { settings, disabled = false, onChange }: Props = $props();
 
@@ -29,10 +37,6 @@
 
 	function handleDialogClose() {
 		triggerElement?.focus();
-	}
-
-	function isTheme(value: string): value is Theme {
-		return value === 'system' || value === 'light' || value === 'dark';
 	}
 
 	function isReadingFontSize(value: string): value is ReadingFontSize {
@@ -131,9 +135,9 @@
 				Theme
 
 				<select id="theme-select" value={settings.theme} onchange={handleThemeChange}>
-					<option value="system">System</option>
-					<option value="light">Light</option>
-					<option value="dark">Dark</option>
+					{#each availableThemes as theme}
+						<option value={theme}>{themeLabels[theme]}</option>
+					{/each}
 				</select>
 			</label>
 

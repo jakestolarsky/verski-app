@@ -1,11 +1,12 @@
-import type { Theme } from '../domain/user-settings';
+import { isTheme, type Theme } from '../domain/user-settings';
+
 
 export const THEME_STORAGE_KEY = 'verski-theme';
 
 export function readStoredThemePreference(): Exclude<Theme, 'system'> | null {
 	const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
 
-	if (storedTheme === 'light' || storedTheme === 'dark') {
+	if (isTheme(storedTheme) && storedTheme !== 'system') {
 		return storedTheme;
 	}
 

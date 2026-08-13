@@ -1,7 +1,14 @@
 export const CURRENT_USER_SETTINGS_VERSION = 1;
 
-export type Theme = 'system' | 'light' | 'dark';
+export const availableThemes = ['system', 'light', 'dark'] as const;
+export type Theme = (typeof availableThemes)[number];
 
+export function isTheme(value: unknown): value is Theme {
+	return (
+		typeof value === 'string' &&
+		availableThemes.includes(value as Theme)
+	);
+}
 export type ReadingFontSize = 'small' | 'default' | 'large';
 
 export type ReadingLineHeight = 'compact' | 'default' | 'relaxed';
