@@ -23,7 +23,8 @@
 	let triggerElement = $state<HTMLButtonElement>();
 	let dialogElement = $state<HTMLDialogElement>();
 	let bookQuery = $state('');
-	let expandedTestamentIds = $state<BibleTestamentId[]>(['old', 'new']);
+	let expandedTestamentIds = $state<BibleTestamentId[]>([]);
+	let navigationPanelElement = $state<HTMLDivElement>();
 	let expandedBookId = $state<string | null>(null);
 	let selectionError = $state(false);
 
@@ -51,11 +52,17 @@
 			testament.books.some((book) => book.id === selectedBookId)
 		);
 
-		if (selectedTestament !== undefined && !expandedTestamentIds.includes(selectedTestament.id)) {
-			expandedTestamentIds = [...expandedTestamentIds, selectedTestament.id];
-		}
+		expandedTestamentIds = selectedTestament === undefined ? [] : [selectedTestament.id];
 
 		dialogElement?.showModal();
+
+		if (dialogElement !== undefined) {
+			dialogElement.scrollTop = 0;
+		}
+
+		if (navigationPanelElement !== undefined) {
+			navigationPanelElement.scrollTop = 0;
+		}
 	}
 
 	function closeMenu() {
@@ -121,7 +128,7 @@
 	aria-labelledby="bible-navigation-heading"
 	onclose={handleDialogClose}
 >
-	<div class="navigation-panel">
+	<div bind:this={navigationPanelElement} class="navigation-panel">
 		<header class="navigation-header">
 			<h2 id="bible-navigation-heading">Bible navigation</h2>
 
@@ -195,7 +202,7 @@
 					</button>
 
 					{#if isTestamentExpanded(testament.id)}
-						<ul class="book-list">
+						<ul class="book-list" role="list">
 							{#each testament.books as book (book.id)}
 								<li>
 									<button
@@ -215,7 +222,7 @@
 										{#if book.chapters.length === 0}
 											<p class="empty-book">No chapters available.</p>
 										{:else}
-											<ul class="chapter-list" aria-label={`${book.name} chapters`}>
+											<ul class="chapter-list" role="list" aria-label={`${book.name} chapters`}>
 												{#each book.chapters as chapter}
 													<li>
 														<button
@@ -270,6 +277,7 @@
 		max-height: 100dvh;
 		margin: 0 auto 0 0;
 		padding: 0;
+		overflow: hidden;
 		border: 0;
 		border-radius: 0;
 		background: var(--verski-background);
@@ -281,8 +289,12 @@
 	}
 
 	.navigation-panel {
-		min-height: 100%;
+		height: 100%;
+		min-height: 0;
 		padding: var(--pico-spacing);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	.navigation-header {
@@ -367,6 +379,19 @@
 		list-style: none;
 	}
 
+	.book-list > li,
+	.chapter-list > li {
+		display: block;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.book-list > li::marker,
+	.chapter-list > li::marker {
+		content: '';
+	}
+
 	.book-button {
 		padding-inline-start: 1rem;
 	}
@@ -374,12 +399,6 @@
 	.book-button[aria-current='true'] {
 		color: var(--verski-primary);
 		font-weight: 600;
-	}
-
-	.chapter-list button[aria-current='page'] {
-		border-color: var(--verski-primary);
-		background: var(--verski-primary);
-		color: var(--verski-on-primary);
 	}
 
 	.navigation-error {
@@ -390,14 +409,38 @@
 		display: grid;
 		grid-template-columns: repeat(5, minmax(2.5rem, 1fr));
 		gap: 0.35rem;
-		padding: 0.25rem 1rem 0.75rem;
+		padding: 0.25rem 0.5rem 0.75rem;
 	}
 
 	.chapter-list button {
 		width: 100%;
+		aspect-ratio: 1;
 		min-height: 2.75rem;
 		margin: 0;
 		padding: 0.35rem;
+		border: 1px solid transparent;
+		border-radius: 0;
+		background: transparent;
+		box-shadow: none;
+		color: var(--verski-text);
+	}
+
+	.chapter-list button:hover {
+		border-color: var(--verski-muted-brown);
+		background: transparent;
+		color: var(--verski-text);
+	}
+
+	.chapter-list button:focus-visible {
+		outline: 2px solid var(--verski-focus);
+		outline-offset: 2px;
+	}
+
+	.chapter-list button[aria-current='page'] {
+		border-color: var(--verski-primary);
+		background: transparent;
+		color: var(--verski-primary);
+		font-weight: 600;
 	}
 
 	.empty-book {

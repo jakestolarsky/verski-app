@@ -52,6 +52,14 @@ describe('BibleNavigationMenu', () => {
 			)
 			.toBeVisible();
 
+		await expect
+			.element(page.getByRole('button', { name: 'Old Testament' }))
+			.toHaveAttribute('aria-expanded', 'false');
+
+		await expect
+			.element(page.getByRole('button', { name: 'New Testament' }))
+			.toHaveAttribute('aria-expanded', 'false');
+
 		await expect.element(page.getByText('World English Bible')).toBeVisible();
 		await expect.element(page.getByRole('button', { name: 'Old Testament' })).toBeVisible();
 		await expect.element(page.getByRole('button', { name: 'New Testament' })).toBeVisible();
@@ -84,6 +92,11 @@ describe('BibleNavigationMenu', () => {
 		});
 
 		await userEvent.click(page.getByRole('button', { name: 'Open Bible navigation' }));
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Old Testament'
+			})
+		);
 		await userEvent.click(page.getByRole('button', { name: 'Genesis' }));
 		await userEvent.click(page.getByRole('button', { name: 'Genesis 2' }));
 
@@ -110,6 +123,11 @@ describe('BibleNavigationMenu', () => {
 		});
 
 		await userEvent.click(page.getByRole('button', { name: 'Open Bible navigation' }));
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Old Testament'
+			})
+		);
 		await userEvent.click(page.getByRole('button', { name: 'Genesis' }));
 		await userEvent.click(page.getByRole('button', { name: 'Genesis 1' }));
 

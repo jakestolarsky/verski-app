@@ -340,6 +340,11 @@ describe('+page.svelte', () => {
 				name: 'Open Bible navigation'
 			})
 		);
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'New Testament'
+			})
+		);
 
 		await userEvent.click(
 			page.getByRole('button', {
