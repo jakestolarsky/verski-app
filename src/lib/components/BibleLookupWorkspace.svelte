@@ -29,6 +29,7 @@
 		recentLookups: RecentLookup[];
 		recentLookupStore: RecentLookupStore | null;
 		readingSettings: ReadingSettings;
+		activeReference?: BibleReference | null;
 	};
 
 	let {
@@ -37,7 +38,8 @@
 		translationName,
 		recentLookups = $bindable(),
 		recentLookupStore = $bindable(),
-		readingSettings
+		readingSettings,
+		activeReference = $bindable(null)
 	}: Props = $props();
 
 	let referenceInput = $state('');
@@ -69,7 +71,7 @@
 			ok: true,
 			reference
 		};
-		lookupResult = null;
+		activeReference = null;
 		copyStatus = 'idle';
 
 		const nextLookupResult = await lookupPassage(repository, translationId, reference);
@@ -79,6 +81,7 @@
 		if (!nextLookupResult.ok) {
 			return false;
 		}
+		activeReference = reference;
 
 		const recentLookup: RecentLookup = {
 			translationId,
@@ -120,6 +123,7 @@
 		if (!nextParseResult.ok) {
 			parseResult = nextParseResult;
 			lookupResult = null;
+			activeReference = null;
 			copyStatus = 'idle';
 			return;
 		}
@@ -131,6 +135,7 @@
 		parseResult = null;
 		lookupResult = null;
 		copyStatus = 'idle';
+		activeReference = null;
 	}
 
 	async function handleRecentLookupSelect(lookup: RecentLookup) {

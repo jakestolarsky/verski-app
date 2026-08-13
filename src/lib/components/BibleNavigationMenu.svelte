@@ -8,16 +8,24 @@
 	type Props = {
 		translationName: string;
 		navigation: BibleNavigationTestament[];
+		selectedBookId?: string | null;
+		selectedChapter?: number | null;
 		onChapterSelect: (bookId: string, chapter: number) => boolean | Promise<boolean>;
 	};
 
-	let { translationName, navigation, onChapterSelect }: Props = $props();
-
+	let {
+		translationName,
+		navigation,
+		selectedBookId = null,
+		selectedChapter = null,
+		onChapterSelect
+	}: Props = $props();
 	let triggerElement = $state<HTMLButtonElement>();
 	let dialogElement = $state<HTMLDialogElement>();
 	let bookQuery = $state('');
 	let expandedTestamentIds = $state<BibleTestamentId[]>(['old', 'new']);
 	let expandedBookId = $state<string | null>(null);
+	let selectionError = $state(false);
 
 	const filteredNavigation = $derived.by(() => {
 		const query = bookQuery.trim().toLocaleLowerCase();
@@ -35,6 +43,18 @@
 	});
 
 	function openMenu() {
+		bookQuery = '';
+		selectionError = false;
+		expandedBookId = selectedBookId;
+
+		const selectedTestament = navigation.find((testament) =>
+			testament.books.some((book) => book.id === selectedBookId)
+		);
+
+		if (selectedTestament !== undefined && !expandedTestamentIds.includes(selectedTestament.id)) {
+			expandedTestamentIds = [...expandedTestamentIds, selectedTestament.id];
+		}
+
 		dialogElement?.showModal();
 	}
 
@@ -64,11 +84,20 @@
 	}
 
 	async function handleChapterSelect(bookId: string, chapter: number) {
-		const selected = await onChapterSelect(bookId, chapter);
+		selectionError = false;
 
-		if (selected) {
-			closeMenu();
+		try {
+			const selected = await onChapterSelect(bookId, chapter);
+
+			if (selected) {
+				closeMenu();
+				return;
+			}
+		} catch {
+			// The dialog remains open and displays a useful error.
 		}
+
+		selectionError = true;
 	}
 </script>
 
@@ -115,7 +144,7 @@
 			</button>
 		</header>
 
-		<p class="translation-name" aria-label="Current translation">
+		<p class="translation-name" aria-label="Current translation" aria-current="true">
 			{translationName}
 		</p>
 
@@ -142,7 +171,13 @@
 			</svg>
 		</div>
 
-		{#if filteredNavigation.length === 0}
+		{#if selectionError}
+			<p class="navigation-error" role="alert">Could not open the selected chapter.</p>
+		{/if}
+
+		{#if navigation.length === 0}
+			<p role="status">No Bible books are available for this translation.</p>
+		{:else if filteredNavigation.length === 0}
 			<p role="status">No books match your search.</p>
 		{:else}
 			{#each filteredNavigation as testament (testament.id)}
@@ -167,6 +202,7 @@
 										class="book-button"
 										type="button"
 										aria-expanded={expandedBookId === book.id}
+										aria-current={selectedBookId === book.id ? 'true' : undefined}
 										onclick={() => toggleBook(book)}
 									>
 										<span>{book.name}</span>
@@ -185,6 +221,10 @@
 														<button
 															type="button"
 															aria-label={`${book.name} ${chapter}`}
+															aria-current={selectedBookId === book.id &&
+															selectedChapter === chapter
+																? 'page'
+																: undefined}
 															onclick={() => handleChapterSelect(book.id, chapter)}
 														>
 															{chapter}
@@ -329,6 +369,21 @@
 
 	.book-button {
 		padding-inline-start: 1rem;
+	}
+
+	.book-button[aria-current='true'] {
+		color: var(--verski-primary);
+		font-weight: 600;
+	}
+
+	.chapter-list button[aria-current='page'] {
+		border-color: var(--verski-primary);
+		background: var(--verski-primary);
+		color: var(--verski-on-primary);
+	}
+
+	.navigation-error {
+		color: var(--pico-del-color);
 	}
 
 	.chapter-list {

@@ -18,6 +18,7 @@
 	import type { UserSettingsStore } from '$lib/storage/user-settings-store';
 	import { buildBibleNavigation } from '$lib/application/build-bible-navigation';
 	import BibleNavigationMenu from '$lib/components/BibleNavigationMenu.svelte';
+	import type { BibleReference } from '$lib/domain/bible-reference';
 
 	type BibleLookupWorkspaceHandle = {
 		openChapter: (bookId: string, chapter: number) => Promise<boolean>;
@@ -35,6 +36,7 @@
 
 	let recentLookups = $state<RecentLookup[]>([]);
 	let recentLookupStore = $state<RecentLookupStore | null>(null);
+	let activeReference = $state<BibleReference | null>(null);
 	let offlineStorageStatus = $state<'preparing' | 'ready' | 'unavailable'>('preparing');
 
 	let userSettings = $state<UserSettings>(structuredClone(defaultUserSettings));
@@ -130,6 +132,8 @@
 			<BibleNavigationMenu
 				translationName={data.translationPackage.manifest.name}
 				navigation={bibleNavigation}
+				selectedBookId={activeReference?.bookId ?? null}
+				selectedChapter={activeReference?.chapter ?? null}
 				onChapterSelect={handleChapterSelect}
 			/>
 		</div>
@@ -157,6 +161,7 @@
 
 	<BibleLookupWorkspace
 		bind:this={bibleLookupWorkspace}
+		bind:activeReference
 		{repository}
 		translationId={data.translationPackage.manifest.id}
 		translationName={data.translationPackage.manifest.name}

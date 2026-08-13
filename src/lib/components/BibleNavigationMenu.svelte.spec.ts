@@ -120,6 +120,10 @@ describe('BibleNavigationMenu', () => {
 				})
 			)
 			.toBeVisible();
+
+		await expect
+			.element(page.getByRole('alert'))
+			.toHaveTextContent('Could not open the selected chapter.');
 	});
 
 	it('closes with Escape and returns focus to its trigger', async () => {
@@ -137,5 +141,57 @@ describe('BibleNavigationMenu', () => {
 		await userEvent.keyboard('{Escape}');
 
 		await expect.element(trigger).toHaveFocus();
+	});
+
+	it('marks and expands the currently selected chapter', async () => {
+		render(BibleNavigationMenu, {
+			translationName: 'World English Bible',
+			navigation,
+			selectedBookId: 'john',
+			selectedChapter: 2,
+			onChapterSelect: () => true
+		});
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Open Bible navigation'
+			})
+		);
+
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'John',
+					exact: true
+				})
+			)
+			.toHaveAttribute('aria-current', 'true');
+
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'John 2',
+					exact: true
+				})
+			)
+			.toHaveAttribute('aria-current', 'page');
+	});
+
+	it('shows an empty state when the translation has no available books', async () => {
+		render(BibleNavigationMenu, {
+			translationName: 'Empty translation',
+			navigation: [],
+			onChapterSelect: () => true
+		});
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Open Bible navigation'
+			})
+		);
+
+		await expect
+			.element(page.getByText('No Bible books are available for this translation.'))
+			.toBeVisible();
 	});
 });

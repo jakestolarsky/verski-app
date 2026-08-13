@@ -374,5 +374,19 @@ describe('+page.svelte', () => {
 				})
 			)
 			.not.toBeVisible();
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Open Bible navigation'
+			})
+		);
+
+		await expect
+			.element(page.getByRole('button', { name: 'John' }))
+			.toHaveAttribute('aria-current', 'true');
+
+		await expect
+			.element(page.getByRole('button', { name: 'John 1' }))
+			.toHaveAttribute('aria-current', 'page');
 	});
 });
