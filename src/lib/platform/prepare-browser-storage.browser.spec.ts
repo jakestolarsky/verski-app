@@ -5,6 +5,8 @@ import type { TranslationPackage } from '../domain/translation-package';
 import { IndexedDbRecentLookupStore } from '../storage/indexed-db/indexed-db-recent-lookup-store';
 import { openBibleDatabase } from '../storage/indexed-db/open-bible-database';
 import { prepareBrowserStorage } from './prepare-browser-storage';
+import { defaultUserSettings } from '../domain/user-settings';
+import { IndexedDbUserSettingsStore } from '../storage/indexed-db/indexed-db-user-settings-store';
 
 const translationPackage = {
 	manifest: {
@@ -72,6 +74,45 @@ describe('prepareBrowserStorage', () => {
 			sessionLookup,
 			storedLookup
 		]);
+
+		expect(storage.userSettings).toEqual(defaultUserSettings);
+		expect(storage.userSettingsStore).not.toBeNull();
+
+		await expect(storage.userSettingsStore?.getStoredUserSettings()).resolves.toEqual(
+			defaultUserSettings
+		);
+
+		storage.close();
+	});
+
+	it('loads previously stored user settings', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+		const database = await openBibleDatabase(databaseName);
+		const settingsStore = new IndexedDbUserSettingsStore(database);
+
+		await settingsStore.replaceUserSettings({
+			version: 1,
+			theme: 'dark',
+			reading: {
+				fontSize: 'large',
+				lineHeight: 'relaxed',
+				showVerseNumbers: false
+			}
+		});
+
+		database.close();
+
+		const storage = await prepareBrowserStorage(translationPackage, [], databaseName);
+
+		expect(storage.userSettings).toEqual({
+			version: 1,
+			theme: 'dark',
+			reading: {
+				fontSize: 'large',
+				lineHeight: 'relaxed',
+				showVerseNumbers: false
+			}
+		});
 
 		storage.close();
 	});

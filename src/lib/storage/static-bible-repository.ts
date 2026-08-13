@@ -1,13 +1,8 @@
-import type {
-	ChapterRecord,
-	TranslationPackage
-} from '../domain/translation-package';
+import type { ChapterRecord, TranslationPackage } from '../domain/translation-package';
 import type { BibleRepository } from './bible-repository';
 
 export class StaticBibleRepository implements BibleRepository {
-	constructor(
-		private readonly translationPackage: TranslationPackage
-	) {}
+	constructor(private readonly translationPackage: TranslationPackage) {}
 
 	async getChapter(
 		translationId: string,

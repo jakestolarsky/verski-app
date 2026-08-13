@@ -7,11 +7,18 @@ import { IndexedDbBibleRepository } from '../storage/indexed-db/indexed-db-bible
 import { IndexedDbRecentLookupStore } from '../storage/indexed-db/indexed-db-recent-lookup-store';
 import { openBibleDatabase } from '../storage/indexed-db/open-bible-database';
 import type { RecentLookupStore } from '../storage/recent-lookup-store';
+import { loadUserSettings } from '../application/load-user-settings';
+import { saveUserSettings } from '../application/save-user-settings';
+import { defaultUserSettings, type UserSettings } from '../domain/user-settings';
+import { IndexedDbUserSettingsStore } from '../storage/indexed-db/indexed-db-user-settings-store';
+import type { UserSettingsStore } from '../storage/user-settings-store';
 
 export type PreparedBrowserStorage = {
 	bibleRepository: BibleRepository;
 	recentLookupStore: RecentLookupStore | null;
 	recentLookups: RecentLookup[];
+	userSettingsStore: UserSettingsStore | null;
+	userSettings: UserSettings;
 	close: () => void;
 };
 
@@ -25,6 +32,7 @@ export async function prepareBrowserStorage(
 	try {
 		const bibleRepository = new IndexedDbBibleRepository(database);
 		const historyStore = new IndexedDbRecentLookupStore(database);
+		const settingsStore = new IndexedDbUserSettingsStore(database);
 
 		let recentLookupStore: RecentLookupStore | null = historyStore;
 		let recentLookups = [...sessionLookups];
@@ -45,12 +53,25 @@ export async function prepareBrowserStorage(
 			recentLookupStore = null;
 		}
 
+		let userSettingsStore: UserSettingsStore | null = settingsStore;
+		let userSettings = structuredClone(defaultUserSettings);
+
+		try {
+			userSettings = await loadUserSettings(settingsStore);
+
+			await saveUserSettings(settingsStore, userSettings);
+		} catch {
+			userSettingsStore = null;
+		}
+
 		await ensureTranslationInstalled(bibleRepository, translationPackage);
 
 		return {
 			bibleRepository,
 			recentLookupStore,
 			recentLookups,
+			userSettingsStore,
+			userSettings,
 			close() {
 				database.close();
 			}

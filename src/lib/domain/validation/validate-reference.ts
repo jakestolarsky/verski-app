@@ -2,8 +2,7 @@ import type { BibleBook } from '../bible-book';
 import type { BibleReference } from '../bible-reference';
 import { bibleReferenceSchema } from './bible-reference-schema';
 
-export type ReferenceValidationError =
-	'invalid-structure' | 'unknown-book' | 'invalid-verse-range';
+export type ReferenceValidationError = 'invalid-structure' | 'unknown-book' | 'invalid-verse-range';
 
 export type ReferenceValidationResult =
 	| {
