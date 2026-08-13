@@ -80,4 +80,12 @@ describe('Bible canons', () => {
 	it('uses the same New Testament order in both canons', () => {
 		expect(catholicCanon.bookIds.slice(-27)).toEqual(protestantCanon.bookIds.slice(-27));
 	});
+
+	it('exposes Old and New Testament groups in canonical order', () => {
+		for (const canon of [protestantCanon, catholicCanon]) {
+			expect(canon.testaments.map((testament) => testament.id)).toEqual(['old', 'new']);
+
+			expect(canon.testaments.flatMap((testament) => testament.bookIds)).toEqual(canon.bookIds);
+		}
+	});
 });

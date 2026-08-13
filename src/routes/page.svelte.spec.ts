@@ -331,4 +331,48 @@ describe('+page.svelte', () => {
 		expect(restoredPassageText?.getAttribute('data-line-height')).toBe('relaxed');
 		expect(restoredPassageText?.querySelector('sup')).toBeNull();
 	});
+
+	it('opens a full chapter selected from Bible navigation', async () => {
+		render(Page, { data });
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Open Bible navigation'
+			})
+		);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'John'
+			})
+		);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'John 1'
+			})
+		);
+
+		await expect.element(page.getByLabelText('Bible reference')).toHaveValue('John 1');
+
+		await expect
+			.element(
+				page.getByRole('heading', {
+					name: 'John 1 (World English Bible)'
+				})
+			)
+			.toBeInTheDocument();
+
+		await expect.element(page.getByText('First verse.')).toBeInTheDocument();
+		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
+
+		await expect
+			.element(
+				page.getByRole('dialog', {
+					name: 'Bible navigation',
+					includeHidden: true
+				})
+			)
+			.not.toBeVisible();
+	});
 });

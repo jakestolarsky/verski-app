@@ -1,6 +1,19 @@
+export type BibleTestamentId = 'old' | 'new';
+
+export type BibleTestament = {
+	id: BibleTestamentId;
+	name: string;
+	bookIds: string[];
+};
+
 export type BibleCanon = {
 	id: string;
 	name: string;
+
+	/**
+	 * Testament groups in their display order.
+	 */
+	testaments: BibleTestament[];
 
 	/**
 	 * Canonical book identifiers in their display order.
@@ -129,14 +142,42 @@ const catholicOldTestamentBookIds = [
 	'malachi'
 ];
 
-export const protestantCanon: BibleCanon = {
-	id: 'protestant-66',
-	name: 'Protestant 66-book canon',
-	bookIds: [...protestantOldTestamentBookIds, ...newTestamentBookIds]
-};
+function defineCanon(id: string, name: string, oldTestamentBookIds: string[]): BibleCanon {
+	const testaments: BibleTestament[] = [
+		{
+			id: 'old',
+			name: 'Old Testament',
+			bookIds: [...oldTestamentBookIds]
+		},
+		{
+			id: 'new',
+			name: 'New Testament',
+			bookIds: [...newTestamentBookIds]
+		}
+	];
 
-export const catholicCanon: BibleCanon = {
-	id: 'catholic-73',
-	name: 'Catholic 73-book canon',
-	bookIds: [...catholicOldTestamentBookIds, ...newTestamentBookIds]
-};
+	return {
+		id,
+		name,
+		testaments,
+		bookIds: testaments.flatMap((testament) => testament.bookIds)
+	};
+}
+
+export const protestantCanon = defineCanon(
+	'protestant-66',
+	'Protestant 66-book canon',
+	protestantOldTestamentBookIds
+);
+
+export const catholicCanon = defineCanon(
+	'catholic-73',
+	'Catholic 73-book canon',
+	catholicOldTestamentBookIds
+);
+
+export const bibleCanons: BibleCanon[] = [protestantCanon, catholicCanon];
+
+export function findBibleCanon(canonId: string): BibleCanon | null {
+	return bibleCanons.find((canon) => canon.id === canonId) ?? null;
+}

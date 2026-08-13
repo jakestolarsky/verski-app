@@ -16,8 +16,18 @@
 	import { defaultUserSettings, type UserSettings } from '$lib/domain/user-settings';
 	import { applyThemePreference, readStoredThemePreference } from '$lib/platform/theme-preference';
 	import type { UserSettingsStore } from '$lib/storage/user-settings-store';
+	import { buildBibleNavigation } from '$lib/application/build-bible-navigation';
+	import BibleNavigationMenu from '$lib/components/BibleNavigationMenu.svelte';
+
+	type BibleLookupWorkspaceHandle = {
+		openChapter: (bookId: string, chapter: number) => Promise<boolean>;
+	};
 
 	let { data }: { data: PageData } = $props();
+
+	const bibleNavigation = $derived(buildBibleNavigation(data.translationPackage));
+
+	let bibleLookupWorkspace = $state<BibleLookupWorkspaceHandle>();
 
 	const staticRepository = $derived(new StaticBibleRepository(data.translationPackage));
 	let persistentRepository = $state<BibleRepository | null>(null);
@@ -97,6 +107,16 @@
 			userSettingsStore = null;
 		}
 	}
+
+	async function handleChapterSelect(bookId: string, chapter: number): Promise<boolean> {
+		const workspace = bibleLookupWorkspace;
+
+		if (workspace === undefined) {
+			return false;
+		}
+
+		return workspace.openChapter(bookId, chapter);
+	}
 </script>
 
 <svelte:head>
@@ -106,16 +126,26 @@
 
 <main class="container">
 	<header class="page-header">
-		<div>
+		<div class="page-header__navigation">
+			<BibleNavigationMenu
+				translationName={data.translationPackage.manifest.name}
+				navigation={bibleNavigation}
+				onChapterSelect={handleChapterSelect}
+			/>
+		</div>
+
+		<div class="page-header__brand">
 			<p>Verski</p>
 			<h1>Bible lookup done right</h1>
 		</div>
 
-		<SettingsMenu
-			settings={userSettings}
-			disabled={offlineStorageStatus === 'preparing'}
-			onChange={handleSettingsChange}
-		/>
+		<div class="page-header__settings">
+			<SettingsMenu
+				settings={userSettings}
+				disabled={offlineStorageStatus === 'preparing'}
+				onChange={handleSettingsChange}
+			/>
+		</div>
 	</header>
 
 	{#if offlineStorageStatus === 'unavailable'}
@@ -126,6 +156,7 @@
 	{/if}
 
 	<BibleLookupWorkspace
+		bind:this={bibleLookupWorkspace}
 		{repository}
 		translationId={data.translationPackage.manifest.id}
 		translationName={data.translationPackage.manifest.name}
@@ -137,13 +168,41 @@
 
 <style>
 	.page-header {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
 		gap: var(--pico-spacing);
+		align-items: start;
 	}
 
-	.page-header h1 {
+	.page-header__navigation {
+		justify-self: start;
+	}
+
+	.page-header__brand {
+		text-align: center;
+	}
+
+	.page-header__brand p,
+	.page-header__brand h1 {
+		margin-inline: 0;
+	}
+
+	.page-header__brand h1 {
 		margin-bottom: var(--pico-spacing);
+	}
+
+	.page-header__settings {
+		justify-self: end;
+	}
+
+	@media (max-width: 36rem) {
+		.page-header {
+			grid-template-columns: auto 1fr auto;
+			gap: 0.75rem;
+		}
+
+		.page-header__brand h1 {
+			font-size: 1.35rem;
+		}
 	}
 </style>

@@ -37,7 +37,7 @@
 		translationName,
 		recentLookups = $bindable(),
 		recentLookupStore = $bindable(),
-		readingSettings,
+		readingSettings
 	}: Props = $props();
 
 	let referenceInput = $state('');
@@ -64,7 +64,7 @@
 		return bibleBooks.find((book) => book.id === bookId)?.names[0] ?? bookId;
 	}
 
-	async function performLookup(reference: BibleReference) {
+	async function performLookup(reference: BibleReference): Promise<boolean> {
 		parseResult = {
 			ok: true,
 			reference
@@ -77,7 +77,7 @@
 		lookupResult = nextLookupResult;
 
 		if (!nextLookupResult.ok) {
-			return;
+			return false;
 		}
 
 		const recentLookup: RecentLookup = {
@@ -90,7 +90,7 @@
 
 		if (historyStore === null) {
 			recentLookups = addRecentLookup(recentLookups, recentLookup);
-			return;
+			return true;
 		}
 
 		try {
@@ -99,6 +99,19 @@
 			recentLookupStore = null;
 			recentLookups = addRecentLookup(recentLookups, recentLookup);
 		}
+
+		return true;
+	}
+
+	export async function openChapter(bookId: string, chapter: number): Promise<boolean> {
+		const reference: BibleReference = {
+			bookId,
+			chapter
+		};
+
+		referenceInput = formatBibleReference(reference, getBookName(bookId));
+
+		return performLookup(reference);
 	}
 
 	async function handleSubmit(input: string) {
