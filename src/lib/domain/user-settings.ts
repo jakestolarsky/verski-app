@@ -9,11 +9,7 @@ export type ReadingLineHeight = 'compact' | 'default' | 'relaxed';
 export type UserSettings = {
 	version: typeof CURRENT_USER_SETTINGS_VERSION;
 	theme: Theme;
-	reading: {
-		fontSize: ReadingFontSize;
-		lineHeight: ReadingLineHeight;
-		showVerseNumbers: boolean;
-	};
+	reading: ReadingSettings;
 };
 
 export const defaultUserSettings: UserSettings = {
@@ -24,4 +20,10 @@ export const defaultUserSettings: UserSettings = {
 		lineHeight: 'default',
 		showVerseNumbers: true
 	}
+};
+
+export type ReadingSettings = {
+	fontSize: ReadingFontSize;
+	lineHeight: ReadingLineHeight;
+	showVerseNumbers: boolean;
 };

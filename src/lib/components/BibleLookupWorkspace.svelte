@@ -14,6 +14,7 @@
 	import PassageResult from './PassageResult.svelte';
 	import RecentLookupList from './RecentLookupList.svelte';
 	import ReferenceSearchForm from './ReferenceSearchForm.svelte';
+	import type { ReadingSettings } from '$lib/domain/user-settings';
 
 	type ReferenceSearchFormHandle = {
 		focus: () => void;
@@ -27,6 +28,7 @@
 		translationName: string;
 		recentLookups: RecentLookup[];
 		recentLookupStore: RecentLookupStore | null;
+		readingSettings: ReadingSettings;
 	};
 
 	let {
@@ -34,7 +36,8 @@
 		translationId,
 		translationName,
 		recentLookups = $bindable(),
-		recentLookupStore = $bindable()
+		recentLookupStore = $bindable(),
+		readingSettings,
 	}: Props = $props();
 
 	let referenceInput = $state('');
@@ -189,5 +192,6 @@
 	{parseResult}
 	{lookupResult}
 	{copyStatus}
+	{readingSettings}
 	onCopy={handleCopy}
 />

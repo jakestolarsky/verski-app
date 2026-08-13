@@ -16,6 +16,16 @@
 	--verski-primary: var(--verski-orange);
 	--verski-primary-hover: var(--verski-orange-hover);
 	--verski-on-primary: var(--verski-ink);
+
+
+	/* Reading typography */
+	--verski-reading-size-small: 1rem;
+	--verski-reading-size-default: 1.125rem;
+	--verski-reading-size-large: 1.25rem;
+
+	--verski-reading-line-height-compact: 1.5;
+	--verski-reading-line-height-default: 1.75;
+	--verski-reading-line-height-relaxed: 2;
 }
 
 /* Light theme */

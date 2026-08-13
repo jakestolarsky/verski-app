@@ -84,4 +84,85 @@ describe('SettingsMenu', () => {
 
 		await expect.element(settingsButton).toHaveFocus();
 	});
+
+	it('reports a reading text size change', async () => {
+		let changedSettings: UserSettings | null = null;
+
+		render(SettingsMenu, {
+			settings: structuredClone(defaultUserSettings),
+			onChange(settings: UserSettings) {
+				changedSettings = settings;
+			}
+		});
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Settings'
+			})
+		);
+
+		await userEvent.selectOptions(page.getByLabelText('Text size'), 'large');
+
+		expect(changedSettings).toEqual({
+			...defaultUserSettings,
+			reading: {
+				...defaultUserSettings.reading,
+				fontSize: 'large'
+			}
+		});
+	});
+
+	it('reports a reading line spacing change', async () => {
+		let changedSettings: UserSettings | null = null;
+
+		render(SettingsMenu, {
+			settings: structuredClone(defaultUserSettings),
+			onChange(settings: UserSettings) {
+				changedSettings = settings;
+			}
+		});
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Settings'
+			})
+		);
+
+		await userEvent.selectOptions(page.getByLabelText('Line spacing'), 'relaxed');
+
+		expect(changedSettings).toEqual({
+			...defaultUserSettings,
+			reading: {
+				...defaultUserSettings.reading,
+				lineHeight: 'relaxed'
+			}
+		});
+	});
+
+	it('reports a verse number visibility change', async () => {
+		let changedSettings: UserSettings | null = null;
+
+		render(SettingsMenu, {
+			settings: structuredClone(defaultUserSettings),
+			onChange(settings: UserSettings) {
+				changedSettings = settings;
+			}
+		});
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Settings'
+			})
+		);
+
+		await userEvent.click(page.getByLabelText('Show verse numbers'));
+
+		expect(changedSettings).toEqual({
+			...defaultUserSettings,
+			reading: {
+				...defaultUserSettings.reading,
+				showVerseNumbers: false
+			}
+		});
+	});
 });

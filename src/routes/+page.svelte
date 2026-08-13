@@ -129,6 +129,7 @@
 		{repository}
 		translationId={data.translationPackage.manifest.id}
 		translationName={data.translationPackage.manifest.name}
+		readingSettings={userSettings.reading}
 		bind:recentLookups
 		bind:recentLookupStore
 	/>

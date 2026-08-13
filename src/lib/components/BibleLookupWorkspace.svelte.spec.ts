@@ -5,6 +5,7 @@ import { render } from 'vitest-browser-svelte';
 import type { TranslationPackage } from '$lib/domain/translation-package';
 import { StaticBibleRepository } from '$lib/storage/static-bible-repository';
 import BibleLookupWorkspace from './BibleLookupWorkspace.svelte';
+import { defaultUserSettings } from '$lib/domain/user-settings';
 
 const translationPackage = {
 	manifest: {
@@ -39,7 +40,8 @@ describe('BibleLookupWorkspace', () => {
 			translationId: translationPackage.manifest.id,
 			translationName: translationPackage.manifest.name,
 			recentLookups: [],
-			recentLookupStore: null
+			recentLookupStore: null,
+			readingSettings: defaultUserSettings.reading
 		});
 
 		const input = page.getByLabelText('Bible reference');

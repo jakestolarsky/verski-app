@@ -4,10 +4,12 @@
 		ParseReferenceError,
 		ParseReferenceResult
 	} from '$lib/domain/parser/parse-reference';
+	import type { ReadingSettings } from '$lib/domain/user-settings';
 
 	type CopyStatus = 'idle' | 'copied' | 'error';
 
 	type Props = {
+		readingSettings: ReadingSettings;
 		heading: string;
 		parseResult: ParseReferenceResult | null;
 		lookupResult: LookupPassageResult | null;
@@ -15,7 +17,7 @@
 		onCopy: () => void | Promise<void>;
 	};
 
-	let { heading, parseResult, lookupResult, copyStatus, onCopy }: Props = $props();
+	let { heading, parseResult, lookupResult, copyStatus, readingSettings, onCopy }: Props = $props();
 
 	const errorMessages: Record<ParseReferenceError, string> = {
 		'invalid-format': 'Enter a reference such as John 3:16.',
@@ -43,10 +45,17 @@
 			<p>That verse does not exist in this chapter.</p>
 		{/if}
 	{:else}
-		<p>
+		<p
+			class="passage-text"
+			data-font-size={readingSettings.fontSize}
+			data-line-height={readingSettings.lineHeight}
+		>
 			{#each lookupResult.passage.verses as verse (verse.number)}
 				<span>
-					<sup>{verse.number}</sup>
+					{#if readingSettings.showVerseNumbers}
+						<sup>{verse.number}</sup>
+					{/if}
+
 					<span>{verse.text}</span>&#32;
 				</span>
 			{/each}
@@ -61,3 +70,30 @@
 		{/if}
 	{/if}
 </section>
+
+<style>
+	.passage-text {
+		font-size: var(--verski-reading-size-default);
+		line-height: var(--verski-reading-line-height-default);
+	}
+
+	.passage-text[data-font-size='small'] {
+		font-size: var(--verski-reading-size-small);
+	}
+
+	.passage-text[data-font-size='large'] {
+		font-size: var(--verski-reading-size-large);
+	}
+
+	.passage-text[data-line-height='compact'] {
+		line-height: var(--verski-reading-line-height-compact);
+	}
+
+	.passage-text[data-line-height='relaxed'] {
+		line-height: var(--verski-reading-line-height-relaxed);
+	}
+
+	.passage-text sup {
+		margin-inline-end: 0.25em;
+	}
+</style>
