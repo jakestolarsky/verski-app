@@ -205,6 +205,8 @@
 	.app-shell {
 		position: relative;
 		z-index: var(--verski-layer-content);
+		display: flex;
+		flex-direction: column;
 		width: 100%;
 		max-width: var(--verski-shell-max-width);
 		min-height: 100vh;

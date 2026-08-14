@@ -222,29 +222,47 @@
 	}
 </script>
 
-{#if referenceInput === ''}
-	<RecentLookupList
-		lookups={recentLookups}
-		onSelect={handleRecentLookupSelect}
-		onRemove={handleRecentLookupRemove}
-		onClear={handleClearRecentLookups}
+<div class="lookup-workspace">
+	{#if referenceInput === ''}
+		<RecentLookupList
+			lookups={recentLookups}
+			onSelect={handleRecentLookupSelect}
+			onRemove={handleRecentLookupRemove}
+			onClear={handleClearRecentLookups}
+		/>
+	{/if}
+
+	<PassageResult
+		heading={passageHeading}
+		{parseResult}
+		{lookupResult}
+		{copyStatus}
+		{readingSettings}
+		onCopy={handleCopy}
 	/>
-{/if}
 
-<ReferenceSearchForm
-	bind:this={referenceSearchForm}
-	bind:value={referenceInput}
-	collapsed={!isSearchExpanded}
-	onSubmit={handleSubmit}
-	onClear={handleClear}
-	onExpand={handleSearchExpand}
-/>
+	<div class="lookup-workspace__search">
+		<ReferenceSearchForm
+			bind:this={referenceSearchForm}
+			bind:value={referenceInput}
+			collapsed={!isSearchExpanded}
+			onSubmit={handleSubmit}
+			onClear={handleClear}
+			onExpand={handleSearchExpand}
+		/>
+	</div>
+</div>
 
-<PassageResult
-	heading={passageHeading}
-	{parseResult}
-	{lookupResult}
-	{copyStatus}
-	{readingSettings}
-	onCopy={handleCopy}
-/>
+<style>
+	.lookup-workspace {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.lookup-workspace__search {
+		margin-block-start: auto;
+		padding-block-start: clamp(1.5rem, 5svh, 3rem);
+	}
+</style>
