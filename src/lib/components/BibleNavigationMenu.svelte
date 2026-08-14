@@ -9,7 +9,6 @@
 	import BookOpen from '@lucide/svelte/icons/book-open';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 
-
 	type Props = {
 		translationName: string;
 		navigation: BibleNavigationTestament[];
@@ -290,7 +289,7 @@
 	}
 
 	dialog.bible-navigation::backdrop {
-		background: color-mix(in srgb, var(--verski-ink) 60%, transparent);
+		background: var(--verski-overlay-background);
 	}
 
 	.navigation-panel {
@@ -393,7 +392,7 @@
 	}
 
 	.book-button[aria-current='true'] {
-		color: var(--verski-primary);
+		color: var(--verski-state-active-text);
 		font-weight: var(--verski-font-weight-medium);
 	}
 
@@ -422,7 +421,7 @@
 	}
 
 	.chapter-list button:hover {
-		border-color: var(--verski-muted-brown);
+		border-color: var(--verski-border-subtle);
 		background: transparent;
 		color: var(--verski-text);
 	}
@@ -433,9 +432,9 @@
 	}
 
 	.chapter-list button[aria-current='page'] {
-		border-color: var(--verski-primary);
+		border-color: var(--verski-border-active);
 		background: transparent;
-		color: var(--verski-primary);
+		color: var(--verski-state-active-text);
 		font-weight: var(--verski-font-weight-medium);
 	}
 

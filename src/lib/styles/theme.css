@@ -17,6 +17,34 @@
 	--verski-primary-hover: var(--verski-orange-hover);
 	--verski-on-primary: var(--verski-ink);
 
+	/* Application shell */
+	--verski-orange-glow: rgb(233 98 36 / 0.18);
+	--verski-app-background:
+		radial-gradient(circle at 50% -10%, var(--verski-orange-glow), transparent 30rem),
+		var(--verski-background);
+
+	--verski-shell-max-width: 48rem;
+	--verski-shell-padding-inline: clamp(1rem, 4vw, 2rem);
+	--verski-shell-padding-block: clamp(1rem, 3vh, 2rem);
+
+	--verski-layer-content: 1;
+	--verski-layer-header: 10;
+	--verski-layer-overlay: 20;
+	--verski-layer-dialog: 30;
+
+	/* Semantic surfaces and states */
+	--verski-border-subtle: var(--verski-muted-brown);
+	--verski-border-active: var(--verski-primary);
+	--verski-state-hover-background: var(--verski-surface);
+	--verski-state-active-text: var(--verski-primary);
+	--verski-overlay-background: color-mix(in srgb, var(--verski-ink) 60%, transparent);
+
+	/* Background texture */
+	--verski-noise-texture: url('../assets/noise.svg');
+	--verski-noise-size: 8rem;
+	--verski-noise-opacity: 0.08;
+	--verski-noise-blend-mode: multiply;
+
 	/* Typography */
 	--verski-font-ui:
 		'Work Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -54,7 +82,7 @@
 	--verski-focus: var(--verski-orange);
 
 	--verski-input-background: var(--verski-cream);
-	--verski-input-border: var(--verski-muted-brown);
+	--verski-input-border: var(--verski-border-subtle);
 	--verski-input-text: var(--verski-ink);
 	--verski-input-placeholder: var(--verski-charcoal);
 }
@@ -71,9 +99,12 @@
 	--verski-focus: var(--verski-orange-hover);
 
 	--verski-input-background: var(--verski-brown);
-	--verski-input-border: var(--verski-muted-brown);
+	--verski-input-border: var(--verski-border-subtle);
 	--verski-input-text: var(--verski-cream);
 	--verski-input-placeholder: var(--verski-sand);
+
+	--verski-noise-opacity: 0.14;
+	--verski-noise-blend-mode: screen;
 }
 
 /* Use dark theme when the operating system requests it */
@@ -89,9 +120,12 @@
 		--verski-focus: var(--verski-orange-hover);
 
 		--verski-input-background: var(--verski-brown);
-		--verski-input-border: var(--verski-muted-brown);
+		--verski-input-border: var(--verski-border-subtle);
 		--verski-input-text: var(--verski-cream);
 		--verski-input-placeholder: var(--verski-sand);
+
+		--verski-noise-opacity: 0.14;
+		--verski-noise-blend-mode: screen;
 	}
 }
 
@@ -119,7 +153,7 @@
 	--pico-form-element-placeholder-color: var(--verski-input-placeholder);
 
 	--pico-form-element-active-background-color: var(--verski-input-background);
-	--pico-form-element-active-border-color: var(--verski-primary);
+	--pico-form-element-active-border-color: var(--verski-border-active);
 	--pico-form-element-focus-color: var(--verski-focus);
 
 	--pico-font-family-sans-serif: var(--verski-font-ui);

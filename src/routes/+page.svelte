@@ -126,7 +126,7 @@
 	<meta name="description" content="Fast, offline-first Bible passage lookup." />
 </svelte:head>
 
-<main class="container">
+<main class="app-shell">
 	<header class="page-header">
 		<div class="page-header__navigation">
 			<BibleNavigationMenu
@@ -172,11 +172,54 @@
 </main>
 
 <style>
+	:global(html) {
+		min-width: 20rem;
+		min-height: 100%;
+		background-color: var(--verski-background);
+	}
+
+	:global(body) {
+		min-height: 100%;
+		margin: 0;
+		background: var(--verski-app-background);
+	}
+
+	:global(body::before) {
+		content: '';
+		position: fixed;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background-image: var(--verski-noise-texture);
+		background-repeat: repeat;
+		background-size: var(--verski-noise-size);
+		opacity: var(--verski-noise-opacity);
+		mix-blend-mode: var(--verski-noise-blend-mode);
+	}
+
+	.app-shell {
+		position: relative;
+		z-index: var(--verski-layer-content);
+		width: 100%;
+		max-width: var(--verski-shell-max-width);
+		min-height: 100vh;
+		min-height: 100svh;
+		margin-inline: auto;
+		padding-block-start: max(var(--verski-shell-padding-block), env(safe-area-inset-top, 0px));
+		padding-inline-end: max(var(--verski-shell-padding-inline), env(safe-area-inset-right, 0px));
+		padding-block-end: max(var(--verski-shell-padding-block), env(safe-area-inset-bottom, 0px));
+		padding-inline-start: max(var(--verski-shell-padding-inline), env(safe-area-inset-left, 0px));
+	}
+
 	.page-header {
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		gap: var(--pico-spacing);
 		align-items: start;
+		position: sticky;
+		top: 0;
+		overflow: hidden;
+		z-index: var(--verski-layer-header);
 	}
 
 	.page-header__navigation {

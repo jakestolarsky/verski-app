@@ -101,7 +101,7 @@
 	}
 
 	button.reference-search__clear:hover {
-		background: var(--verski-surface);
+		background: var(--verski-state-hover-background);
 	}
 
 	button.reference-search__clear:focus-visible {
