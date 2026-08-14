@@ -5,6 +5,11 @@
 	} from '$lib/application/build-bible-navigation';
 	import type { BibleTestamentId } from '$lib/domain/bible-canon';
 
+	/* icons */
+	import BookOpen from '@lucide/svelte/icons/book-open';
+	import ChevronDown from '@lucide/svelte/icons/chevron-down';
+	import Search from '@lucide/svelte/icons/search';
+
 	type Props = {
 		translationName: string;
 		navigation: BibleNavigationTestament[];
@@ -116,10 +121,7 @@
 	aria-haspopup="dialog"
 	onclick={openMenu}
 >
-	<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-		<rect x="5" y="3" width="14" height="18" rx="2"></rect>
-		<path d="M8 7h8M8 17h8"></path>
-	</svg>
+	<BookOpen />
 </button>
 
 <dialog
@@ -138,16 +140,7 @@
 				aria-label="Close Bible navigation"
 				onclick={closeMenu}
 			>
-				<svg
-					aria-hidden="true"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<rect x="5" y="3" width="14" height="18" rx="2"></rect>
-					<path d="M8 7h8M8 17h8"></path>
-				</svg>
+				<BookOpen />
 			</button>
 		</header>
 
@@ -161,21 +154,10 @@
 			<input
 				id="book-filter"
 				type="search"
-				placeholder="Find a book"
+				placeholder="Find a book..."
 				autocomplete="off"
 				bind:value={bookQuery}
 			/>
-
-			<svg
-				aria-hidden="true"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<circle cx="11" cy="11" r="7"></circle>
-				<path d="m20 20-4-4"></path>
-			</svg>
 		</div>
 
 		{#if selectionError}
@@ -196,8 +178,12 @@
 						onclick={() => toggleTestament(testament.id)}
 					>
 						<span>{testament.name}</span>
-						<span aria-hidden="true">
-							{isTestamentExpanded(testament.id) ? '⌃' : '⌄'}
+						<span
+							class="disclosure-icon"
+							class:expanded={isTestamentExpanded(testament.id)}
+							aria-hidden="true"
+						>
+							<ChevronDown />
 						</span>
 					</button>
 
@@ -213,8 +199,12 @@
 										onclick={() => toggleBook(book)}
 									>
 										<span>{book.name}</span>
-										<span aria-hidden="true">
-											{expandedBookId === book.id ? '⌃' : '⌄'}
+										<span
+											class="disclosure-icon"
+											class:expanded={expandedBookId === book.id}
+											aria-hidden="true"
+										>
+											<ChevronDown />
 										</span>
 									</button>
 
@@ -264,10 +254,25 @@
 		border-radius: 50%;
 	}
 
-	.navigation-trigger svg,
-	.navigation-close svg {
-		width: 1.4rem;
-		height: 1.4rem;
+	.navigation-trigger :global(svg),
+	.navigation-close :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
+	}
+
+	.disclosure-icon {
+		display: grid;
+		place-items: center;
+		transform: rotate(0deg);
+	}
+
+	.disclosure-icon.expanded {
+		transform: rotate(180deg);
+	}
+
+	.disclosure-icon :global(svg) {
+		width: var(--verski-icon-size-disclosure);
+		height: var(--verski-icon-size-disclosure);
 	}
 
 	dialog.bible-navigation {
@@ -330,23 +335,14 @@
 	}
 
 	.book-filter {
-		position: relative;
 		margin-bottom: var(--pico-spacing);
 	}
 
 	.book-filter input {
 		margin: 0;
-		padding-inline-end: 3rem;
-	}
-
-	.book-filter svg {
-		position: absolute;
-		inset-block-start: 50%;
-		inset-inline-end: 0.9rem;
-		width: 1.35rem;
-		height: 1.35rem;
-		transform: translateY(-50%);
-		pointer-events: none;
+		padding-inline-start: var(--pico-form-element-spacing-horizontal);
+		background-image: none;
+		-webkit-appearance: none;
 	}
 
 	.testament {

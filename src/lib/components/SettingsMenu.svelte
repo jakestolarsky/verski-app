@@ -10,6 +10,9 @@
 	} from '$lib/domain/user-settings';
 	import { applyThemePreference } from '$lib/platform/theme-preference';
 
+	/* icons */
+	import SettingsIcon from '@lucide/svelte/icons/settings';
+
 	type Props = {
 		settings: UserSettings;
 		disabled?: boolean;
@@ -113,22 +116,29 @@
 <div class="settings-menu">
 	<button
 		bind:this={triggerElement}
-		class="secondary outline"
+		class="settings-trigger secondary outline"
 		type="button"
+		aria-label="Settings"
 		aria-haspopup="dialog"
 		{disabled}
 		onclick={openMenu}
 	>
-		Settings
+		<SettingsIcon />
 	</button>
 
 	<dialog bind:this={dialogElement} aria-labelledby="settings-heading" onclose={handleDialogClose}>
 		<article>
 			<header>
-				<button class="close" type="button" aria-label="Close settings" onclick={closeMenu}
-				></button>
-
 				<h2 id="settings-heading">Settings</h2>
+
+				<button
+					class="settings-close secondary outline"
+					type="button"
+					aria-label="Close settings"
+					onclick={closeMenu}
+				>
+					<SettingsIcon />
+				</button>
 			</header>
 
 			<label for="theme-select">
@@ -188,18 +198,37 @@
 </div>
 
 <style>
-	.settings-menu > button {
-		width: auto;
+	.settings-trigger,
+	.settings-close {
+		display: grid;
+		width: 2.75rem;
+		height: 2.75rem;
+		min-width: 2.75rem;
 		margin: 0;
-		white-space: nowrap;
+		padding: 0;
+		place-items: center;
+		border-radius: 50%;
 	}
 
-	dialog article {
-		min-width: min(28rem, calc(100vw - 2rem));
+	.settings-trigger :global(svg),
+	.settings-close :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
+	}
+
+	dialog header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--pico-spacing);
 	}
 
 	dialog header h2 {
 		margin-bottom: 0;
+	}
+
+	dialog article {
+		min-width: min(28rem, calc(100vw - 2rem));
 	}
 
 	select {

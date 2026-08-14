@@ -26,6 +26,11 @@
 	--verski-reading-line-height-compact: 1.5;
 	--verski-reading-line-height-default: 1.75;
 	--verski-reading-line-height-relaxed: 2;
+
+	/* Interface icons */
+	--verski-icon-stroke-width: 2;
+	--verski-icon-size-action: 1.4rem;
+	--verski-icon-size-disclosure: 1rem;
 }
 
 /* Light theme */
@@ -108,4 +113,8 @@
 	--pico-form-element-active-background-color: var(--verski-input-background);
 	--pico-form-element-active-border-color: var(--verski-primary);
 	--pico-form-element-focus-color: var(--verski-focus);
+}
+
+.lucide {
+	stroke-width: var(--verski-icon-stroke-width);
 }

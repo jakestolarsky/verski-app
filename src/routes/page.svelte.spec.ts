@@ -348,7 +348,8 @@ describe('+page.svelte', () => {
 
 		await userEvent.click(
 			page.getByRole('button', {
-				name: 'John'
+				name: 'John',
+				exact: true
 			})
 		);
 
@@ -387,11 +388,11 @@ describe('+page.svelte', () => {
 		);
 
 		await expect
-			.element(page.getByRole('button', { name: 'John' }))
+			.element(page.getByRole('button', { name: 'John', exact: true }))
 			.toHaveAttribute('aria-current', 'true');
 
 		await expect
-			.element(page.getByRole('button', { name: 'John 1' }))
+			.element(page.getByRole('button', { name: 'John 1', exact: true }))
 			.toHaveAttribute('aria-current', 'page');
 	});
 });
