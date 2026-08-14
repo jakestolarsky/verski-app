@@ -8,7 +8,7 @@ import type { ParseReferenceResult } from '$lib/domain/parser/parse-reference';
 import PassageResult from './PassageResult.svelte';
 
 describe('PassageResult', () => {
-	it('shows instructions before the first lookup', async () => {
+	it('does not render placeholder content before the first lookup', async () => {
 		render(PassageResult, {
 			heading: 'Passage',
 			parseResult: null,
@@ -18,7 +18,17 @@ describe('PassageResult', () => {
 			onCopy() {}
 		});
 
-		await expect.element(page.getByText('Enter a Bible reference to begin.')).toBeInTheDocument();
+		await expect
+			.element(page.getByText('Enter a Bible reference to begin.'))
+			.not.toBeInTheDocument();
+
+		await expect
+			.element(
+				page.getByRole('heading', {
+					name: 'Passage'
+				})
+			)
+			.not.toBeInTheDocument();
 	});
 
 	it('shows a parser error', async () => {

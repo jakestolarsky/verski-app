@@ -223,23 +223,25 @@
 </script>
 
 <div class="lookup-workspace">
-	{#if referenceInput === ''}
-		<RecentLookupList
-			lookups={recentLookups}
-			onSelect={handleRecentLookupSelect}
-			onRemove={handleRecentLookupRemove}
-			onClear={handleClearRecentLookups}
-		/>
-	{/if}
+	<div class="lookup-workspace__content">
+		{#if referenceInput === ''}
+			<RecentLookupList
+				lookups={recentLookups}
+				onSelect={handleRecentLookupSelect}
+				onRemove={handleRecentLookupRemove}
+				onClear={handleClearRecentLookups}
+			/>
+		{/if}
 
-	<PassageResult
-		heading={passageHeading}
-		{parseResult}
-		{lookupResult}
-		{copyStatus}
-		{readingSettings}
-		onCopy={handleCopy}
-	/>
+		<PassageResult
+			heading={passageHeading}
+			{parseResult}
+			{lookupResult}
+			{copyStatus}
+			{readingSettings}
+			onCopy={handleCopy}
+		/>
+	</div>
 
 	<div class="lookup-workspace__search">
 		<ReferenceSearchForm
@@ -255,14 +257,22 @@
 
 <style>
 	.lookup-workspace {
-		display: flex;
+		display: grid;
 		flex: 1;
-		flex-direction: column;
+		grid-template-rows: minmax(0, 1fr) auto;
 		width: 100%;
+		min-height: 0;
+	}
+
+	.lookup-workspace__content {
+		min-height: 0;
+		overflow-y: auto;
+		padding-block-end: var(--pico-spacing);
+		overscroll-behavior: contain;
 	}
 
 	.lookup-workspace__search {
-		margin-block-start: auto;
-		padding-block-start: clamp(1.5rem, 5svh, 3rem);
+		flex-shrink: 0;
+		padding-block-start: var(--pico-spacing);
 	}
 </style>

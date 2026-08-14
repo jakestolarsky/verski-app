@@ -124,7 +124,10 @@ describe('+page.svelte', () => {
 		);
 
 		await expect.element(referenceInput).toHaveValue('');
-		await expect.element(page.getByText('Enter a Bible reference to begin.')).toBeInTheDocument();
+		await expect.element(page.getByText('First verse.')).not.toBeInTheDocument();
+		await expect
+			.element(page.getByText('Enter a Bible reference to begin.'))
+			.not.toBeInTheDocument();
 		await expect.element(referenceInput).toHaveFocus();
 	});
 
@@ -143,7 +146,10 @@ describe('+page.svelte', () => {
 		await userEvent.keyboard('{Escape}');
 
 		await expect.element(referenceInput).toHaveValue('');
-		await expect.element(page.getByText('Enter a Bible reference to begin.')).toBeInTheDocument();
+		await expect.element(page.getByText('First verse.')).not.toBeInTheDocument();
+		await expect
+			.element(page.getByText('Enter a Bible reference to begin.'))
+			.not.toBeInTheDocument();
 		await expect.element(referenceInput).toHaveFocus();
 	});
 

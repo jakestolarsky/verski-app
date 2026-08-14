@@ -29,44 +29,47 @@
 	};
 </script>
 
-<section aria-labelledby="passage-heading" aria-live="polite">
-	<h2 id="passage-heading">{heading}</h2>
+<section
+	aria-labelledby={parseResult === null ? undefined : 'passage-heading'}
+	aria-live="polite"
+>
+	{#if parseResult !== null}
+		<h2 id="passage-heading">{heading}</h2>
 
-	{#if parseResult === null}
-		<p>Enter a Bible reference to begin.</p>
-	{:else if !parseResult.ok}
-		<p>{errorMessages[parseResult.error]}</p>
-	{:else if lookupResult === null}
-		<p>Loading passage…</p>
-	{:else if !lookupResult.ok}
-		{#if lookupResult.error === 'chapter-not-found'}
-			<p>This chapter is not available in the selected translation.</p>
+		{#if !parseResult.ok}
+			<p>{errorMessages[parseResult.error]}</p>
+		{:else if lookupResult === null}
+			<p>Loading passage…</p>
+		{:else if !lookupResult.ok}
+			{#if lookupResult.error === 'chapter-not-found'}
+				<p>This chapter is not available in the selected translation.</p>
+			{:else}
+				<p>That verse does not exist in this chapter.</p>
+			{/if}
 		{:else}
-			<p>That verse does not exist in this chapter.</p>
-		{/if}
-	{:else}
-		<p
-			class="passage-text"
-			data-font-size={readingSettings.fontSize}
-			data-line-height={readingSettings.lineHeight}
-		>
-			{#each lookupResult.passage.verses as verse (verse.number)}
-				<span>
-					{#if readingSettings.showVerseNumbers}
-						<sup>{verse.number}</sup>
-					{/if}
+			<p
+				class="passage-text"
+				data-font-size={readingSettings.fontSize}
+				data-line-height={readingSettings.lineHeight}
+			>
+				{#each lookupResult.passage.verses as verse (verse.number)}
+					<span>
+						{#if readingSettings.showVerseNumbers}
+							<sup>{verse.number}</sup>
+						{/if}
 
-					<span>{verse.text}</span>&#32;
-				</span>
-			{/each}
-		</p>
+						<span>{verse.text}</span>&#32;
+					</span>
+				{/each}
+			</p>
 
-		<button type="button" onclick={onCopy}>Copy passage</button>
+			<button type="button" onclick={onCopy}>Copy passage</button>
 
-		{#if copyStatus === 'copied'}
-			<p>Passage copied.</p>
-		{:else if copyStatus === 'error'}
-			<p>Passage could not be copied.</p>
+			{#if copyStatus === 'copied'}
+				<p>Passage copied.</p>
+			{:else if copyStatus === 'error'}
+				<p>Passage could not be copied.</p>
+			{/if}
 		{/if}
 	{/if}
 </section>
