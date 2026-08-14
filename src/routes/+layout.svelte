@@ -1,4 +1,17 @@
 <script lang="ts">
+	import '@fontsource/work-sans/latin-400.css';
+	import '@fontsource/work-sans/latin-ext-400.css';
+	import '@fontsource/work-sans/latin-500.css';
+	import '@fontsource/work-sans/latin-ext-500.css';
+
+	import '@fontsource/instrument-serif/latin-400.css';
+	import '@fontsource/instrument-serif/latin-ext-400.css';
+	import '@fontsource/instrument-serif/latin-400-italic.css';
+	import '@fontsource/instrument-serif/latin-ext-400-italic.css';
+
+	import '@fontsource/lora/latin-400.css';
+	import '@fontsource/lora/latin-ext-400.css';
+
 	import '@picocss/pico/css/pico.min.css';
 	import '$lib/styles/theme.css';
 

@@ -8,7 +8,7 @@
 	/* icons */
 	import BookOpen from '@lucide/svelte/icons/book-open';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import Search from '@lucide/svelte/icons/search';
+
 
 	type Props = {
 		translationName: string;
@@ -322,7 +322,7 @@
 		margin-bottom: var(--pico-spacing);
 		text-align: center;
 		font-size: 1.25rem;
-		font-weight: 600;
+		font-weight: var(--verski-font-weight-medium);
 	}
 
 	.visually-hidden {
@@ -365,7 +365,7 @@
 
 	.testament-button {
 		font-size: 1.15rem;
-		font-weight: 600;
+		font-weight: var(--verski-font-weight-medium);
 	}
 
 	.book-list,
@@ -394,7 +394,7 @@
 
 	.book-button[aria-current='true'] {
 		color: var(--verski-primary);
-		font-weight: 600;
+		font-weight: var(--verski-font-weight-medium);
 	}
 
 	.navigation-error {
@@ -436,7 +436,7 @@
 		border-color: var(--verski-primary);
 		background: transparent;
 		color: var(--verski-primary);
-		font-weight: 600;
+		font-weight: var(--verski-font-weight-medium);
 	}
 
 	.empty-book {
