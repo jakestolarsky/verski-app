@@ -147,7 +147,8 @@ describe('+page.svelte', () => {
 		);
 
 		const recentLookupButton = page.getByRole('button', {
-			name: 'John 1:2'
+			name: 'John 1:2',
+			exact: true
 		});
 
 		await expect.element(recentLookupButton).toBeInTheDocument();
@@ -240,7 +241,8 @@ describe('+page.svelte', () => {
 		await expect
 			.element(
 				page.getByRole('button', {
-					name: 'John 1:1'
+					name: 'John 1:1',
+					exact: true
 				})
 			)
 			.toBeInTheDocument();
@@ -261,7 +263,8 @@ describe('+page.svelte', () => {
 		await expect
 			.element(
 				page.getByRole('button', {
-					name: 'John 1:2'
+					name: 'John 1:2',
+					exact: true
 				})
 			)
 			.toBeInTheDocument();
@@ -273,7 +276,8 @@ describe('+page.svelte', () => {
 		await expect
 			.element(
 				page.getByRole('button', {
-					name: 'John 1:2'
+					name: 'John 1:2',
+					exact: true
 				})
 			)
 			.toBeInTheDocument();

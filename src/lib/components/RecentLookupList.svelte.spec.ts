@@ -25,11 +25,13 @@ describe('RecentLookupList', () => {
 			onSelect(selected: RecentLookup) {
 				selectedLookup = selected;
 			},
+			onRemove() {},
 			onClear() {}
 		});
 
 		const lookupButton = page.getByRole('button', {
-			name: 'John 3:16-18'
+			name: 'John 3:16-18',
+			exact: true
 		});
 
 		await expect.element(lookupButton).toBeInTheDocument();
@@ -45,6 +47,7 @@ describe('RecentLookupList', () => {
 		render(RecentLookupList, {
 			lookups: [lookup],
 			onSelect() {},
+			onRemove() {},
 			onClear() {
 				clearCalls += 1;
 			}
@@ -57,5 +60,26 @@ describe('RecentLookupList', () => {
 		);
 
 		expect(clearCalls).toBe(1);
+	});
+
+	it('reports the lookup selected for removal', async () => {
+		let removedLookup: RecentLookup | null = null;
+
+		render(RecentLookupList, {
+			lookups: [lookup],
+			onSelect() {},
+			onRemove(selected: RecentLookup) {
+				removedLookup = selected;
+			},
+			onClear() {}
+		});
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Remove John 3:16-18 from recent lookups'
+			})
+		);
+
+		expect(removedLookup).toEqual(lookup);
 	});
 });

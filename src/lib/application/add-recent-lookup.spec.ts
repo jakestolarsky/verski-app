@@ -78,8 +78,6 @@ describe('addRecentLookup', () => {
 		const result = addRecentLookup(currentLookups, newLookup);
 
 		expect(result).toHaveLength(MAX_RECENT_LOOKUPS);
-		expect(result.map((lookup) => lookup.reference.chapter)).toEqual([
-			11, 1, 2, 3, 4, 5, 6, 7, 8, 9
-		]);
+		expect(result.map((lookup) => lookup.reference.chapter)).toEqual([4, 1, 2]);
 	});
 });

@@ -3,13 +3,16 @@
 	import { bibleBooks } from '$lib/domain/bible-book';
 	import type { RecentLookup } from '$lib/domain/recent-lookup';
 
+	import XIcon from '@lucide/svelte/icons/x';
+
 	type Props = {
 		lookups: readonly RecentLookup[];
 		onSelect: (lookup: RecentLookup) => void;
+		onRemove: (lookup: RecentLookup) => void | Promise<void>;
 		onClear: () => void;
 	};
 
-	let { lookups, onSelect, onClear }: Props = $props();
+	let { lookups, onSelect, onRemove, onClear }: Props = $props();
 
 	function getBookName(bookId: string): string {
 		return bibleBooks.find((book) => book.id === bookId)?.names[0] ?? bookId;
@@ -52,6 +55,14 @@
 					>
 						{getLookupLabel(lookup)}
 					</button>
+					<button
+						class="recent-lookups__remove secondary outline"
+						type="button"
+						aria-label={`Remove ${getLookupLabel(lookup)} from recent lookups`}
+						onclick={() => onRemove(lookup)}
+					>
+						<XIcon aria-hidden="true" />
+					</button>
 				</li>
 			{/each}
 		</ul>
@@ -87,13 +98,33 @@
 		list-style: none;
 	}
 
-	.recent-lookups__items li {
-		margin: 0;
-	}
-
 	.recent-lookups__item {
 		width: 100%;
 		margin: 0;
 		text-align: start;
+	}
+
+	.recent-lookups__items li {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 0.25rem;
+		margin: 0;
+	}
+
+	.recent-lookups__remove {
+		display: grid;
+		width: 2.75rem;
+		min-width: 2.75rem;
+		height: 2.75rem;
+		margin: 0;
+		padding: 0;
+		place-items: center;
+		border-color: transparent;
+		background: transparent;
+	}
+
+	.recent-lookups__remove :global(svg) {
+		width: var(--verski-icon-size-disclosure);
+		height: var(--verski-icon-size-disclosure);
 	}
 </style>

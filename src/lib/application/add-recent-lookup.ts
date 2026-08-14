@@ -1,8 +1,8 @@
 import type { RecentLookup } from '$lib/domain/recent-lookup';
 
-export const MAX_RECENT_LOOKUPS = 10;
+export const MAX_RECENT_LOOKUPS = 3;
 
-function representsSameLookup(left: RecentLookup, right: RecentLookup): boolean {
+export function representsSameLookup(left: RecentLookup, right: RecentLookup): boolean {
 	return (
 		left.translationId === right.translationId &&
 		left.reference.bookId === right.reference.bookId &&

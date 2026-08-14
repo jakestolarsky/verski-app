@@ -11,6 +11,7 @@
 	import type { RecentLookup } from '$lib/domain/recent-lookup';
 	import type { BibleRepository } from '$lib/storage/bible-repository';
 	import type { RecentLookupStore } from '$lib/storage/recent-lookup-store';
+	import { removeRecentLookup, withoutRecentLookup } from '$lib/application/remove-recent-lookup';
 	import PassageResult from './PassageResult.svelte';
 	import RecentLookupList from './RecentLookupList.svelte';
 	import ReferenceSearchForm from './ReferenceSearchForm.svelte';
@@ -164,6 +165,25 @@
 		}
 	}
 
+	async function handleRecentLookupRemove(lookup: RecentLookup) {
+		const historyStore = recentLookupStore;
+
+		if (historyStore === null) {
+			recentLookups = withoutRecentLookup(recentLookups, lookup);
+			referenceSearchForm?.focus();
+			return;
+		}
+
+		try {
+			recentLookups = await removeRecentLookup(historyStore, lookup);
+		} catch {
+			recentLookupStore = null;
+			recentLookups = withoutRecentLookup(recentLookups, lookup);
+		}
+
+		referenceSearchForm?.focus();
+	}
+
 	async function handleCopy() {
 		const currentLookupResult = lookupResult;
 		const currentParseResult = parseResult;
@@ -201,6 +221,7 @@
 	<RecentLookupList
 		lookups={recentLookups}
 		onSelect={handleRecentLookupSelect}
+		onRemove={handleRecentLookupRemove}
 		onClear={handleClearRecentLookups}
 	/>
 {/if}
