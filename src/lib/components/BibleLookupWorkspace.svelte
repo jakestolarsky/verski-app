@@ -210,13 +210,6 @@
 	}
 </script>
 
-<ReferenceSearchForm
-	bind:this={referenceSearchForm}
-	bind:value={referenceInput}
-	onSubmit={handleSubmit}
-	onClear={handleClear}
-/>
-
 {#if referenceInput === ''}
 	<RecentLookupList
 		lookups={recentLookups}
@@ -225,6 +218,13 @@
 		onClear={handleClearRecentLookups}
 	/>
 {/if}
+
+<ReferenceSearchForm
+	bind:this={referenceSearchForm}
+	bind:value={referenceInput}
+	onSubmit={handleSubmit}
+	onClear={handleClear}
+/>
 
 <PassageResult
 	heading={passageHeading}

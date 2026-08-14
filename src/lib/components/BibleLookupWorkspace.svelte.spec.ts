@@ -68,7 +68,8 @@ describe('BibleLookupWorkspace', () => {
 		await expect
 			.element(
 				page.getByRole('button', {
-					name: 'John 1:2'
+					name: 'John 1:2',
+					exact: true
 				})
 			)
 			.toBeInTheDocument();

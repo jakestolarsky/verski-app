@@ -138,11 +138,6 @@
 			/>
 		</div>
 
-		<div class="page-header__brand">
-			<p>Verski</p>
-			<h1>Bible lookup done right</h1>
-		</div>
-
 		<div class="page-header__settings">
 			<SettingsMenu
 				settings={userSettings}
@@ -151,6 +146,16 @@
 			/>
 		</div>
 	</header>
+
+	{#if activeReference === null}
+		<section class="brand-hero" aria-labelledby="verski-brand-heading">
+			<h1 id="verski-brand-heading" class="visually-hidden">Verski</h1>
+
+			<img class="brand-hero__mark" src="/verski-icon.svg" width="180" height="180" alt="" />
+
+			<p>Bible lookup done right</p>
+		</section>
+	{/if}
 
 	{#if offlineStorageStatus === 'unavailable'}
 		<p role="status">
@@ -212,45 +217,51 @@
 	}
 
 	.page-header {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto;
-		gap: var(--pico-spacing);
-		align-items: start;
 		position: sticky;
-		top: 0;
-		overflow: hidden;
+		top: max(0.5rem, env(safe-area-inset-top, 0px));
 		z-index: var(--verski-layer-header);
-	}
-
-	.page-header__navigation {
-		justify-self: start;
-	}
-
-	.page-header__brand {
-		text-align: center;
-	}
-
-	.page-header__brand p,
-	.page-header__brand h1 {
-		margin-inline: 0;
-	}
-
-	.page-header__brand h1 {
-		margin-bottom: var(--pico-spacing);
-	}
-
-	.page-header__settings {
-		justify-self: end;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--pico-spacing);
+		width: 100%;
+		overflow: visible;
 	}
 
 	@media (max-width: 36rem) {
 		.page-header {
-			grid-template-columns: auto 1fr auto;
 			gap: 0.75rem;
 		}
+	}
 
-		.page-header__brand h1 {
-			font-size: 1.35rem;
-		}
+	.brand-hero {
+		display: grid;
+		min-height: clamp(14rem, 38svh, 24rem);
+		padding-block: clamp(2rem, 8svh, 5rem);
+		place-items: center;
+		align-content: center;
+		gap: 0.75rem;
+		text-align: center;
+	}
+
+	.brand-hero__mark {
+		width: clamp(7.5rem, 32vw, 11rem);
+		height: auto;
+	}
+
+	.brand-hero p {
+		margin: 0;
+		color: var(--verski-primary);
+		font-family: var(--verski-font-display);
+		font-size: clamp(1.35rem, 5vw, 1.75rem);
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 </style>

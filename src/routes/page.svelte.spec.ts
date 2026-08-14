@@ -57,6 +57,9 @@ describe('+page.svelte', () => {
 	it('looks up a valid reference submitted with Enter', async () => {
 		render(Page, { data });
 
+		const tagline = page.getByText('Bible lookup done right');
+		await expect.element(tagline).toBeVisible();
+
 		const referenceInput = page.getByLabelText('Bible reference');
 
 		await userEvent.fill(referenceInput, 'J 1,2');
@@ -77,6 +80,8 @@ describe('+page.svelte', () => {
 				})
 			)
 			.toBeInTheDocument();
+
+		await expect.element(tagline).not.toBeInTheDocument();
 	});
 
 	it('shows a clear message when a chapter is unavailable in the translation', async () => {
