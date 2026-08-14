@@ -58,7 +58,15 @@ describe('BibleLookupWorkspace', () => {
 				})
 			)
 			.toBeInTheDocument();
+		await expect.element(input).not.toBeInTheDocument();
 
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Search Bible'
+			})
+		);
+
+		await expect.element(input).toHaveFocus();
 		await userEvent.click(
 			page.getByRole('button', {
 				name: 'Clear'

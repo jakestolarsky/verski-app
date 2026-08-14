@@ -68,4 +68,28 @@ describe('ReferenceSearchForm', () => {
 		await expect.element(input).toHaveFocus();
 		expect(clearCalls).toBe(1);
 	});
+
+	it('reports when the collapsed search should be expanded', async () => {
+		let expandCalls = 0;
+
+		render(ReferenceSearchForm, {
+			value: 'John 3:16',
+			collapsed: true,
+			onSubmit() {},
+			onClear() {},
+			onExpand() {
+				expandCalls += 1;
+			}
+		});
+
+		await expect.element(page.getByLabelText('Bible reference')).not.toBeInTheDocument();
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Search Bible'
+			})
+		);
+
+		expect(expandCalls).toBe(1);
+	});
 });

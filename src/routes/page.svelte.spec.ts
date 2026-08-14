@@ -53,6 +53,14 @@ beforeEach(async () => {
 	await deleteBibleDatabase();
 });
 
+async function expandSearch(): Promise<void> {
+	await userEvent.click(
+		page.getByRole('button', {
+			name: 'Search Bible'
+		})
+	);
+}
+
 describe('+page.svelte', () => {
 	it('looks up a valid reference submitted with Enter', async () => {
 		render(Page, { data });
@@ -107,6 +115,8 @@ describe('+page.svelte', () => {
 
 		await expect.element(page.getByText('First verse.')).toBeInTheDocument();
 
+		await expandSearch();
+
 		await userEvent.click(
 			page.getByRole('button', {
 				name: 'Clear'
@@ -128,6 +138,8 @@ describe('+page.svelte', () => {
 
 		await expect.element(page.getByText('First verse.')).toBeInTheDocument();
 
+		await expandSearch();
+
 		await userEvent.keyboard('{Escape}');
 
 		await expect.element(referenceInput).toHaveValue('');
@@ -144,6 +156,7 @@ describe('+page.svelte', () => {
 		await userEvent.keyboard('{Enter}');
 
 		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
+		await expandSearch();
 
 		await userEvent.click(
 			page.getByRole('button', {
@@ -160,8 +173,12 @@ describe('+page.svelte', () => {
 
 		await userEvent.click(recentLookupButton);
 
-		await expect.element(referenceInput).toHaveValue('John 1:2');
 		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
+		await expect.element(referenceInput).not.toBeInTheDocument();
+
+		await expandSearch();
+
+		await expect.element(referenceInput).toHaveValue('John 1:2');
 		await expect.element(referenceInput).toHaveFocus();
 	});
 
@@ -199,6 +216,8 @@ describe('+page.svelte', () => {
 
 		await userEvent.fill(referenceInput, 'John 1:1');
 		await userEvent.keyboard('{Enter}');
+
+		await expandSearch();
 
 		await userEvent.click(
 			page.getByRole('button', {
@@ -258,7 +277,7 @@ describe('+page.svelte', () => {
 		await userEvent.keyboard('{Enter}');
 
 		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
-
+		await expandSearch();
 		await userEvent.click(
 			page.getByRole('button', {
 				name: 'Clear'
@@ -368,8 +387,14 @@ describe('+page.svelte', () => {
 			})
 		);
 
-		await expect.element(page.getByLabelText('Bible reference')).toHaveValue('John 1');
+		const referenceInput = page.getByLabelText('Bible reference');
 
+		await expect.element(referenceInput).not.toBeInTheDocument();
+
+		await expandSearch();
+
+		await expect.element(referenceInput).toHaveValue('John 1');
+		await expect.element(referenceInput).toHaveFocus();
 		await expect
 			.element(
 				page.getByRole('heading', {

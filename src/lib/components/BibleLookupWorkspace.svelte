@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { addRecentLookup } from '$lib/application/add-recent-lookup';
 	import { clearRecentLookups } from '$lib/application/clear-recent-lookups';
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
@@ -43,6 +44,7 @@
 		activeReference = $bindable(null)
 	}: Props = $props();
 
+	let isSearchExpanded = $state(true);
 	let referenceInput = $state('');
 	let referenceSearchForm = $state<ReferenceSearchFormHandle>();
 	let parseResult = $state<ParseReferenceResult | null>(null);
@@ -80,9 +82,11 @@
 		lookupResult = nextLookupResult;
 
 		if (!nextLookupResult.ok) {
+			isSearchExpanded = true;
 			return false;
 		}
 		activeReference = reference;
+		isSearchExpanded = false;
 
 		const recentLookup: RecentLookup = {
 			translationId,
@@ -126,6 +130,7 @@
 			lookupResult = null;
 			activeReference = null;
 			copyStatus = 'idle';
+			isSearchExpanded = true;
 			return;
 		}
 
@@ -137,13 +142,13 @@
 		lookupResult = null;
 		copyStatus = 'idle';
 		activeReference = null;
+		isSearchExpanded = true;
 	}
 
 	async function handleRecentLookupSelect(lookup: RecentLookup) {
 		const bookName = getBookName(lookup.reference.bookId);
 
 		referenceInput = formatBibleReference(lookup.reference, bookName);
-		referenceSearchForm?.focus();
 
 		await performLookup(lookup.reference);
 	}
@@ -208,6 +213,13 @@
 			copyStatus = 'error';
 		}
 	}
+
+	async function handleSearchExpand() {
+		isSearchExpanded = true;
+
+		await tick();
+		referenceSearchForm?.focus();
+	}
 </script>
 
 {#if referenceInput === ''}
@@ -222,8 +234,10 @@
 <ReferenceSearchForm
 	bind:this={referenceSearchForm}
 	bind:value={referenceInput}
+	collapsed={!isSearchExpanded}
 	onSubmit={handleSubmit}
 	onClear={handleClear}
+	onExpand={handleSearchExpand}
 />
 
 <PassageResult
