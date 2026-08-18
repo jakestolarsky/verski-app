@@ -104,14 +104,42 @@
 	.reference-search {
 		position: relative;
 		margin-bottom: 0;
+		padding: 0.125rem;
+		border-radius: var(--verski-input-radius);
+		background: var(--verski-input-border);
+		transition: box-shadow var(--pico-transition);
+	}
+
+	.reference-search:focus-within {
+		background: var(--verski-input-border-gradient);
+		box-shadow: 0 0 0 0.1875rem var(--verski-input-focus-ring);
 	}
 
 	.reference-search input {
 		appearance: none;
-		margin-bottom: 0;
-		padding-inline-end: 3.25rem;
-		background-image: none;
+		margin: 0;
+		padding-inline-end: 2.25rem;
+		padding-inline-start: 1.25rem;
+		border: 0;
+		border-radius: calc(var(--verski-input-radius) - 0.125rem);
+		background: var(--verski-input-background);
+		box-shadow: none;
+		color: var(--verski-input-text);
+		caret-color: var(--verski-primary);
+		transition: color var(--pico-transition);
 		-webkit-appearance: none;
+	}
+
+	.reference-search input:focus {
+		outline: none;
+		border: 0;
+		background: var(--verski-input-background);
+		box-shadow: none;
+	}
+
+	.reference-search input::placeholder {
+		color: var(--verski-input-placeholder);
+		opacity: 1;
 	}
 
 	button.reference-search__clear {
