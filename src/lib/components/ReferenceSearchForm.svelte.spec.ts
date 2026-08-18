@@ -92,4 +92,49 @@ describe('ReferenceSearchForm', () => {
 
 		expect(expandCalls).toBe(1);
 	});
+
+	it('prevents repeated submissions while a lookup is pending', async () => {
+		let submitCalls = 0;
+		let finishSubmit = () => {};
+
+		const pendingSubmit = new Promise<void>((resolve) => {
+			finishSubmit = resolve;
+		});
+
+		render(ReferenceSearchForm, {
+			value: '',
+			async onSubmit() {
+				submitCalls += 1;
+				await pendingSubmit;
+			},
+			onClear() {}
+		});
+
+		const input = page.getByLabelText('Bible reference');
+
+		await userEvent.fill(input, 'John 3:16');
+		await userEvent.keyboard('{Enter}{Enter}');
+
+		expect(submitCalls).toBe(1);
+
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Searching Bible'
+				})
+			)
+			.toBeDisabled();
+
+		await expect.element(page.getByText('Looking up passage…')).toBeInTheDocument();
+
+		finishSubmit();
+
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Search Bible'
+				})
+			)
+			.not.toBeDisabled();
+	});
 });

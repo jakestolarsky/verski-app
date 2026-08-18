@@ -19,6 +19,7 @@
 	}: Props = $props();
 
 	let inputElement = $state<HTMLInputElement>();
+	let isSubmitting = $state(false);
 
 	export function focus() {
 		inputElement?.focus();
@@ -27,10 +28,24 @@
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
-		await onSubmit(value);
+		if (isSubmitting) {
+			return;
+		}
+
+		isSubmitting = true;
+
+		try {
+			await onSubmit(value);
+		} finally {
+			isSubmitting = false;
+		}
 	}
 
 	function handleClear() {
+		if (isSubmitting) {
+			return;
+		}
+
 		value = '';
 		onClear();
 		focus();
@@ -66,6 +81,7 @@
 				type="search"
 				placeholder="John 3:16"
 				autocomplete="off"
+				readonly={isSubmitting}
 				bind:this={inputElement}
 				bind:value
 				onkeydown={handleKeydown}
@@ -76,6 +92,7 @@
 					class="reference-search__clear"
 					type="button"
 					aria-label="Clear"
+					disabled={isSubmitting}
 					onclick={handleClear}
 				>
 					<XIcon aria-hidden="true" />
@@ -83,9 +100,21 @@
 			{/if}
 		</div>
 
-		<button class="reference-search__submit" type="submit" aria-label="Search Bible">
-			<SearchIcon aria-hidden="true" />
+		<button
+			class="reference-search__submit"
+			type="submit"
+			aria-label={isSubmitting ? 'Searching Bible' : 'Search Bible'}
+			aria-busy={isSubmitting}
+			disabled={isSubmitting}
+		>
+			{#if !isSubmitting}
+				<SearchIcon aria-hidden="true" />
+			{/if}
 		</button>
+
+		{#if isSubmitting}
+			<span class="visually-hidden" role="status">Looking up passage…</span>
+		{/if}
 	</form>
 {/if}
 
