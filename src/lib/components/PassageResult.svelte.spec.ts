@@ -11,6 +11,7 @@ describe('PassageResult', () => {
 	it('does not render placeholder content before the first lookup', async () => {
 		render(PassageResult, {
 			heading: 'Passage',
+			translationName: 'World English Bible',
 			parseResult: null,
 			lookupResult: null,
 			copyStatus: 'idle',
@@ -39,6 +40,7 @@ describe('PassageResult', () => {
 
 		render(PassageResult, {
 			heading: 'Passage',
+			translationName: 'World English Bible',
 			parseResult,
 			lookupResult: null,
 			copyStatus: 'idle',
@@ -77,7 +79,8 @@ describe('PassageResult', () => {
 		let copyCalls = 0;
 
 		render(PassageResult, {
-			heading: 'John 1:2 (World English Bible)',
+			heading: 'John 1:2',
+			translationName: 'World English Bible',
 			parseResult,
 			lookupResult,
 			copyStatus: 'copied',
@@ -94,10 +97,12 @@ describe('PassageResult', () => {
 		await expect
 			.element(
 				page.getByRole('heading', {
-					name: 'John 1:2 (World English Bible)'
+					name: 'John 1:2'
 				})
 			)
 			.toBeInTheDocument();
+
+		await expect.element(page.getByText('(World English Bible)')).toBeInTheDocument();
 
 		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
 		const passageText = page.getByText('Second verse.').element().closest('.passage-text');

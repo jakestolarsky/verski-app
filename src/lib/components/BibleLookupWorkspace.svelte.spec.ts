@@ -54,7 +54,7 @@ describe('BibleLookupWorkspace', () => {
 		await expect
 			.element(
 				page.getByRole('heading', {
-					name: 'John 1:2 (World English Bible)'
+					name: 'John 1:2'
 				})
 			)
 			.toBeInTheDocument();
@@ -65,6 +65,7 @@ describe('BibleLookupWorkspace', () => {
 				name: 'Search Bible'
 			})
 		);
+		await expect.element(page.getByText('(World English Bible)')).toBeInTheDocument();
 
 		await expect.element(input).toHaveFocus();
 		await userEvent.click(
@@ -81,5 +82,6 @@ describe('BibleLookupWorkspace', () => {
 				})
 			)
 			.toBeInTheDocument();
+
 	});
 });

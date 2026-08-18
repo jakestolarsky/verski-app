@@ -62,7 +62,7 @@
 		const bookName = getBookName(currentLookupResult.passage.bookId);
 		const reference = formatBibleReference(currentParseResult.reference, bookName);
 
-		return `${reference} (${translationName})`;
+		return reference;
 	});
 
 	function getBookName(bookId: string): string {
@@ -234,6 +234,7 @@
 
 	<PassageResult
 		heading={passageHeading}
+		{translationName}
 		{parseResult}
 		{lookupResult}
 		{copyStatus}

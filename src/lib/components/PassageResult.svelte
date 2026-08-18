@@ -11,13 +11,22 @@
 	type Props = {
 		readingSettings: ReadingSettings;
 		heading: string;
+		translationName: string;
 		parseResult: ParseReferenceResult | null;
 		lookupResult: LookupPassageResult | null;
 		copyStatus: CopyStatus;
 		onCopy: () => void | Promise<void>;
 	};
 
-	let { heading, parseResult, lookupResult, copyStatus, readingSettings, onCopy }: Props = $props();
+	let {
+		heading,
+		translationName,
+		parseResult,
+		lookupResult,
+		copyStatus,
+		readingSettings,
+		onCopy
+	}: Props = $props();
 
 	const errorMessages: Record<ParseReferenceError, string> = {
 		'invalid-format': 'Enter a reference such as John 3:16.',
@@ -29,12 +38,13 @@
 	};
 </script>
 
-<section
-	aria-labelledby={parseResult === null ? undefined : 'passage-heading'}
-	aria-live="polite"
->
+<section aria-labelledby={parseResult === null ? undefined : 'passage-heading'} aria-live="polite">
 	{#if parseResult !== null}
-		<h2 id="passage-heading">{heading}</h2>
+		<h2 id="passage-heading" class="passage-heading">{heading}</h2>
+
+		{#if parseResult.ok && lookupResult?.ok}
+			<p class="translation-name">({translationName})</p>
+		{/if}
 
 		{#if !parseResult.ok}
 			<p>{errorMessages[parseResult.error]}</p>
@@ -58,7 +68,7 @@
 							<sup>{verse.number}</sup>
 						{/if}
 
-						<span>{verse.text}</span>&#32;
+						<span>{verse.text}{" "}</span>&#32;
 					</span>
 				{/each}
 			</p>
@@ -75,8 +85,29 @@
 </section>
 
 <style>
+	.passage-heading {
+		margin-bottom: 0.125rem;
+		font-family: var(--verski-font-display);
+		font-size: clamp(3.5rem, 8vw, 3rem);
+		font-style: italic;
+		font-weight: var(--verski-font-weight-regular);
+		line-height: 1.1;
+	}
+
+	.translation-name {
+		margin-top: 0;
+		margin-bottom: 1.5rem;
+		font-family: var(--verski-font-display);
+		font-size: 1.5rem;
+		font-style: italic;
+		font-weight: var(--verski-font-weight-regular);
+		line-height: 1.3;
+	}
+
 	.passage-text {
+		font-family: var(--verski-font-reading);
 		font-size: var(--verski-reading-size-default);
+		font-weight: var(--verski-font-weight-regular);
 		line-height: var(--verski-reading-line-height-default);
 	}
 

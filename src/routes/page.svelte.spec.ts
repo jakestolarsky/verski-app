@@ -77,7 +77,7 @@ describe('+page.svelte', () => {
 		await expect
 			.element(
 				page.getByRole('heading', {
-					name: 'John 1:2 (World English Bible)'
+					name: 'John 1:2'
 				})
 			)
 			.toBeInTheDocument();
@@ -408,7 +408,7 @@ describe('+page.svelte', () => {
 		await expect
 			.element(
 				page.getByRole('heading', {
-					name: 'John 1 (World English Bible)'
+					name: 'John 1'
 				})
 			)
 			.toBeInTheDocument();
