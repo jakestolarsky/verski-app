@@ -115,7 +115,7 @@ describe('PassageResult', () => {
 
 		await userEvent.click(
 			page.getByRole('button', {
-				name: 'Copy passage'
+				name: 'Copy passage again'
 			})
 		);
 

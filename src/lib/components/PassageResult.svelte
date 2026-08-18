@@ -6,6 +6,10 @@
 	} from '$lib/domain/parser/parse-reference';
 	import type { ReadingSettings } from '$lib/domain/user-settings';
 
+	/*icons*/
+	import CheckIcon from '@lucide/svelte/icons/check';
+	import ClipboardCopyIcon from '@lucide/svelte/icons/clipboard-copy';
+
 	type CopyStatus = 'idle' | 'copied' | 'error';
 
 	type Props = {
@@ -68,17 +72,28 @@
 							<sup>{verse.number}</sup>
 						{/if}
 
-						<span>{verse.text}{" "}</span>&#32;
+						<span>{verse.text}{' '}</span>&#32;
 					</span>
 				{/each}
 			</p>
 
-			<button type="button" onclick={onCopy}>Copy passage</button>
+			<button
+				class="copy-button"
+				type="button"
+				aria-label={copyStatus === 'copied' ? 'Copy passage again' : 'Copy passage'}
+				onclick={onCopy}
+			>
+				{#if copyStatus === 'copied'}
+					<CheckIcon aria-hidden="true" />
+				{:else}
+					<ClipboardCopyIcon aria-hidden="true" />
+				{/if}
+			</button>
 
 			{#if copyStatus === 'copied'}
-				<p>Passage copied.</p>
+				<p class="copy-status" role="status">Passage copied.</p>
 			{:else if copyStatus === 'error'}
-				<p>Passage could not be copied.</p>
+				<p class="copy-status" role="alert">Passage could not be copied.</p>
 			{/if}
 		{/if}
 	{/if}
@@ -88,7 +103,7 @@
 	.passage-heading {
 		margin-bottom: 0.125rem;
 		font-family: var(--verski-font-display);
-		font-size: clamp(3.5rem, 8vw, 3rem);
+		font-size: clamp(2.25rem, 8vw, 3.5rem);
 		font-style: italic;
 		font-weight: var(--verski-font-weight-regular);
 		line-height: 1.1;
@@ -98,7 +113,7 @@
 		margin-top: 0;
 		margin-bottom: 1.5rem;
 		font-family: var(--verski-font-display);
-		font-size: 1.5rem;
+		font-size: clamp(1rem, 3vw, 1.5rem);
 		font-style: italic;
 		font-weight: var(--verski-font-weight-regular);
 		line-height: 1.3;
@@ -109,6 +124,7 @@
 		font-size: var(--verski-reading-size-default);
 		font-weight: var(--verski-font-weight-regular);
 		line-height: var(--verski-reading-line-height-default);
+		margin-bottom: 0;
 	}
 
 	.passage-text[data-font-size='small'] {
@@ -129,5 +145,41 @@
 
 	.passage-text sup {
 		margin-inline-end: 0.25em;
+	}
+
+	button.copy-button {
+		display: grid;
+		width: 3rem;
+		min-width: 3rem;
+		height: 3rem;
+		margin-block: 0;
+		margin-inline-start: auto;
+		padding: 0;
+		place-items: center;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		box-shadow: none;
+		color: var(--verski-text);
+	}
+
+	button.copy-button:hover {
+		background: var(--verski-state-hover-background);
+		color: var(--verski-primary);
+	}
+
+	button.copy-button:focus-visible {
+		outline: 2px solid var(--verski-focus);
+		outline-offset: 2px;
+	}
+
+	button.copy-button :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
+	}
+
+	.copy-status {
+		margin-block: 0.5rem 0;
+		text-align: end;
 	}
 </style>
