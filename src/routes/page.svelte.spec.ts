@@ -231,11 +231,15 @@ describe('+page.svelte', () => {
 			})
 		);
 
-		await userEvent.click(
-			page.getByRole('button', {
-				name: 'Clear history'
-			})
-		);
+		const clearHistoryButton = page.getByRole('button', {
+			name: 'Clear history'
+		});
+
+		clearHistoryButton.element().scrollIntoView({
+			block: 'center'
+		});
+
+		await userEvent.click(clearHistoryButton);
 
 		await expect
 			.element(

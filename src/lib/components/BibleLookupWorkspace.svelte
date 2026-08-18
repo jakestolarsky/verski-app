@@ -223,25 +223,23 @@
 </script>
 
 <div class="lookup-workspace">
-	<div class="lookup-workspace__content">
-		{#if referenceInput === ''}
-			<RecentLookupList
-				lookups={recentLookups}
-				onSelect={handleRecentLookupSelect}
-				onRemove={handleRecentLookupRemove}
-				onClear={handleClearRecentLookups}
-			/>
-		{/if}
-
-		<PassageResult
-			heading={passageHeading}
-			{parseResult}
-			{lookupResult}
-			{copyStatus}
-			{readingSettings}
-			onCopy={handleCopy}
+	{#if referenceInput === ''}
+		<RecentLookupList
+			lookups={recentLookups}
+			onSelect={handleRecentLookupSelect}
+			onRemove={handleRecentLookupRemove}
+			onClear={handleClearRecentLookups}
 		/>
-	</div>
+	{/if}
+
+	<PassageResult
+		heading={passageHeading}
+		{parseResult}
+		{lookupResult}
+		{copyStatus}
+		{readingSettings}
+		onCopy={handleCopy}
+	/>
 
 	<div class="lookup-workspace__search">
 		<ReferenceSearchForm
@@ -257,22 +255,25 @@
 
 <style>
 	.lookup-workspace {
-		display: grid;
-		flex: 1;
-		grid-template-rows: minmax(0, 1fr) auto;
 		width: 100%;
-		min-height: 0;
-	}
-
-	.lookup-workspace__content {
-		min-height: 0;
-		overflow-y: auto;
-		padding-block-end: var(--pico-spacing);
-		overscroll-behavior: contain;
+		padding-block-end: calc(3.25rem + 2 * var(--pico-spacing));
 	}
 
 	.lookup-workspace__search {
-		flex-shrink: 0;
-		padding-block-start: var(--pico-spacing);
+		position: fixed;
+		inset-block-end: max(var(--verski-shell-padding-block), env(safe-area-inset-bottom, 0px));
+		inset-inline-start: 50%;
+		z-index: var(--verski-layer-header);
+		width: 100%;
+		max-width: var(--verski-shell-max-width);
+		padding-inline-end: max(var(--verski-shell-padding-inline), env(safe-area-inset-right, 0px));
+		padding-inline-start: max(var(--verski-shell-padding-inline), env(safe-area-inset-left, 0px));
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.lookup-workspace__search :global(form),
+	.lookup-workspace__search :global(.reference-search-trigger) {
+		pointer-events: auto;
 	}
 </style>

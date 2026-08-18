@@ -209,9 +209,8 @@
 		flex-direction: column;
 		width: 100%;
 		max-width: var(--verski-shell-max-width);
-		height: 100vh;
-		height: 100svh;
-		overflow: hidden;
+		min-height: 100vh;
+		min-height: 100svh;
 		margin-inline: auto;
 		padding-block-start: max(var(--verski-shell-padding-block), env(safe-area-inset-top, 0px));
 		padding-inline-end: max(var(--verski-shell-padding-inline), env(safe-area-inset-right, 0px));
@@ -229,6 +228,12 @@
 		gap: var(--pico-spacing);
 		width: 100%;
 		overflow: visible;
+		pointer-events: none;
+	}
+
+	.page-header__navigation,
+	.page-header__settings {
+		pointer-events: auto;
 	}
 
 	@media (max-width: 36rem) {
