@@ -19,6 +19,19 @@
 		onChange: (settings: UserSettings) => void | Promise<void>;
 	};
 
+	type SettingsSection = 'display' | 'system' | 'about';
+
+	const settingsSections = [
+		{ id: 'display', label: 'Display' },
+		{ id: 'system', label: 'System' },
+		{ id: 'about', label: 'About' }
+	] as const satisfies ReadonlyArray<{
+		id: SettingsSection;
+		label: string;
+	}>;
+
+	let activeSection = $state<SettingsSection>('display');
+
 	const themeLabels = {
 		system: 'System',
 		light: 'Light',
@@ -40,6 +53,52 @@
 
 	function handleDialogClose() {
 		triggerElement?.focus();
+	}
+
+	function selectSection(section: SettingsSection) {
+		activeSection = section;
+	}
+
+	function handleTablistKeydown(event: KeyboardEvent) {
+		if (
+			event.key !== 'ArrowLeft' &&
+			event.key !== 'ArrowRight' &&
+			event.key !== 'Home' &&
+			event.key !== 'End'
+		) {
+			return;
+		}
+
+		const tablist = event.currentTarget as HTMLElement;
+		const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+		const currentIndex = tabs.indexOf(event.target as HTMLButtonElement);
+
+		if (currentIndex === -1) {
+			return;
+		}
+
+		let nextIndex = currentIndex;
+
+		if (event.key === 'ArrowRight') {
+			nextIndex = (currentIndex + 1) % tabs.length;
+		} else if (event.key === 'ArrowLeft') {
+			nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+		} else if (event.key === 'Home') {
+			nextIndex = 0;
+		} else if (event.key === 'End') {
+			nextIndex = tabs.length - 1;
+		}
+
+		const nextTab = tabs[nextIndex];
+		const nextSection = settingsSections[nextIndex];
+
+		if (!nextTab || !nextSection) {
+			return;
+		}
+
+		event.preventDefault();
+		activeSection = nextSection.id;
+		nextTab.focus();
 	}
 
 	function isReadingFontSize(value: string): value is ReadingFontSize {
@@ -141,58 +200,109 @@
 				</button>
 			</header>
 
-			<label for="theme-select">
-				Theme
-
-				<select id="theme-select" value={settings.theme} onchange={handleThemeChange}>
-					{#each availableThemes as theme}
-						<option value={theme}>{themeLabels[theme]}</option>
-					{/each}
-				</select>
-			</label>
-
-			<fieldset>
-				<legend>Reading</legend>
-
-				<label for="reading-font-size">
-					Text size
-
-					<select
-						id="reading-font-size"
-						value={settings.reading.fontSize}
-						onchange={handleFontSizeChange}
+			<div
+				class="settings-tabs"
+				role="tablist"
+				aria-label="Settings sections"
+				onkeydown={handleTablistKeydown}
+			>
+				{#each settingsSections as section}
+					<button
+						id={`settings-tab-${section.id}`}
+						class="settings-tab"
+						type="button"
+						role="tab"
+						aria-selected={activeSection === section.id}
+						aria-controls={`settings-panel-${section.id}`}
+						tabindex={activeSection === section.id ? 0 : -1}
+						onclick={() => selectSection(section.id)}
 					>
-						<option value="small">Small</option>
-						<option value="default">Default</option>
-						<option value="large">Large</option>
-					</select>
-				</label>
+						{section.label}
+					</button>
+				{/each}
+			</div>
 
-				<label for="reading-line-height">
-					Line spacing
+			{#if activeSection === 'display'}
+				<section
+					id="settings-panel-display"
+					class="settings-panel"
+					role="tabpanel"
+					aria-labelledby="settings-tab-display"
+				>
+					<label for="theme-select">
+						Theme
 
-					<select
-						id="reading-line-height"
-						value={settings.reading.lineHeight}
-						onchange={handleLineHeightChange}
-					>
-						<option value="compact">Compact</option>
-						<option value="default">Default</option>
-						<option value="relaxed">Relaxed</option>
-					</select>
-				</label>
+						<select id="theme-select" value={settings.theme} onchange={handleThemeChange}>
+							{#each availableThemes as theme}
+								<option value={theme}>{themeLabels[theme]}</option>
+							{/each}
+						</select>
+					</label>
 
-				<label for="show-verse-numbers">
-					<input
-						id="show-verse-numbers"
-						type="checkbox"
-						checked={settings.reading.showVerseNumbers}
-						onchange={handleVerseNumbersChange}
-					/>
+					<fieldset>
+						<legend>Reading</legend>
 
-					Show verse numbers
-				</label>
-			</fieldset>
+						<label for="reading-font-size">
+							Text size
+
+							<select
+								id="reading-font-size"
+								value={settings.reading.fontSize}
+								onchange={handleFontSizeChange}
+							>
+								<option value="small">Small</option>
+								<option value="default">Default</option>
+								<option value="large">Large</option>
+							</select>
+						</label>
+
+						<label for="reading-line-height">
+							Line spacing
+
+							<select
+								id="reading-line-height"
+								value={settings.reading.lineHeight}
+								onchange={handleLineHeightChange}
+							>
+								<option value="compact">Compact</option>
+								<option value="default">Default</option>
+								<option value="relaxed">Relaxed</option>
+							</select>
+						</label>
+
+						<label for="show-verse-numbers">
+							<input
+								id="show-verse-numbers"
+								type="checkbox"
+								checked={settings.reading.showVerseNumbers}
+								onchange={handleVerseNumbersChange}
+							/>
+
+							Show verse numbers
+						</label>
+					</fieldset>
+				</section>
+			{:else if activeSection === 'system'}
+				<section
+					id="settings-panel-system"
+					class="settings-panel"
+					role="tabpanel"
+					aria-labelledby="settings-tab-system"
+					tabindex="0"
+				>
+					<p>System settings will appear here.</p>
+				</section>
+			{:else}
+				<section
+					id="settings-panel-about"
+					class="settings-panel"
+					role="tabpanel"
+					aria-labelledby="settings-tab-about"
+					tabindex="0"
+				>
+					<p>Application information will appear here.</p>
+				</section>
+			{/if}
 		</article>
 	</dialog>
 </div>
@@ -233,5 +343,34 @@
 
 	select {
 		margin-bottom: 0;
+	}
+
+	.settings-tabs {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		margin-block-end: var(--pico-spacing);
+		border-block-end: 1px solid var(--verski-border);
+	}
+
+	.settings-tab {
+		margin: 0;
+		padding: 0.5rem;
+		border: 0;
+		border-block-end: 2px solid transparent;
+		border-radius: 0;
+		background: transparent;
+		box-shadow: none;
+		color: var(--verski-text);
+		font-family: var(--verski-font-display);
+		font-weight: 400;
+	}
+
+	.settings-tab[aria-selected='true'] {
+		border-block-end-color: var(--verski-border-active);
+		color: var(--verski-state-active-text);
+	}
+
+	.settings-panel {
+		min-inline-size: 0;
 	}
 </style>

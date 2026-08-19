@@ -165,4 +165,34 @@ describe('SettingsMenu', () => {
 			}
 		});
 	});
+
+	it('switches settings sections with pointer and keyboard', async () => {
+		render(SettingsMenu, {
+			settings: structuredClone(defaultUserSettings),
+			onChange() {}
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Settings' }));
+
+		const displayTab = page.getByRole('tab', { name: 'Display' });
+		const systemTab = page.getByRole('tab', { name: 'System' });
+		const aboutTab = page.getByRole('tab', { name: 'About' });
+
+		await expect.element(displayTab).toHaveAttribute('aria-selected', 'true');
+
+		await userEvent.click(systemTab);
+
+		await expect.element(systemTab).toHaveAttribute('aria-selected', 'true');
+		await expect.element(page.getByRole('tabpanel', { name: 'System' })).toBeVisible();
+
+		await userEvent.keyboard('{ArrowRight}');
+
+		await expect.element(aboutTab).toHaveFocus();
+		await expect.element(aboutTab).toHaveAttribute('aria-selected', 'true');
+
+		await userEvent.keyboard('{Home}');
+
+		await expect.element(displayTab).toHaveFocus();
+		await expect.element(displayTab).toHaveAttribute('aria-selected', 'true');
+	});
 });
