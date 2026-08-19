@@ -213,7 +213,7 @@
 <div class="settings-menu">
 	<button
 		bind:this={triggerElement}
-		class="settings-trigger secondary outline"
+		class="settings-trigger verski-round-action verski-round-action--secondary"
 		type="button"
 		aria-label="Settings"
 		aria-haspopup="dialog"
@@ -229,7 +229,7 @@
 				<h2 id="settings-heading">Settings</h2>
 
 				<button
-					class="settings-close secondary outline"
+					class="settings-close verski-round-action verski-round-action--secondary"
 					type="button"
 					aria-label="Close settings"
 					onclick={closeMenu}
@@ -475,24 +475,6 @@
 </div>
 
 <style>
-	.settings-trigger,
-	.settings-close {
-		display: grid;
-		width: 2.75rem;
-		height: 2.75rem;
-		min-width: 2.75rem;
-		margin: 0;
-		padding: 0;
-		place-items: center;
-		border-radius: 50%;
-	}
-
-	.settings-trigger :global(svg),
-	.settings-close :global(svg) {
-		width: var(--verski-icon-size-action);
-		height: var(--verski-icon-size-action);
-	}
-
 	dialog header {
 		display: flex;
 		align-items: center;

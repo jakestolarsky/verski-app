@@ -63,7 +63,7 @@
 
 {#if collapsed}
 	<button
-		class="reference-search-trigger"
+		class="reference-search-trigger verski-round-action"
 		type="button"
 		aria-label="Search Bible"
 		onclick={onExpand}
@@ -101,7 +101,7 @@
 		</div>
 
 		<button
-			class="reference-search__submit"
+			class="reference-search__submit verski-round-action"
 			type="submit"
 			aria-label={isSubmitting ? 'Searching Bible' : 'Search Bible'}
 			aria-busy={isSubmitting}
@@ -199,24 +199,10 @@
 		outline-offset: -2px;
 	}
 
-	button.reference-search-trigger,
-	button.reference-search__submit {
-		display: grid;
-		width: 3.25rem;
-		min-width: 3.25rem;
-		height: 3.25rem;
-		margin: 0;
-		padding: 0;
-		place-items: center;
-		border-radius: 50%;
-	}
-
 	button.reference-search-trigger {
 		margin-inline-start: auto;
 	}
 
-	button.reference-search-trigger :global(svg),
-	button.reference-search__submit :global(svg),
 	button.reference-search__clear :global(svg) {
 		width: var(--verski-icon-size-action);
 		height: var(--verski-icon-size-action);

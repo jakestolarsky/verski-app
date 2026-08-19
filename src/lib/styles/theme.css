@@ -80,6 +80,11 @@
 	--verski-icon-stroke-width: 2;
 	--verski-icon-size-action: 1.4rem;
 	--verski-icon-size-disclosure: 1rem;
+
+	--verski-round-action-size: 3.25rem;
+	--verski-round-action-background: var(--verski-cream);
+	--verski-round-action-text: var(--verski-ink);
+	--verski-round-action-border: var(--verski-border-subtle);
 }
 
 /* Light theme */
@@ -184,4 +189,38 @@
 
 .lucide {
 	stroke-width: var(--verski-icon-stroke-width);
+}
+
+button.verski-round-action {
+	display: grid;
+	inline-size: var(--verski-round-action-size);
+	min-inline-size: var(--verski-round-action-size);
+	block-size: var(--verski-round-action-size);
+	margin: 0;
+	padding: 0;
+	place-items: center;
+	border-radius: 50%;
+}
+
+button.verski-round-action :where(svg) {
+	width: var(--verski-icon-size-action);
+	height: var(--verski-icon-size-action);
+}
+
+button.verski-round-action--secondary {
+	border: 1px solid var(--verski-round-action-border);
+	background: var(--verski-round-action-background);
+	box-shadow: none;
+	color: var(--verski-round-action-text);
+}
+
+button.verski-round-action--secondary:hover:not(:disabled) {
+	border-color: var(--verski-border-active);
+	background: var(--verski-round-action-background);
+	color: var(--verski-state-active-text);
+}
+
+button.verski-round-action--secondary:focus-visible {
+	outline: 2px solid var(--verski-focus);
+	outline-offset: 0.25rem;
 }

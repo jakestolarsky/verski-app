@@ -115,7 +115,7 @@
 
 <button
 	bind:this={triggerElement}
-	class="navigation-trigger secondary outline"
+	class="navigation-trigger verski-round-action verski-round-action--secondary"
 	type="button"
 	aria-label="Open Bible navigation"
 	aria-haspopup="dialog"
@@ -135,7 +135,7 @@
 			<h2 id="bible-navigation-heading">Bible navigation</h2>
 
 			<button
-				class="navigation-close secondary outline"
+				class="navigation-close verski-round-action verski-round-action--secondary"
 				type="button"
 				aria-label="Close Bible navigation"
 				onclick={closeMenu}
@@ -254,18 +254,6 @@
 		overscroll-behavior: none;
 	}
 
-	.navigation-trigger,
-	.navigation-close {
-		display: grid;
-		width: 2.75rem;
-		height: 2.75rem;
-		min-width: 2.75rem;
-		margin: 0;
-		padding: 0;
-		place-items: center;
-		border-radius: 50%;
-	}
-
 	.navigation-close {
 		position: fixed;
 		inset-block-start: max(var(--verski-shell-padding-block), env(safe-area-inset-top, 0px));
@@ -284,12 +272,6 @@
 
 	.desktop-close-icon {
 		display: none;
-	}
-
-	.navigation-trigger :global(svg),
-	.navigation-close :global(svg) {
-		width: var(--verski-icon-size-action);
-		height: var(--verski-icon-size-action);
 	}
 
 	.disclosure-icon {
