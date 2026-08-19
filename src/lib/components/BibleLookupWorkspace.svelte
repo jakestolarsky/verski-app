@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import { addRecentLookup } from '$lib/application/add-recent-lookup';
-	import { clearRecentLookups } from '$lib/application/clear-recent-lookups';
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
 	import { lookupPassage, type LookupPassageResult } from '$lib/application/lookup-passage';
@@ -154,23 +153,6 @@
 		await performLookup(lookup.reference);
 	}
 
-	async function handleClearRecentLookups() {
-		recentLookups = [];
-		referenceSearchForm?.focus();
-
-		const historyStore = recentLookupStore;
-
-		if (historyStore === null) {
-			return;
-		}
-
-		try {
-			await clearRecentLookups(historyStore);
-		} catch {
-			recentLookupStore = null;
-		}
-	}
-
 	async function handleRecentLookupRemove(lookup: RecentLookup) {
 		const historyStore = recentLookupStore;
 
@@ -266,7 +248,6 @@
 			lookups={recentLookups}
 			onSelect={handleRecentLookupSelect}
 			onRemove={handleRecentLookupRemove}
-			onClear={handleClearRecentLookups}
 		/>
 	{/if}
 

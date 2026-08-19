@@ -231,25 +231,27 @@ describe('+page.svelte', () => {
 			})
 		);
 
+		const recentLookupButton = page.getByRole('button', {
+			name: 'John 1:1',
+			exact: true
+		});
+
+		await expect.element(recentLookupButton).toBeInTheDocument();
+
+		await userEvent.click(page.getByRole('button', { name: 'Settings' }));
+		await userEvent.click(page.getByRole('tab', { name: 'System' }));
+
 		const clearHistoryButton = page.getByRole('button', {
 			name: 'Clear history'
 		});
 
-		clearHistoryButton.element().scrollIntoView({
-			block: 'center'
-		});
+		await expect.element(clearHistoryButton).toBeEnabled();
 
 		await userEvent.click(clearHistoryButton);
 
-		await expect
-			.element(
-				page.getByRole('heading', {
-					name: 'Recent lookups'
-				})
-			)
-			.not.toBeInTheDocument();
-
-		await expect.element(referenceInput).toHaveFocus();
+		await expect.element(clearHistoryButton).toBeDisabled();
+		await expect.element(recentLookupButton).not.toBeInTheDocument();
+		await expect.element(page.getByText('There are no recent lookups to remove.')).toBeVisible();
 	});
 
 	it('restores recent lookups from IndexedDB after remounting', async () => {
@@ -327,9 +329,23 @@ describe('+page.svelte', () => {
 		await expect.element(settingsButton).toBeEnabled();
 		await userEvent.click(settingsButton);
 
-		await userEvent.selectOptions(page.getByLabelText('Text size'), 'large');
-		await userEvent.selectOptions(page.getByLabelText('Line spacing'), 'relaxed');
-		await userEvent.click(page.getByLabelText('Show verse numbers'));
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Increase text size'
+			})
+		);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Increase line spacing'
+			})
+		);
+
+		await userEvent.click(
+			page.getByRole('checkbox', {
+				name: 'Show verse numbers'
+			})
+		);
 
 		await userEvent.click(
 			page.getByRole('button', {

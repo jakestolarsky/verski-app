@@ -26,7 +26,6 @@ describe('RecentLookupList', () => {
 				selectedLookup = selected;
 			},
 			onRemove() {},
-			onClear() {}
 		});
 
 		const lookupButton = page.getByRole('button', {
@@ -41,27 +40,6 @@ describe('RecentLookupList', () => {
 		expect(selectedLookup).toEqual(lookup);
 	});
 
-	it('reports when the user clears the history', async () => {
-		let clearCalls = 0;
-
-		render(RecentLookupList, {
-			lookups: [lookup],
-			onSelect() {},
-			onRemove() {},
-			onClear() {
-				clearCalls += 1;
-			}
-		});
-
-		await userEvent.click(
-			page.getByRole('button', {
-				name: 'Clear history'
-			})
-		);
-
-		expect(clearCalls).toBe(1);
-	});
-
 	it('reports the lookup selected for removal', async () => {
 		let removedLookup: RecentLookup | null = null;
 
@@ -71,7 +49,6 @@ describe('RecentLookupList', () => {
 			onRemove(selected: RecentLookup) {
 				removedLookup = selected;
 			},
-			onClear() {}
 		});
 
 		await userEvent.click(

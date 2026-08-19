@@ -272,4 +272,43 @@ describe('SettingsMenu', () => {
 			.element(page.getByRole('button', { name: 'Decrease line spacing' }))
 			.toBeDisabled();
 	});
+
+	it('reports clearing recent lookups from the System section', async () => {
+		let clearCalls = 0;
+
+		render(SettingsMenu, {
+			settings: structuredClone(defaultUserSettings),
+			recentLookupCount: 3,
+			onChange() {},
+			onClearRecentLookups() {
+				clearCalls += 1;
+			}
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Settings' }));
+		await userEvent.click(page.getByRole('tab', { name: 'System' }));
+
+		const clearHistoryButton = page.getByRole('button', {
+			name: 'Clear history'
+		});
+
+		await expect.element(clearHistoryButton).toBeEnabled();
+
+		await userEvent.click(clearHistoryButton);
+
+		expect(clearCalls).toBe(1);
+	});
+
+	it('disables clearing when recent history is empty', async () => {
+		render(SettingsMenu, {
+			settings: structuredClone(defaultUserSettings),
+			recentLookupCount: 0,
+			onChange() {}
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Settings' }));
+		await userEvent.click(page.getByRole('tab', { name: 'System' }));
+
+		await expect.element(page.getByRole('button', { name: 'Clear history' })).toBeDisabled();
+	});
 });

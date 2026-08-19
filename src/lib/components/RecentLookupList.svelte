@@ -11,10 +11,9 @@
 		lookups: readonly RecentLookup[];
 		onSelect: (lookup: RecentLookup) => void;
 		onRemove: (lookup: RecentLookup) => void | Promise<void>;
-		onClear: () => void;
 	};
 
-	let { lookups, onSelect, onRemove, onClear }: Props = $props();
+	let { lookups, onSelect, onRemove }: Props = $props();
 
 	function getBookName(bookId: string): string {
 		return bibleBooks.find((book) => book.id === bookId)?.names[0] ?? bookId;
@@ -46,7 +45,6 @@
 				<RotateCcwClockIcon aria-hidden="true" />
 				<span aria-hidden="true">Recent</span>
 			</h2>
-			<button class="secondary outline" type="button" onclick={onClear}> Clear history </button>
 		</header>
 
 		<ul class="recent-lookups__items">
@@ -101,11 +99,6 @@
 	.recent-lookups__header h2 :global(svg) {
 		width: var(--verski-icon-size-action);
 		height: var(--verski-icon-size-action);
-	}
-
-	.recent-lookups__header button {
-		width: auto;
-		margin: 0;
 	}
 
 	.recent-lookups__items {

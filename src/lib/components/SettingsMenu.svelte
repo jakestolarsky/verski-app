@@ -21,11 +21,14 @@
 	import LaptopMinimalIcon from '@lucide/svelte/icons/laptop-minimal';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import SunIcon from '@lucide/svelte/icons/sun';
+	import TrashIcon from '@lucide/svelte/icons/trash';
 
 	type Props = {
 		settings: UserSettings;
 		disabled?: boolean;
+		recentLookupCount?: number;
 		onChange: (settings: UserSettings) => void | Promise<void>;
+		onClearRecentLookups?: () => void | Promise<void>;
 	};
 
 	type SettingsSection = 'display' | 'system' | 'about';
@@ -68,7 +71,13 @@
 		relaxed: 'Relaxed'
 	} satisfies Record<ReadingLineHeight, string>;
 
-	let { settings, disabled = false, onChange }: Props = $props();
+	let {
+		settings,
+		disabled = false,
+		recentLookupCount = 0,
+		onChange,
+		onClearRecentLookups = () => {}
+	}: Props = $props();
 
 	let triggerElement = $state<HTMLButtonElement>();
 	let dialogElement = $state<HTMLDialogElement>();
@@ -398,7 +407,28 @@
 					aria-labelledby="settings-tab-system"
 					tabindex="0"
 				>
-					<p>System settings will appear here.</p>
+					<section class="system-setting" aria-labelledby="history-settings-heading">
+						<h3 id="history-settings-heading">Recent lookups</h3>
+
+						{#if recentLookupCount === 0}
+							<p>There are no recent lookups to remove.</p>
+						{:else}
+							<p>
+								Remove all {recentLookupCount}
+								{recentLookupCount === 1 ? 'recent lookup' : 'recent lookups'}.
+							</p>
+						{/if}
+
+						<button
+							class="clear-history secondary outline"
+							type="button"
+							disabled={recentLookupCount === 0}
+							onclick={onClearRecentLookups}
+						>
+							<TrashIcon aria-hidden="true" />
+							<span>Clear history</span>
+						</button>
+					</section>
 				</div>
 			{:else}
 				<div
@@ -689,5 +719,30 @@
 
 	.theme-option:hover input:checked + .theme-option__icon {
 		color: var(--verski-background);
+	}
+
+	.system-setting h3 {
+		margin-block-end: 0.5rem;
+		font-family: var(--verski-font-ui);
+		font-size: 1rem;
+		font-weight: var(--verski-font-weight-medium);
+	}
+
+	.system-setting p {
+		color: var(--verski-border-subtle);
+	}
+
+	button.clear-history {
+		display: flex;
+		width: 100%;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		margin: 0;
+	}
+
+	button.clear-history :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
 	}
 </style>

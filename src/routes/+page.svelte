@@ -19,6 +19,7 @@
 	import { buildBibleNavigation } from '$lib/application/build-bible-navigation';
 	import BibleNavigationMenu from '$lib/components/BibleNavigationMenu.svelte';
 	import type { BibleReference } from '$lib/domain/bible-reference';
+	import { clearRecentLookups } from '$lib/application/clear-recent-lookups';
 
 	type BibleLookupWorkspaceHandle = {
 		openChapter: (bookId: string, chapter: number) => Promise<boolean>;
@@ -110,6 +111,22 @@
 		}
 	}
 
+	async function handleClearRecentLookups() {
+		recentLookups = [];
+
+		const historyStore = recentLookupStore;
+
+		if (historyStore === null) {
+			return;
+		}
+
+		try {
+			await clearRecentLookups(historyStore);
+		} catch {
+			recentLookupStore = null;
+		}
+	}
+
 	async function handleChapterSelect(bookId: string, chapter: number): Promise<boolean> {
 		const workspace = bibleLookupWorkspace;
 
@@ -142,7 +159,9 @@
 			<SettingsMenu
 				settings={userSettings}
 				disabled={offlineStorageStatus === 'preparing'}
+				recentLookupCount={recentLookups.length}
 				onChange={handleSettingsChange}
+				onClearRecentLookups={handleClearRecentLookups}
 			/>
 		</div>
 	</header>
