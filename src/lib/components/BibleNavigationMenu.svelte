@@ -481,8 +481,8 @@
 
 	.book-button {
 		padding-inline-start: 1rem;
-		font-family: var(--verski-font-ui);
-		font-style: normal;
+		font-size: 1.2rem;
+		font-family: var(--verski-font-display);
 		font-weight: var(--verski-font-weight-regular);
 	}
 
