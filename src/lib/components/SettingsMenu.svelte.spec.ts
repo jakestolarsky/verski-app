@@ -31,7 +31,7 @@ describe('SettingsMenu', () => {
 			)
 			.toBeVisible();
 
-		await expect.element(page.getByLabelText('Theme')).toHaveValue('system');
+		await expect.element(page.getByRole('radio', { name: 'System theme' })).toBeChecked();
 	});
 
 	it('applies the selected theme and reports updated settings', async () => {
@@ -50,7 +50,11 @@ describe('SettingsMenu', () => {
 			})
 		);
 
-		await userEvent.selectOptions(page.getByLabelText('Theme'), 'dark');
+		await userEvent.click(
+			page.getByRole('radio', {
+				name: 'Dark theme'
+			})
+		);
 
 		expect(changedSettings).toEqual({
 			...defaultUserSettings,

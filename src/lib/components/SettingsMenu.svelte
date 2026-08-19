@@ -1,6 +1,5 @@
 <script lang="ts">
 	import {
-		availableThemes,
 		isTheme,
 		type ReadingFontSize,
 		type ReadingLineHeight,
@@ -19,6 +18,9 @@
 	import CircleIcon from '@lucide/svelte/icons/circle';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
 	import TextInitialIcon from '@lucide/svelte/icons/text-initial';
+	import LaptopMinimalIcon from '@lucide/svelte/icons/laptop-minimal';
+	import MoonIcon from '@lucide/svelte/icons/moon';
+	import SunIcon from '@lucide/svelte/icons/sun';
 
 	type Props = {
 		settings: UserSettings;
@@ -38,6 +40,8 @@
 	}>;
 
 	let activeSection = $state<SettingsSection>('display');
+
+	const themeOptions = ['light', 'dark', 'system'] as const satisfies readonly Theme[];
 
 	const themeLabels = {
 		system: 'System',
@@ -177,8 +181,8 @@
 	}
 
 	async function handleThemeChange(event: Event) {
-		const select = event.currentTarget as HTMLSelectElement;
-		const theme = select.value;
+		const input = event.currentTarget as HTMLInputElement;
+		const theme = input.value;
 
 		if (!isTheme(theme)) {
 			return;
@@ -268,16 +272,6 @@
 					role="tabpanel"
 					aria-labelledby="settings-tab-display"
 				>
-					<label for="theme-select">
-						Theme
-
-						<select id="theme-select" value={settings.theme} onchange={handleThemeChange}>
-							{#each availableThemes as theme}
-								<option value={theme}>{themeLabels[theme]}</option>
-							{/each}
-						</select>
-					</label>
-
 					<fieldset class="reading-controls">
 						<legend class="visually-hidden">Reading</legend>
 
@@ -367,6 +361,33 @@
 								</span>
 							</span>
 						</label>
+					</fieldset>
+
+					<fieldset class="theme-controls">
+						<legend class="visually-hidden">Theme</legend>
+
+						{#each themeOptions as theme}
+							<label class="theme-option">
+								<input
+									type="radio"
+									name="theme"
+									value={theme}
+									checked={settings.theme === theme}
+									aria-label={`${themeLabels[theme]} theme`}
+									onchange={handleThemeChange}
+								/>
+
+								<span class="theme-option__icon" aria-hidden="true">
+									{#if theme === 'light'}
+										<SunIcon />
+									{:else if theme === 'dark'}
+										<MoonIcon />
+									{:else}
+										<LaptopMinimalIcon />
+									{/if}
+								</span>
+							</label>
+						{/each}
 					</fieldset>
 				</div>
 			{:else if activeSection === 'system'}
@@ -604,5 +625,69 @@
 		margin: 0;
 		opacity: 0;
 		cursor: pointer;
+	}
+
+	.theme-controls {
+		display: flex;
+		justify-content: center;
+		gap: 0.5rem;
+		margin-block-start: 2rem;
+		margin-block-end: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	.theme-option {
+		position: relative;
+		display: grid;
+		width: 2.75rem;
+		min-width: 2.75rem;
+		height: 2.75rem;
+		margin: 0;
+		place-items: center;
+		cursor: pointer;
+	}
+
+	.theme-option input {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		opacity: 0;
+		cursor: pointer;
+	}
+
+	.theme-option__icon {
+		display: grid;
+		place-items: center;
+		border-radius: 50%;
+		color: var(--verski-text);
+		pointer-events: none;
+	}
+
+	.theme-option__icon :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
+	}
+
+	.theme-option input:checked + .theme-option__icon {
+		width: 2.25rem;
+		height: 2.25rem;
+		background: var(--verski-text);
+		color: var(--verski-background);
+	}
+
+	.theme-option input:focus-visible + .theme-option__icon {
+		outline: 2px solid var(--verski-focus);
+		outline-offset: 0.25rem;
+	}
+
+	.theme-option:hover .theme-option__icon {
+		color: var(--verski-state-active-text);
+	}
+
+	.theme-option:hover input:checked + .theme-option__icon {
+		color: var(--verski-background);
 	}
 </style>
