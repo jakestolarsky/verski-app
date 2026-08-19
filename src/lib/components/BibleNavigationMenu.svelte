@@ -120,7 +120,7 @@
 	aria-haspopup="dialog"
 	onclick={openMenu}
 >
-	<BookOpen />
+	<BookOpen aria-hidden="true" />
 </button>
 
 <dialog
@@ -139,7 +139,7 @@
 				aria-label="Close Bible navigation"
 				onclick={closeMenu}
 			>
-				<BookOpen />
+				<BookOpen aria-hidden="true" />
 			</button>
 		</header>
 
@@ -182,7 +182,7 @@
 							class:expanded={isTestamentExpanded(testament.id)}
 							aria-hidden="true"
 						>
-							<ChevronDown />
+							<ChevronDown aria-hidden="true" />
 						</span>
 					</button>
 
@@ -203,7 +203,7 @@
 											class:expanded={expandedBookId === book.id}
 											aria-hidden="true"
 										>
-											<ChevronDown />
+											<ChevronDown aria-hidden="true" />
 										</span>
 									</button>
 
@@ -319,9 +319,12 @@
 
 	.translation-name {
 		margin-bottom: var(--pico-spacing);
+		font-family: var(--verski-font-display);
+		font-size: clamp(1.25rem, 5vw, 1.75rem);
+		font-style: italic;
+		font-weight: var(--verski-font-weight-regular);
+		line-height: 1.2;
 		text-align: center;
-		font-size: 1.25rem;
-		font-weight: var(--verski-font-weight-medium);
 	}
 
 	.visually-hidden {
@@ -334,14 +337,47 @@
 	}
 
 	.book-filter {
+		position: relative;
 		margin-bottom: var(--pico-spacing);
+		padding: 0.125rem;
+		border-radius: var(--verski-input-radius);
+		background: var(--verski-input-border);
+		transition: box-shadow var(--pico-transition);
+	}
+
+	.book-filter:focus-within {
+		background: var(--verski-input-border-gradient);
+		box-shadow: 0 0 0 0.1875rem var(--verski-input-focus-ring);
 	}
 
 	.book-filter input {
+		appearance: none;
 		margin: 0;
-		padding-inline-start: var(--pico-form-element-spacing-horizontal);
-		background-image: none;
+		padding-inline: 1.25rem;
+		border: 0;
+		border-radius: calc(var(--verski-input-radius) - 0.125rem);
+		background: var(--verski-input-background);
+		box-shadow: none;
+		color: var(--verski-input-text);
+		caret-color: var(--verski-primary);
+		transition: color var(--pico-transition);
 		-webkit-appearance: none;
+	}
+
+	.book-filter input:focus {
+		outline: none;
+		border: 0;
+		background: var(--verski-input-background);
+		box-shadow: none;
+	}
+
+	.book-filter input::placeholder {
+		color: var(--verski-input-placeholder);
+		opacity: 1;
+	}
+
+	.book-filter input::-webkit-search-cancel-button {
+		appearance: none;
 	}
 
 	.testament {
@@ -363,8 +399,11 @@
 	}
 
 	.testament-button {
-		font-size: 1.15rem;
-		font-weight: var(--verski-font-weight-medium);
+		font-family: var(--verski-font-display);
+		font-size: 1.35rem;
+		font-style: italic;
+		font-weight: var(--verski-font-weight-regular);
+		line-height: 1.2;
 	}
 
 	.book-list,
@@ -389,6 +428,9 @@
 
 	.book-button {
 		padding-inline-start: 1rem;
+		font-family: var(--verski-font-ui);
+		font-style: normal;
+		font-weight: var(--verski-font-weight-regular);
 	}
 
 	.book-button[aria-current='true'] {
@@ -418,6 +460,8 @@
 		background: transparent;
 		box-shadow: none;
 		color: var(--verski-text);
+		font-family: var(--verski-font-ui);
+		font-weight: var(--verski-font-weight-regular);
 	}
 
 	.chapter-list button:hover {
