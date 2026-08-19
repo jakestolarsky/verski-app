@@ -156,6 +156,9 @@ describe('BibleNavigationMenu', () => {
 		});
 
 		await userEvent.click(trigger);
+
+		expect(getComputedStyle(document.body).overflow).toBe('hidden');
+
 		await userEvent.keyboard('{Escape}');
 
 		await expect.element(trigger).toHaveFocus();

@@ -8,6 +8,7 @@
 	/* icons */
 	import BookOpen from '@lucide/svelte/icons/book-open';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
+	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 
 	type Props = {
 		translationName: string;
@@ -139,7 +140,13 @@
 				aria-label="Close Bible navigation"
 				onclick={closeMenu}
 			>
-				<BookOpen aria-hidden="true" />
+				<span class="mobile-close-icon" aria-hidden="true">
+					<BookOpen />
+				</span>
+
+				<span class="desktop-close-icon" aria-hidden="true">
+					<ChevronLeft />
+				</span>
 			</button>
 		</header>
 
@@ -241,6 +248,12 @@
 </dialog>
 
 <style>
+	:global(html:has(dialog.bible-navigation[open])),
+	:global(body:has(dialog.bible-navigation[open])) {
+		overflow: hidden;
+		overscroll-behavior: none;
+	}
+
 	.navigation-trigger,
 	.navigation-close {
 		display: grid;
@@ -251,6 +264,26 @@
 		padding: 0;
 		place-items: center;
 		border-radius: 50%;
+	}
+
+	.navigation-close {
+		position: fixed;
+		inset-block-start: max(var(--verski-shell-padding-block), env(safe-area-inset-top, 0px));
+		inset-inline-end: max(var(--verski-shell-padding-inline), env(safe-area-inset-right, 0px));
+		z-index: var(--verski-layer-dialog);
+	}
+
+	.mobile-close-icon,
+	.desktop-close-icon {
+		place-items: center;
+	}
+
+	.mobile-close-icon {
+		display: grid;
+	}
+
+	.desktop-close-icon {
+		display: none;
 	}
 
 	.navigation-trigger :global(svg),
@@ -275,13 +308,17 @@
 	}
 
 	dialog.bible-navigation {
-		width: min(28rem, 100%);
+		box-sizing: border-box;
+		inline-size: 100%;
+		min-inline-size: 100%;
+		max-inline-size: 100%;
+
 		height: 100dvh;
-		max-width: 100%;
 		max-height: 100dvh;
 		margin: 0 auto 0 0;
 		padding: 0;
 		overflow: hidden;
+
 		border: 0;
 		border-radius: 0;
 		background: var(--verski-background);
@@ -295,14 +332,24 @@
 	.navigation-panel {
 		height: 100%;
 		min-height: 0;
-		padding: var(--pico-spacing);
+		padding-block-start: max(var(--verski-shell-padding-block), env(safe-area-inset-top, 0px));
+		padding-inline-end: max(var(--verski-shell-padding-inline), env(safe-area-inset-right, 0px));
+		padding-block-end: max(var(--verski-shell-padding-block), env(safe-area-inset-bottom, 0px));
+		padding-inline-start: max(var(--verski-shell-padding-inline), env(safe-area-inset-left, 0px));
 		overflow-y: auto;
 		overscroll-behavior: contain;
+		background: var(--verski-background);
 		-webkit-overflow-scrolling: touch;
+
+		box-sizing: border-box;
+		inline-size: 100%;
+		min-inline-size: 0;
+		scrollbar-gutter: stable;
 	}
 
 	.navigation-header {
 		display: flex;
+		min-height: 2.75rem;
 		align-items: center;
 		justify-content: flex-end;
 		margin-bottom: var(--pico-spacing);
@@ -426,6 +473,12 @@
 		content: '';
 	}
 
+	.book-list,
+	.book-list > li,
+	.chapter-list {
+		min-inline-size: 0;
+	}
+
 	.book-button {
 		padding-inline-start: 1rem;
 		font-family: var(--verski-font-ui);
@@ -444,7 +497,7 @@
 
 	.chapter-list {
 		display: grid;
-		grid-template-columns: repeat(5, minmax(2.5rem, 1fr));
+		grid-template-columns: repeat(5, minmax(0, 1fr));
 		gap: 0.35rem;
 		padding: 0.25rem 0.5rem 0.75rem;
 	}
@@ -487,9 +540,29 @@
 		padding: 0 1rem 0.75rem;
 	}
 
-	@media (max-width: 30rem) {
+	@media (min-width: 48rem) {
 		dialog.bible-navigation {
-			width: 100%;
+			--navigation-panel-width: clamp(32rem, 42vw, 38rem);
+
+			inline-size: var(--navigation-panel-width);
+			min-inline-size: var(--navigation-panel-width);
+			max-inline-size: var(--navigation-panel-width);
+
+			overflow: visible;
+		}
+
+		.navigation-close {
+			inset-inline-end: auto;
+			inset-inline-start: max(var(--verski-shell-padding-inline), env(safe-area-inset-left, 0px));
+			transform: none;
+		}
+
+		.mobile-close-icon {
+			display: none;
+		}
+
+		.desktop-close-icon {
+			display: inline-flex;
 		}
 	}
 </style>
