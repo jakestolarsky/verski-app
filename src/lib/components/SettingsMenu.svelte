@@ -353,30 +353,33 @@
 							</div>
 						</div>
 
-						<label class="setting-row setting-row--toggle" for="show-verse-numbers">
-							<span class="setting-row__label">
+						<div class="setting-row">
+							<div class="setting-row__label">
 								<TextInitialIcon aria-hidden="true" />
-								<span>Show verse numbers</span>
-							</span>
+								<span id="show-verse-numbers-label">Show verse numbers</span>
+							</div>
 
-							<span class="setting-toggle">
-								<input
-									id="show-verse-numbers"
-									class="setting-toggle__input"
-									type="checkbox"
-									checked={settings.reading.showVerseNumbers}
-									onchange={handleVerseNumbersChange}
-								/>
+							<span class="setting-control-slot">
+								<span class="setting-toggle">
+									<input
+										id="show-verse-numbers"
+										class="setting-toggle__input"
+										type="checkbox"
+										checked={settings.reading.showVerseNumbers}
+										aria-labelledby="show-verse-numbers-label"
+										onchange={handleVerseNumbersChange}
+									/>
 
-								<span class="setting-toggle__icon" aria-hidden="true">
-									{#if settings.reading.showVerseNumbers}
-										<CircleCheckIcon />
-									{:else}
-										<CircleIcon />
-									{/if}
+									<span class="setting-toggle__icon" aria-hidden="true">
+										{#if settings.reading.showVerseNumbers}
+											<CircleCheckIcon />
+										{:else}
+											<CircleIcon />
+										{/if}
+									</span>
 								</span>
 							</span>
-						</label>
+						</div>
 					</fieldset>
 					<fieldset class="theme-controls">
 						<legend class="visually-hidden">Theme</legend>
@@ -607,9 +610,15 @@
 	}
 
 	.reading-preview {
+		box-sizing: border-box;
 		width: 100%;
+		block-size: 5.5rem;
+		min-block-size: 5.25rem;
+		max-block-size: 5.5rem;
 		margin-block-end: 1.5rem;
 		padding: 1rem;
+		overflow: auto;
+		overscroll-behavior: contain;
 		border: 1px solid var(--verski-border-subtle);
 		border-radius: 0.5rem;
 		background: color-mix(in srgb, var(--verski-surface) 25%, transparent);
@@ -682,20 +691,35 @@
 
 	.setting-stepper button {
 		display: grid;
-		width: 2.75rem;
-		min-width: 2.75rem;
-		height: 2.75rem;
+		width: var(--settings-control-size);
+		min-width: var(--settings-control-size);
+		height: var(--settings-control-size);
 		margin: 0;
 		padding: 0;
 		place-items: center;
 		border: 0;
+		border-radius: 50%;
 		background: transparent;
 		box-shadow: none;
 		color: var(--verski-text);
+		cursor: pointer;
+		transition:
+			background-color var(--pico-transition),
+			color var(--pico-transition);
+	}
+
+	.setting-stepper button:hover:not(:disabled) {
+		color: var(--verski-state-active-text);
+	}
+
+	.setting-stepper button:focus-visible {
+		outline: 2px solid var(--verski-focus);
+		outline-offset: 0.125rem;
 	}
 
 	.setting-stepper button:disabled {
 		opacity: 0.4;
+		cursor: not-allowed;
 	}
 
 	.setting-stepper button :global(svg) {
@@ -712,17 +736,22 @@
 		white-space: nowrap;
 	}
 
-	.setting-row--toggle {
-		cursor: pointer;
-	}
-
 	.setting-toggle {
 		position: relative;
 		display: grid;
-		width: 2.75rem;
-		min-width: 2.75rem;
-		height: 2.75rem;
+		width: var(--settings-control-size);
+		min-width: var(--settings-control-size);
+		height: var(--settings-control-size);
 		place-items: center;
+		border-radius: 50%;
+	}
+
+	.setting-toggle:hover .setting-toggle__icon {
+		color: var(--verski-state-active-text);
+	}
+
+	.setting-toggle__input {
+		cursor: pointer;
 	}
 
 	.setting-toggle__icon {
@@ -743,10 +772,6 @@
 		outline-offset: 0.25rem;
 	}
 
-	.setting-row--toggle:hover .setting-toggle__icon {
-		color: var(--verski-state-active-text);
-	}
-
 	.setting-toggle__input {
 		position: absolute;
 		inset: 0;
@@ -755,6 +780,23 @@
 		margin: 0;
 		opacity: 0;
 		cursor: pointer;
+	}
+
+	.reading-controls {
+		--settings-control-size: 2.75rem;
+		--settings-control-gap: 0.25rem;
+	}
+
+	.setting-control-slot {
+		display: flex;
+		inline-size: calc(2 * var(--settings-control-size) + var(--settings-control-gap));
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: flex-start;
+	}
+
+	.setting-row--toggle {
+		width: 100%;
 	}
 
 	.theme-controls {
@@ -887,7 +929,7 @@
 			block-size: min(46rem, calc(100dvh - 2rem));
 			max-block-size: min(46rem, calc(100dvh - 2rem));
 			margin: auto;
-			border: 1px solid var(--verski-border-subtle);
+			border: 0;
 			border-radius: 1rem;
 		}
 	}
