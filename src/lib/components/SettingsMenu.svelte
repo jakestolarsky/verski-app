@@ -224,6 +224,21 @@
 
 			{#if activeSection === 'display'}
 				<section
+					class="reading-preview"
+					aria-label="Reading preview"
+					data-font-size={settings.reading.fontSize}
+					data-line-height={settings.reading.lineHeight}
+				>
+					<p>
+						{#if settings.reading.showVerseNumbers}
+							<sup>16</sup>
+						{/if}
+
+						For God so loved the world, that he gave his one and only Son, that whoever believes in
+						him should not perish, but have eternal life.
+					</p>
+				</section>
+				<section
 					id="settings-panel-display"
 					class="settings-panel"
 					role="tabpanel"
@@ -349,7 +364,7 @@
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		margin-block-end: var(--pico-spacing);
-		border-block-end: 1px solid var(--verski-border);
+		border-block-end: 1px solid var(--verski-border-subtle);
 	}
 
 	.settings-tab {
@@ -372,5 +387,40 @@
 
 	.settings-panel {
 		min-inline-size: 0;
+	}
+
+	.reading-preview {
+		margin-block-end: var(--pico-spacing);
+		padding: 1rem;
+		border: 1px solid var(--verski-border-subtle);
+		border-radius: 0.5rem;
+	}
+
+	.reading-preview p {
+		margin: 0;
+		font-family: var(--verski-font-reading);
+		font-size: var(--verski-reading-size-default);
+		font-weight: var(--verski-font-weight-regular);
+		line-height: var(--verski-reading-line-height-default);
+	}
+
+	.reading-preview[data-font-size='small'] p {
+		font-size: var(--verski-reading-size-small);
+	}
+
+	.reading-preview[data-font-size='large'] p {
+		font-size: var(--verski-reading-size-large);
+	}
+
+	.reading-preview[data-line-height='compact'] p {
+		line-height: var(--verski-reading-line-height-compact);
+	}
+
+	.reading-preview[data-line-height='relaxed'] p {
+		line-height: var(--verski-reading-line-height-relaxed);
+	}
+
+	.reading-preview sup {
+		margin-inline-end: 0.25em;
 	}
 </style>

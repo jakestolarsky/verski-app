@@ -195,4 +195,41 @@ describe('SettingsMenu', () => {
 		await expect.element(displayTab).toHaveFocus();
 		await expect.element(displayTab).toHaveAttribute('aria-selected', 'true');
 	});
+
+	it('updates the reading preview when settings change', async () => {
+		const onChange = () => {};
+
+		const screen = render(SettingsMenu, {
+			settings: structuredClone(defaultUserSettings),
+			onChange
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Settings' }));
+
+		const preview = page.getByRole('region', {
+			name: 'Reading preview'
+		});
+
+		await expect.element(preview).toHaveAttribute('data-font-size', 'default');
+		await expect.element(preview).toHaveAttribute('data-line-height', 'default');
+
+		await screen.rerender({
+			settings: {
+				...defaultUserSettings,
+				reading: {
+					fontSize: 'large',
+					lineHeight: 'relaxed',
+					showVerseNumbers: false
+				}
+			},
+			onChange
+		});
+
+		await expect.element(preview).toHaveAttribute('data-font-size', 'large');
+		await expect.element(preview).toHaveAttribute('data-line-height', 'relaxed');
+
+		const previewElement = document.querySelector('.reading-preview');
+
+		expect(previewElement?.querySelector('sup')).toBeNull();
+	});
 });
