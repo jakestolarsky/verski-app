@@ -163,7 +163,13 @@ describe('SettingsMenu', () => {
 			})
 		);
 
-		await userEvent.click(page.getByLabelText('Show verse numbers'));
+		const verseNumbersCheckbox = page.getByRole('checkbox', {
+			name: 'Show verse numbers'
+		});
+
+		await expect.element(verseNumbersCheckbox).toBeChecked();
+
+		await userEvent.click(verseNumbersCheckbox);
 
 		expect(changedSettings).toEqual({
 			...defaultUserSettings,

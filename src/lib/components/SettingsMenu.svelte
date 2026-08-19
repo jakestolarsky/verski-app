@@ -16,6 +16,9 @@
 	import ArrowDownWideNarrowIcon from '@lucide/svelte/icons/arrow-down-wide-narrow';
 	import CircleMinusIcon from '@lucide/svelte/icons/circle-minus';
 	import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
+	import CircleIcon from '@lucide/svelte/icons/circle';
+	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
+	import TextInitialIcon from '@lucide/svelte/icons/text-initial';
 
 	type Props = {
 		settings: UserSettings;
@@ -340,15 +343,29 @@
 							</div>
 						</div>
 
-						<label for="show-verse-numbers">
-							<input
-								id="show-verse-numbers"
-								type="checkbox"
-								checked={settings.reading.showVerseNumbers}
-								onchange={handleVerseNumbersChange}
-							/>
+						<label class="setting-row setting-row--toggle" for="show-verse-numbers">
+							<span class="setting-row__label">
+								<TextInitialIcon aria-hidden="true" />
+								<span>Show verse numbers</span>
+							</span>
 
-							Show verse numbers
+							<span class="setting-toggle">
+								<input
+									id="show-verse-numbers"
+									class="setting-toggle__input"
+									type="checkbox"
+									checked={settings.reading.showVerseNumbers}
+									onchange={handleVerseNumbersChange}
+								/>
+
+								<span class="setting-toggle__icon" aria-hidden="true">
+									{#if settings.reading.showVerseNumbers}
+										<CircleCheckIcon />
+									{:else}
+										<CircleIcon />
+									{/if}
+								</span>
+							</span>
 						</label>
 					</fieldset>
 				</div>
@@ -542,5 +559,50 @@
 		overflow: hidden;
 		clip-path: inset(50%);
 		white-space: nowrap;
+	}
+
+	.setting-row--toggle {
+		cursor: pointer;
+	}
+
+	.setting-toggle {
+		position: relative;
+		display: grid;
+		width: 2.75rem;
+		min-width: 2.75rem;
+		height: 2.75rem;
+		place-items: center;
+	}
+
+	.setting-toggle__icon {
+		display: grid;
+		place-items: center;
+		color: var(--verski-text);
+		pointer-events: none;
+	}
+
+	.setting-toggle__icon :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
+	}
+
+	.setting-toggle__input:focus-visible + .setting-toggle__icon {
+		border-radius: 50%;
+		outline: 2px solid var(--verski-focus);
+		outline-offset: 0.25rem;
+	}
+
+	.setting-row--toggle:hover .setting-toggle__icon {
+		color: var(--verski-state-active-text);
+	}
+
+	.setting-toggle__input {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		opacity: 0;
+		cursor: pointer;
 	}
 </style>
