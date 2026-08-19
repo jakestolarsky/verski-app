@@ -220,11 +220,16 @@
 		{disabled}
 		onclick={openMenu}
 	>
-		<SettingsIcon />
+		<SettingsIcon aria-hidden="true" />
 	</button>
 
-	<dialog bind:this={dialogElement} aria-labelledby="settings-heading" onclose={handleDialogClose}>
-		<article>
+	<dialog
+		bind:this={dialogElement}
+		class="settings-dialog"
+		aria-labelledby="settings-heading"
+		onclose={handleDialogClose}
+	>
+		<article class="settings-dialog__content">
 			<header>
 				<h2 id="settings-heading">Settings</h2>
 
@@ -234,7 +239,7 @@
 					aria-label="Close settings"
 					onclick={closeMenu}
 				>
-					<SettingsIcon />
+					<SettingsIcon aria-hidden="true" />
 				</button>
 			</header>
 
@@ -262,27 +267,27 @@
 			</div>
 
 			{#if activeSection === 'display'}
-				<section
-					class="reading-preview"
-					aria-label="Reading preview"
-					data-font-size={settings.reading.fontSize}
-					data-line-height={settings.reading.lineHeight}
-				>
-					<p>
-						{#if settings.reading.showVerseNumbers}
-							<sup>16</sup>
-						{/if}
-
-						For God so loved the world, that he gave his one and only Son, that whoever believes in
-						him should not perish, but have eternal life.
-					</p>
-				</section>
 				<div
 					id="settings-panel-display"
 					class="settings-panel"
 					role="tabpanel"
 					aria-labelledby="settings-tab-display"
 				>
+					<section
+						class="reading-preview"
+						aria-label="Reading preview"
+						data-font-size={settings.reading.fontSize}
+						data-line-height={settings.reading.lineHeight}
+					>
+						<p>
+							{#if settings.reading.showVerseNumbers}
+								<sup>16</sup>
+							{/if}
+
+							For God so loved the world, that he gave his one and only Son, that whoever believes
+							in him should not perish, but have eternal life.
+						</p>
+					</section>
 					<fieldset class="reading-controls">
 						<legend class="visually-hidden">Reading</legend>
 
@@ -373,7 +378,6 @@
 							</span>
 						</label>
 					</fieldset>
-
 					<fieldset class="theme-controls">
 						<legend class="visually-hidden">Theme</legend>
 
@@ -475,31 +479,92 @@
 </div>
 
 <style>
-	dialog header {
+	:global(html:has(dialog.settings-dialog[open])),
+	:global(body:has(dialog.settings-dialog[open])) {
+		overflow: hidden;
+		overscroll-behavior: none;
+	}
+
+	dialog.settings-dialog {
+		box-sizing: border-box;
+		inset: 0;
+		inline-size: 100%;
+		max-inline-size: 100%;
+		block-size: 100dvh;
+		max-block-size: 100dvh;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		border: 0;
+		border-radius: 0;
+		background: var(--verski-background);
+		color: var(--verski-text);
+	}
+
+	dialog.settings-dialog::backdrop {
+		background: var(--verski-overlay-background);
+	}
+
+	.settings-dialog__content {
 		display: flex;
+		box-sizing: border-box;
+		inline-size: 100%;
+		min-inline-size: 0;
+		block-size: 100%;
+		flex-direction: column;
+		margin: 0;
+		padding-block-start: max(var(--verski-shell-padding-block), env(safe-area-inset-top, 0px));
+		padding-inline-end: max(var(--verski-shell-padding-inline), env(safe-area-inset-right, 0px));
+		padding-block-end: max(var(--verski-shell-padding-block), env(safe-area-inset-bottom, 0px));
+		padding-inline-start: max(var(--verski-shell-padding-inline), env(safe-area-inset-left, 0px));
+		overflow-y: auto;
+		border: 0;
+		border-radius: inherit;
+		background: transparent;
+		box-shadow: none;
+	}
+
+	.settings-dialog__content > header {
+		display: grid;
+		grid-template-columns:
+			var(--verski-round-action-size)
+			minmax(0, 1fr)
+			var(--verski-round-action-size);
 		align-items: center;
-		justify-content: space-between;
-		gap: var(--pico-spacing);
+		gap: 0.75rem;
+		margin: 0 0 1rem;
+		padding: 0;
+		border: 0;
+		background: transparent;
 	}
 
-	dialog header h2 {
-		margin-bottom: 0;
+	.settings-dialog__content > header h2 {
+		grid-column: 2;
+		margin: 0;
+		font-family: var(--verski-font-display);
+		font-size: clamp(1.75rem, 6vw, 2.25rem);
+		font-style: italic;
+		font-weight: var(--verski-font-weight-regular);
+		line-height: 1;
+		text-align: center;
 	}
 
-	dialog article {
-		min-width: min(28rem, calc(100vw - 2rem));
+	.settings-close {
+		grid-column: 3;
+		justify-self: end;
 	}
 
 	.settings-tabs {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		margin-block-end: var(--pico-spacing);
-		border-block-end: 1px solid var(--verski-border-subtle);
+		flex: 0 0 auto;
+		margin-block-end: 1.25rem;
+		border: 0;
 	}
 
 	.settings-tab {
 		margin: 0;
-		padding: 0.5rem;
+		padding: 0.5rem 0.25rem;
 		border: 0;
 		border-block-end: 2px solid transparent;
 		border-radius: 0;
@@ -507,7 +572,23 @@
 		box-shadow: none;
 		color: var(--verski-text);
 		font-family: var(--verski-font-display);
-		font-weight: 400;
+		font-size: 1.125rem;
+		font-weight: var(--verski-font-weight-regular);
+	}
+
+	.settings-tab:hover {
+		background: transparent;
+		color: var(--verski-state-active-text);
+	}
+
+	.settings-tab[aria-selected='true'] {
+		border-block-end-color: var(--verski-border-active);
+		color: var(--verski-text);
+	}
+
+	.settings-tab:focus-visible {
+		outline: 2px solid var(--verski-focus);
+		outline-offset: 0.125rem;
 	}
 
 	.settings-tab[aria-selected='true'] {
@@ -517,13 +598,21 @@
 
 	.settings-panel {
 		min-inline-size: 0;
+		flex: 1;
+	}
+
+	.settings-panel--display {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.reading-preview {
-		margin-block-end: var(--pico-spacing);
+		width: 100%;
+		margin-block-end: 1.5rem;
 		padding: 1rem;
 		border: 1px solid var(--verski-border-subtle);
 		border-radius: 0.5rem;
+		background: color-mix(in srgb, var(--verski-surface) 25%, transparent);
 	}
 
 	.reading-preview p {
@@ -556,7 +645,7 @@
 
 	.reading-controls {
 		display: grid;
-		gap: 0.75rem;
+		gap: 1rem;
 		margin: 0;
 		padding: 0;
 		border: 0;
@@ -671,10 +760,12 @@
 	.theme-controls {
 		display: flex;
 		justify-content: center;
-		gap: 0.5rem;
-		margin-block-start: 2rem;
+		gap: 0.75rem;
+		margin-block-start: auto;
 		margin-block-end: 0;
-		padding: 0;
+		padding-block-start: 2rem;
+		padding-inline: 0;
+		padding-block-end: 0;
 		border: 0;
 	}
 
@@ -787,5 +878,17 @@
 	.repository-link :global(svg) {
 		width: var(--verski-icon-size-action);
 		height: var(--verski-icon-size-action);
+	}
+
+	@media (min-width: 48rem) {
+		dialog.settings-dialog {
+			inline-size: min(26rem, calc(100vw - 2rem));
+			max-inline-size: min(26rem, calc(100vw - 2rem));
+			block-size: min(46rem, calc(100dvh - 2rem));
+			max-block-size: min(46rem, calc(100dvh - 2rem));
+			margin: auto;
+			border: 1px solid var(--verski-border-subtle);
+			border-radius: 1rem;
+		}
 	}
 </style>
