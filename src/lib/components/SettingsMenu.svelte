@@ -12,6 +12,10 @@
 
 	/* icons */
 	import SettingsIcon from '@lucide/svelte/icons/settings';
+	import ALargeSmallIcon from '@lucide/svelte/icons/a-large-small';
+	import ArrowDownWideNarrowIcon from '@lucide/svelte/icons/arrow-down-wide-narrow';
+	import CircleMinusIcon from '@lucide/svelte/icons/circle-minus';
+	import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
 
 	type Props = {
 		settings: UserSettings;
@@ -37,6 +41,25 @@
 		light: 'Light',
 		dark: 'Dark'
 	} satisfies Record<Theme, string>;
+
+	const fontSizes = ['small', 'default', 'large'] as const satisfies readonly ReadingFontSize[];
+	const lineHeights = [
+		'compact',
+		'default',
+		'relaxed'
+	] as const satisfies readonly ReadingLineHeight[];
+
+	const fontSizeLabels = {
+		small: 'Small',
+		default: 'Default',
+		large: 'Large'
+	} satisfies Record<ReadingFontSize, string>;
+
+	const lineHeightLabels = {
+		compact: 'Compact',
+		default: 'Default',
+		relaxed: 'Relaxed'
+	} satisfies Record<ReadingLineHeight, string>;
 
 	let { settings, disabled = false, onChange }: Props = $props();
 
@@ -101,14 +124,6 @@
 		nextTab.focus();
 	}
 
-	function isReadingFontSize(value: string): value is ReadingFontSize {
-		return value === 'small' || value === 'default' || value === 'large';
-	}
-
-	function isReadingLineHeight(value: string): value is ReadingLineHeight {
-		return value === 'compact' || value === 'default' || value === 'relaxed';
-	}
-
 	async function updateReadingSettings(reading: ReadingSettings) {
 		await onChange({
 			...settings,
@@ -116,11 +131,17 @@
 		});
 	}
 
-	async function handleFontSizeChange(event: Event) {
-		const select = event.currentTarget as HTMLSelectElement;
-		const fontSize = select.value;
+	function getAdjacentValue<T>(values: readonly T[], currentValue: T, direction: -1 | 1): T | null {
+		const currentIndex = values.indexOf(currentValue);
+		const nextValue = values[currentIndex + direction];
 
-		if (!isReadingFontSize(fontSize)) {
+		return nextValue ?? null;
+	}
+
+	async function changeFontSize(direction: -1 | 1) {
+		const fontSize = getAdjacentValue(fontSizes, settings.reading.fontSize, direction);
+
+		if (fontSize === null) {
 			return;
 		}
 
@@ -130,11 +151,10 @@
 		});
 	}
 
-	async function handleLineHeightChange(event: Event) {
-		const select = event.currentTarget as HTMLSelectElement;
-		const lineHeight = select.value;
+	async function changeLineHeight(direction: -1 | 1) {
+		const lineHeight = getAdjacentValue(lineHeights, settings.reading.lineHeight, direction);
 
-		if (!isReadingLineHeight(lineHeight)) {
+		if (lineHeight === null) {
 			return;
 		}
 
@@ -204,6 +224,7 @@
 				class="settings-tabs"
 				role="tablist"
 				aria-label="Settings sections"
+				tabindex="-1"
 				onkeydown={handleTablistKeydown}
 			>
 				{#each settingsSections as section}
@@ -238,7 +259,7 @@
 						him should not perish, but have eternal life.
 					</p>
 				</section>
-				<section
+				<div
 					id="settings-panel-display"
 					class="settings-panel"
 					role="tabpanel"
@@ -254,36 +275,70 @@
 						</select>
 					</label>
 
-					<fieldset>
-						<legend>Reading</legend>
+					<fieldset class="reading-controls">
+						<legend class="visually-hidden">Reading</legend>
 
-						<label for="reading-font-size">
-							Text size
+						<div class="setting-row">
+							<div class="setting-row__label">
+								<ALargeSmallIcon aria-hidden="true" />
+								<span>Text size</span>
+							</div>
 
-							<select
-								id="reading-font-size"
-								value={settings.reading.fontSize}
-								onchange={handleFontSizeChange}
-							>
-								<option value="small">Small</option>
-								<option value="default">Default</option>
-								<option value="large">Large</option>
-							</select>
-						</label>
+							<div class="setting-stepper">
+								<output class="visually-hidden" aria-live="polite">
+									Text size: {fontSizeLabels[settings.reading.fontSize]}
+								</output>
 
-						<label for="reading-line-height">
-							Line spacing
+								<button
+									type="button"
+									aria-label="Decrease text size"
+									disabled={settings.reading.fontSize === 'small'}
+									onclick={() => changeFontSize(-1)}
+								>
+									<CircleMinusIcon aria-hidden="true" />
+								</button>
 
-							<select
-								id="reading-line-height"
-								value={settings.reading.lineHeight}
-								onchange={handleLineHeightChange}
-							>
-								<option value="compact">Compact</option>
-								<option value="default">Default</option>
-								<option value="relaxed">Relaxed</option>
-							</select>
-						</label>
+								<button
+									type="button"
+									aria-label="Increase text size"
+									disabled={settings.reading.fontSize === 'large'}
+									onclick={() => changeFontSize(1)}
+								>
+									<CirclePlusIcon aria-hidden="true" />
+								</button>
+							</div>
+						</div>
+
+						<div class="setting-row">
+							<div class="setting-row__label">
+								<ArrowDownWideNarrowIcon aria-hidden="true" />
+								<span>Line spacing</span>
+							</div>
+
+							<div class="setting-stepper">
+								<output class="visually-hidden" aria-live="polite">
+									Line spacing: {lineHeightLabels[settings.reading.lineHeight]}
+								</output>
+
+								<button
+									type="button"
+									aria-label="Decrease line spacing"
+									disabled={settings.reading.lineHeight === 'compact'}
+									onclick={() => changeLineHeight(-1)}
+								>
+									<CircleMinusIcon aria-hidden="true" />
+								</button>
+
+								<button
+									type="button"
+									aria-label="Increase line spacing"
+									disabled={settings.reading.lineHeight === 'relaxed'}
+									onclick={() => changeLineHeight(1)}
+								>
+									<CirclePlusIcon aria-hidden="true" />
+								</button>
+							</div>
+						</div>
 
 						<label for="show-verse-numbers">
 							<input
@@ -296,9 +351,9 @@
 							Show verse numbers
 						</label>
 					</fieldset>
-				</section>
+				</div>
 			{:else if activeSection === 'system'}
-				<section
+				<div
 					id="settings-panel-system"
 					class="settings-panel"
 					role="tabpanel"
@@ -306,9 +361,9 @@
 					tabindex="0"
 				>
 					<p>System settings will appear here.</p>
-				</section>
+				</div>
 			{:else}
-				<section
+				<div
 					id="settings-panel-about"
 					class="settings-panel"
 					role="tabpanel"
@@ -316,7 +371,7 @@
 					tabindex="0"
 				>
 					<p>Application information will appear here.</p>
-				</section>
+				</div>
 			{/if}
 		</article>
 	</dialog>
@@ -354,10 +409,6 @@
 
 	dialog article {
 		min-width: min(28rem, calc(100vw - 2rem));
-	}
-
-	select {
-		margin-bottom: 0;
 	}
 
 	.settings-tabs {
@@ -422,5 +473,74 @@
 
 	.reading-preview sup {
 		margin-inline-end: 0.25em;
+	}
+
+	.reading-controls {
+		display: grid;
+		gap: 0.75rem;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	.setting-row {
+		display: flex;
+		min-height: 2.75rem;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.setting-row__label {
+		display: flex;
+		min-width: 0;
+		align-items: center;
+		gap: 0.75rem;
+		font-weight: var(--verski-font-weight-medium);
+	}
+
+	.setting-row__label :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
+		flex: 0 0 auto;
+	}
+
+	.setting-stepper {
+		display: flex;
+		flex: 0 0 auto;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.setting-stepper button {
+		display: grid;
+		width: 2.75rem;
+		min-width: 2.75rem;
+		height: 2.75rem;
+		margin: 0;
+		padding: 0;
+		place-items: center;
+		border: 0;
+		background: transparent;
+		box-shadow: none;
+		color: var(--verski-text);
+	}
+
+	.setting-stepper button:disabled {
+		opacity: 0.4;
+	}
+
+	.setting-stepper button :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 </style>

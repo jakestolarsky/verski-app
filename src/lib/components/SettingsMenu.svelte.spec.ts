@@ -101,7 +101,11 @@ describe('SettingsMenu', () => {
 			})
 		);
 
-		await userEvent.selectOptions(page.getByLabelText('Text size'), 'large');
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Increase text size'
+			})
+		);
 
 		expect(changedSettings).toEqual({
 			...defaultUserSettings,
@@ -128,7 +132,11 @@ describe('SettingsMenu', () => {
 			})
 		);
 
-		await userEvent.selectOptions(page.getByLabelText('Line spacing'), 'relaxed');
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Increase line spacing'
+			})
+		);
 
 		expect(changedSettings).toEqual({
 			...defaultUserSettings,
@@ -231,5 +239,27 @@ describe('SettingsMenu', () => {
 		const previewElement = document.querySelector('.reading-preview');
 
 		expect(previewElement?.querySelector('sup')).toBeNull();
+	});
+
+	it('disables decrement controls at the smallest reading values', async () => {
+		render(SettingsMenu, {
+			settings: {
+				...defaultUserSettings,
+				reading: {
+					fontSize: 'small',
+					lineHeight: 'compact',
+					showVerseNumbers: true
+				}
+			},
+			onChange() {}
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Settings' }));
+
+		await expect.element(page.getByRole('button', { name: 'Decrease text size' })).toBeDisabled();
+
+		await expect
+			.element(page.getByRole('button', { name: 'Decrease line spacing' }))
+			.toBeDisabled();
 	});
 });
