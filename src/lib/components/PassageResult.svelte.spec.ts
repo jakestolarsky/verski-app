@@ -16,7 +16,8 @@ describe('PassageResult', () => {
 			lookupResult: null,
 			copyStatus: 'idle',
 			readingSettings: defaultUserSettings.reading,
-			onCopy() {}
+			onCopy() {},
+			onShowChapterRemainder() {}
 		});
 
 		await expect
@@ -45,7 +46,8 @@ describe('PassageResult', () => {
 			lookupResult: null,
 			copyStatus: 'idle',
 			readingSettings: defaultUserSettings.reading,
-			onCopy() {}
+			onCopy() {},
+			onShowChapterRemainder() {}
 		});
 
 		await expect.element(page.getByText('That Bible book is not available.')).toBeInTheDocument();
@@ -63,6 +65,7 @@ describe('PassageResult', () => {
 
 		const lookupResult = {
 			ok: true,
+			hasMoreVerses: true,
 			passage: {
 				translationId: 'engwebp',
 				bookId: 'john',
@@ -77,6 +80,7 @@ describe('PassageResult', () => {
 		} satisfies LookupPassageResult;
 
 		let copyCalls = 0;
+		let chapterRemainderCalls = 0;
 
 		render(PassageResult, {
 			heading: 'John 1:2',
@@ -91,6 +95,9 @@ describe('PassageResult', () => {
 			},
 			onCopy() {
 				copyCalls += 1;
+			},
+			onShowChapterRemainder() {
+				chapterRemainderCalls += 1;
 			}
 		});
 
@@ -120,5 +127,13 @@ describe('PassageResult', () => {
 		);
 
 		expect(copyCalls).toBe(1);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Show rest of chapter'
+			})
+		);
+
+		expect(chapterRemainderCalls).toBe(1);
 	});
 });

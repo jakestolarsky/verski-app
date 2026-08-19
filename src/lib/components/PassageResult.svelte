@@ -9,6 +9,7 @@
 	/*icons*/
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import ClipboardCopyIcon from '@lucide/svelte/icons/clipboard-copy';
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	type CopyStatus = 'idle' | 'copied' | 'error';
 
@@ -20,6 +21,7 @@
 		lookupResult: LookupPassageResult | null;
 		copyStatus: CopyStatus;
 		onCopy: () => void | Promise<void>;
+		onShowChapterRemainder: () => void | Promise<void>;
 	};
 
 	let {
@@ -29,7 +31,8 @@
 		lookupResult,
 		copyStatus,
 		readingSettings,
-		onCopy
+		onCopy,
+		onShowChapterRemainder
 	}: Props = $props();
 
 	const errorMessages: Record<ParseReferenceError, string> = {
@@ -94,6 +97,17 @@
 				<p class="copy-status" role="status">Passage copied.</p>
 			{:else if copyStatus === 'error'}
 				<p class="copy-status" role="alert">Passage could not be copied.</p>
+			{/if}
+
+			{#if lookupResult.hasMoreVerses}
+				<button
+					class="chapter-remainder-button"
+					type="button"
+					aria-label="Show rest of chapter"
+					onclick={onShowChapterRemainder}
+				>
+					<ChevronDownIcon aria-hidden="true" />
+				</button>
 			{/if}
 		{/if}
 	{/if}
@@ -181,5 +195,35 @@
 	.copy-status {
 		margin-block: 0.5rem 0;
 		text-align: end;
+	}
+
+	button.chapter-remainder-button {
+		display: grid;
+		width: 3.5rem;
+		min-width: 3.5rem;
+		height: 3.5rem;
+		margin: 1.5rem auto 0;
+		padding: 0;
+		place-items: center;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		box-shadow: none;
+		color: var(--verski-text);
+	}
+
+	button.chapter-remainder-button:hover {
+		background: var(--verski-state-hover-background);
+		color: var(--verski-primary);
+	}
+
+	button.chapter-remainder-button:focus-visible {
+		outline: 2px solid var(--verski-focus);
+		outline-offset: 2px;
+	}
+
+	button.chapter-remainder-button :global(svg) {
+		width: 2.25rem;
+		height: 2.25rem;
 	}
 </style>

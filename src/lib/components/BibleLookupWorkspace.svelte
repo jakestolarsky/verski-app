@@ -17,6 +17,7 @@
 	import RecentLookupList from './RecentLookupList.svelte';
 	import ReferenceSearchForm from './ReferenceSearchForm.svelte';
 	import type { ReadingSettings } from '$lib/domain/user-settings';
+	import { expandPassageToChapterEnd } from '$lib/application/expand-passage-to-chapter-end';
 
 	type ReferenceSearchFormHandle = {
 		focus: () => void;
@@ -189,6 +190,43 @@
 		referenceSearchForm?.focus();
 	}
 
+	async function handleShowChapterRemainder() {
+		const currentLookupResult = lookupResult;
+		const currentParseResult = parseResult;
+
+		if (!currentLookupResult?.ok || !currentLookupResult.hasMoreVerses || !currentParseResult?.ok) {
+			return;
+		}
+
+		const expandedResult = await expandPassageToChapterEnd(repository, currentLookupResult.passage);
+
+		if (!expandedResult.ok) {
+			lookupResult = expandedResult;
+			return;
+		}
+
+		const lastVerse = expandedResult.passage.verses[expandedResult.passage.verses.length - 1];
+
+		if (lastVerse === undefined) {
+			return;
+		}
+
+		const expandedReference: BibleReference = {
+			...currentParseResult.reference,
+			verseEnd: lastVerse.number
+		};
+
+		parseResult = {
+			ok: true,
+			reference: expandedReference
+		};
+
+		lookupResult = expandedResult;
+		activeReference = expandedReference;
+		referenceInput = formatBibleReference(expandedReference, getBookName(expandedReference.bookId));
+		copyStatus = 'idle';
+	}
+
 	async function handleCopy() {
 		const currentLookupResult = lookupResult;
 		const currentParseResult = parseResult;
@@ -240,6 +278,7 @@
 		{copyStatus}
 		{readingSettings}
 		onCopy={handleCopy}
+		onShowChapterRemainder={handleShowChapterRemainder}
 	/>
 
 	<div class="lookup-workspace__search">

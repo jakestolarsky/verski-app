@@ -17,6 +17,7 @@ export type LookupPassageResult =
 	| {
 			ok: true;
 			passage: Passage;
+			hasMoreVerses: boolean;
 	  }
 	| {
 			ok: false;
@@ -59,6 +60,7 @@ export async function lookupPassage(
 
 	return {
 		ok: true,
+		hasMoreVerses: verseEnd < chapter.verses.length,
 		passage: {
 			translationId,
 			bookId: reference.bookId,

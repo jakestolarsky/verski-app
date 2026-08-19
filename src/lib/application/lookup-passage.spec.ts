@@ -33,6 +33,7 @@ describe('lookupPassage', () => {
 
 		expect(result).toEqual({
 			ok: true,
+			hasMoreVerses: false,
 			passage: {
 				translationId: 'engwebp',
 				bookId: 'john',
@@ -64,6 +65,7 @@ describe('lookupPassage', () => {
 
 		expect(result).toEqual({
 			ok: true,
+			hasMoreVerses: true,
 			passage: {
 				translationId: 'engwebp',
 				bookId: 'john',
@@ -88,6 +90,7 @@ describe('lookupPassage', () => {
 
 		expect(result).toEqual({
 			ok: true,
+			hasMoreVerses: false,
 			passage: {
 				translationId: 'engwebp',
 				bookId: 'john',

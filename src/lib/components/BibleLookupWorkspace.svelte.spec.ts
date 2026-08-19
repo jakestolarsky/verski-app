@@ -26,7 +26,7 @@ const translationPackage = {
 			translationId: 'engwebp',
 			bookId: 'john',
 			chapter: 1,
-			verses: ['First verse.', 'Second verse.']
+			verses: ['First verse.', 'Second verse.', 'Third verse.']
 		}
 	]
 } satisfies TranslationPackage;
@@ -58,6 +58,31 @@ describe('BibleLookupWorkspace', () => {
 				})
 			)
 			.toBeInTheDocument();
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Show rest of chapter'
+			})
+		);
+
+		await expect.element(page.getByText('Third verse.')).toBeInTheDocument();
+
+		await expect
+			.element(
+				page.getByRole('heading', {
+					name: 'John 1:2-3'
+				})
+			)
+			.toBeInTheDocument();
+
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Show rest of chapter'
+				})
+			)
+			.not.toBeInTheDocument();
+
 		await expect.element(input).not.toBeInTheDocument();
 
 		await userEvent.click(
@@ -82,6 +107,5 @@ describe('BibleLookupWorkspace', () => {
 				})
 			)
 			.toBeInTheDocument();
-
 	});
 });
