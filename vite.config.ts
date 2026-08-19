@@ -2,8 +2,31 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { execFileSync } from 'node:child_process';
+import packageJson from './package.json' with { type: 'json' };
+
+function getCommitIdentifier(): string {
+	const configuredCommit = process.env.VERSKI_BUILD_COMMIT;
+
+	if (configuredCommit) {
+		return configuredCommit.slice(0, 7);
+	}
+
+	try {
+		return execFileSync('git', ['rev-parse', '--short', 'HEAD'], {
+			encoding: 'utf8',
+			stdio: ['ignore', 'pipe', 'ignore']
+		}).trim();
+	} catch {
+		return 'development';
+	}
+}
 
 export default defineConfig({
+	define: {
+		__VERSKI_APP_VERSION__: JSON.stringify(packageJson.version),
+		__VERSKI_APP_COMMIT__: JSON.stringify(getCommitIdentifier())
+	},
 	plugins: [
 		sveltekit({
 			compilerOptions: {

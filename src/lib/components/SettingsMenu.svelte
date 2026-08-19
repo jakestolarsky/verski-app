@@ -8,6 +8,7 @@
 		type UserSettings
 	} from '$lib/domain/user-settings';
 	import { applyThemePreference } from '$lib/platform/theme-preference';
+	import { appMetadata } from '$lib/platform/app-metadata';
 
 	/* icons */
 	import SettingsIcon from '@lucide/svelte/icons/settings';
@@ -22,6 +23,7 @@
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import SunIcon from '@lucide/svelte/icons/sun';
 	import TrashIcon from '@lucide/svelte/icons/trash';
+	import LinkIcon from '@lucide/svelte/icons/link';
 
 	type Props = {
 		settings: UserSettings;
@@ -438,7 +440,34 @@
 					aria-labelledby="settings-tab-about"
 					tabindex="0"
 				>
-					<p>Application information will appear here.</p>
+					<section class="about-section" aria-labelledby="about-heading">
+						<dl class="about-metadata">
+							<div>
+								<dt>Version</dt>
+								<dd>{appMetadata.version}</dd>
+							</div>
+
+							<div>
+								<dt>Build</dt>
+								<dd><code>{appMetadata.commit}</code></dd>
+							</div>
+
+							<div>
+								<dt>Author</dt>
+								<dd>{appMetadata.author}</dd>
+							</div>
+						</dl>
+
+						<a
+							class="repository-link"
+							href={appMetadata.repositoryUrl}
+							target="_blank"
+							rel="noreferrer"
+						>
+							<LinkIcon aria-hidden="true" />
+							<span>GitHub repository</span>
+						</a>
+					</section>
 				</div>
 			{/if}
 		</article>
@@ -742,6 +771,38 @@
 	}
 
 	button.clear-history :global(svg) {
+		width: var(--verski-icon-size-action);
+		height: var(--verski-icon-size-action);
+	}
+
+	.about-metadata {
+		display: grid;
+		gap: 0.75rem;
+		margin-block-end: 1.5rem;
+	}
+
+	.about-metadata div {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.about-metadata dt {
+		font-weight: var(--verski-font-weight-medium);
+	}
+
+	.about-metadata dd {
+		margin: 0;
+		text-align: end;
+	}
+
+	.repository-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.repository-link :global(svg) {
 		width: var(--verski-icon-size-action);
 		height: var(--verski-icon-size-action);
 	}

@@ -4,6 +4,7 @@ import { render } from 'vitest-browser-svelte';
 
 import { defaultUserSettings, type UserSettings } from '$lib/domain/user-settings';
 import SettingsMenu from './SettingsMenu.svelte';
+import { appMetadata } from '$lib/platform/app-metadata';
 
 afterEach(() => {
 	delete document.documentElement.dataset.theme;
@@ -310,5 +311,23 @@ describe('SettingsMenu', () => {
 		await userEvent.click(page.getByRole('tab', { name: 'System' }));
 
 		await expect.element(page.getByRole('button', { name: 'Clear history' })).toBeDisabled();
+	});
+
+	it('shows application metadata and repository in About', async () => {
+		render(SettingsMenu, {
+			settings: structuredClone(defaultUserSettings),
+			onChange() {}
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Settings' }));
+		await userEvent.click(page.getByRole('tab', { name: 'About' }));
+
+		await expect.element(page.getByText(appMetadata.version)).toBeVisible();
+		await expect.element(page.getByText(appMetadata.commit)).toBeVisible();
+		await expect.element(page.getByText(appMetadata.author)).toBeVisible();
+
+		await expect
+			.element(page.getByRole('link', { name: 'GitHub repository' }))
+			.toHaveAttribute('href', appMetadata.repositoryUrl);
 	});
 });
