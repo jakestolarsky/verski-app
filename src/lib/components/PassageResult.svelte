@@ -86,11 +86,17 @@
 				aria-label={copyStatus === 'copied' ? 'Copy passage again' : 'Copy passage'}
 				onclick={onCopy}
 			>
-				{#if copyStatus === 'copied'}
-					<CheckIcon aria-hidden="true" />
-				{:else}
-					<ClipboardCopyIcon aria-hidden="true" />
-				{/if}
+				<span
+					class="copy-button__icon"
+					class:confirmed={copyStatus === 'copied'}
+					aria-hidden="true"
+				>
+					{#if copyStatus === 'copied'}
+						<CheckIcon />
+					{:else}
+						<ClipboardCopyIcon />
+					{/if}
+				</span>
 			</button>
 
 			{#if copyStatus === 'copied'}
@@ -187,9 +193,38 @@
 		outline-offset: 2px;
 	}
 
-	button.copy-button :global(svg) {
+	.copy-button__icon {
+		display: grid;
+		place-items: center;
+	}
+
+	.copy-button__icon :global(svg) {
 		width: var(--verski-icon-size-action);
 		height: var(--verski-icon-size-action);
+		animation: copy-confirmation 180ms ease-out;
+	}
+
+	.copy-button__icon.confirmed {
+		color: var(--verski-primary);
+		animation: copy-confirmation 180ms ease-out;
+	}
+
+	@keyframes copy-confirmation {
+		from {
+			opacity: 0;
+			transform: scale(0.7);
+		}
+
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.copy-button__icon.confirmed {
+			animation: none;
+		}
 	}
 
 	.copy-status {

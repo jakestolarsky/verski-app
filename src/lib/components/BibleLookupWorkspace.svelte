@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tick } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 	import { addRecentLookup } from '$lib/application/add-recent-lookup';
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
@@ -23,6 +23,8 @@
 	};
 
 	type CopyStatus = 'idle' | 'copied' | 'error';
+	const copyFeedbackDuration = 1800;
+	let copyFeedbackTimeout: number | undefined;
 
 	type Props = {
 		repository: BibleRepository;
@@ -226,13 +228,36 @@
 			translationName
 		});
 
+		clearCopyFeedbackTimeout();
+
 		try {
 			await navigator.clipboard.writeText(text);
 			copyStatus = 'copied';
+			scheduleCopyFeedbackReset();
 		} catch {
 			copyStatus = 'error';
 		}
 	}
+
+	function clearCopyFeedbackTimeout() {
+		if (copyFeedbackTimeout === undefined) {
+			return;
+		}
+
+		window.clearTimeout(copyFeedbackTimeout);
+		copyFeedbackTimeout = undefined;
+	}
+
+	function scheduleCopyFeedbackReset() {
+		clearCopyFeedbackTimeout();
+
+		copyFeedbackTimeout = window.setTimeout(() => {
+			copyStatus = 'idle';
+			copyFeedbackTimeout = undefined;
+		}, copyFeedbackDuration);
+	}
+
+	onDestroy(clearCopyFeedbackTimeout);
 
 	async function handleSearchExpand() {
 		isSearchExpanded = true;
