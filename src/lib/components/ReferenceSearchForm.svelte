@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { createTypewriterPlaceholder } from './typewriter-placeholder.svelte';
+
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import XIcon from '@lucide/svelte/icons/x';
 
@@ -20,6 +22,15 @@
 
 	let inputElement = $state<HTMLInputElement>();
 	let isSubmitting = $state(false);
+
+	//typewriter animation effect
+	const referenceExamples = ['J 3:16', 'Psalm 23', '1 Kor 13:4-7', 'Hi 1:1'] as const;
+	let isInputFocused = $state(false);
+
+	const typewriterPlaceholder = createTypewriterPlaceholder({
+		examples: referenceExamples,
+		isPaused: () => isInputFocused || collapsed || value !== ''
+	});
 
 	export function focus() {
 		inputElement?.focus();
@@ -79,13 +90,32 @@
 				id="reference"
 				name="reference"
 				type="search"
-				placeholder="John 3:16"
+				placeholder=""
 				autocomplete="off"
 				readonly={isSubmitting}
 				bind:this={inputElement}
 				bind:value
 				onkeydown={handleKeydown}
+				onfocus={() => {
+					isInputFocused = true;
+				}}
+				onblur={() => {
+					isInputFocused = false;
+				}}
 			/>
+
+			{#if !isInputFocused && value === ''}
+				<span class="typewriter-placeholder" aria-hidden="true">
+					<span class="typewriter-placeholder__text">
+						{typewriterPlaceholder.value}
+					</span>
+
+					<span
+						class="typewriter-placeholder__cursor"
+						class:blinking={typewriterPlaceholder.isCursorBlinking}
+					></span>
+				</span>
+			{/if}
 
 			{#if value}
 				<button
@@ -219,5 +249,54 @@
 
 	.reference-search input::-webkit-search-cancel-button {
 		appearance: none;
+	}
+
+	.typewriter-placeholder {
+		position: absolute;
+		inset-block-start: 50%;
+		inset-inline-start: 1.375rem;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		max-width: calc(100% - 4rem);
+		transform: translateY(-50%);
+		overflow: hidden;
+		color: var(--verski-input-placeholder);
+		line-height: 1;
+		white-space: nowrap;
+		pointer-events: none;
+	}
+
+	.typewriter-placeholder__cursor {
+		display: inline-block;
+		width: 0.1rem;
+		height: 1.1em;
+		margin-inline-start: 0.125rem;
+		flex: 0 0 auto;
+		background: var(--verski-input-placeholder);
+		opacity: 1;
+	}
+
+	.typewriter-placeholder__cursor.blinking {
+		animation: typewriter-cursor-blink 900ms steps(1, end) infinite;
+	}
+
+	@keyframes typewriter-cursor-blink {
+		0%,
+		45% {
+			opacity: 1;
+		}
+
+		46%,
+		100% {
+			opacity: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.typewriter-placeholder__cursor.blinking {
+			animation: none;
+			opacity: 1;
+		}
 	}
 </style>

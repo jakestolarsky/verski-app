@@ -137,4 +137,20 @@ describe('ReferenceSearchForm', () => {
 			)
 			.not.toBeDisabled();
 	});
+
+	it('hides the animated hint while the input is focused', async () => {
+		render(ReferenceSearchForm, {
+			value: '',
+			onSubmit() {},
+			onClear() {}
+		});
+
+		const input = page.getByLabelText('Bible reference');
+
+		await userEvent.click(input);
+
+		await expect.element(input).toHaveAttribute('placeholder', '');
+
+		expect(document.querySelector('.typewriter-placeholder')).toBeNull();
+	});
 });
