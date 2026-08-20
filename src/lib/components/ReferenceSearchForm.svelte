@@ -36,6 +36,15 @@
 		inputElement?.focus();
 	}
 
+	function handleSearchButtonClick(event: MouseEvent) {
+		if (!collapsed) {
+			return;
+		}
+
+		event.preventDefault();
+		void onExpand();
+	}
+
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
@@ -72,19 +81,16 @@
 	}
 </script>
 
-{#if collapsed}
-	<button
-		class="reference-search-trigger verski-round-action"
-		type="button"
-		aria-label="Search Bible"
-		onclick={onExpand}
-	>
-		<SearchIcon aria-hidden="true" />
-	</button>
-{:else}
-	<form onsubmit={handleSubmit}>
-		<label class="visually-hidden" for="reference">Bible reference</label>
+<form class:collapsed onsubmit={handleSubmit}>
+	<label class="visually-hidden" for="reference">Bible reference</label>
 
+	<div
+		id="reference-search-controls"
+		class="reference-search-reveal"
+		class:collapsed
+		aria-hidden={collapsed}
+		inert={collapsed}
+	>
 		<div class="reference-search">
 			<input
 				id="reference"
@@ -129,24 +135,27 @@
 				</button>
 			{/if}
 		</div>
+	</div>
 
-		<button
-			class="reference-search__submit verski-round-action"
-			type="submit"
-			aria-label={isSubmitting ? 'Searching Bible' : 'Search Bible'}
-			aria-busy={isSubmitting}
-			disabled={isSubmitting}
-		>
-			{#if !isSubmitting}
-				<SearchIcon aria-hidden="true" />
-			{/if}
-		</button>
+	<button
+		class="reference-search__submit verski-round-action"
+		type="submit"
+		aria-label={isSubmitting ? 'Searching Bible' : 'Search Bible'}
+		aria-expanded={!collapsed}
+		aria-controls="reference-search-controls"
+		aria-busy={isSubmitting}
+		disabled={isSubmitting}
+		onclick={handleSearchButtonClick}
+	>
+		<span class="search-submit__icon" aria-hidden="true">
+			<SearchIcon />
+		</span>
+	</button>
 
-		{#if isSubmitting}
-			<span class="visually-hidden" role="status">Looking up passage…</span>
-		{/if}
-	</form>
-{/if}
+	{#if isSubmitting}
+		<span class="visually-hidden" role="status">Looking up passage…</span>
+	{/if}
+</form>
 
 <style>
 	form {
@@ -158,6 +167,11 @@
 		width: 100%;
 		max-width: 32rem;
 		margin-inline: auto;
+		transition: max-width 180ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	form.collapsed {
+		max-width: 100%;
 	}
 
 	.reference-search {
@@ -199,6 +213,43 @@
 	.reference-search input::placeholder {
 		color: var(--verski-input-placeholder);
 		opacity: 1;
+	}
+
+	form {
+		pointer-events: none;
+	}
+
+	.reference-search-reveal {
+		min-width: 0;
+		visibility: visible;
+		opacity: 1;
+		transform: translateX(0);
+		transition:
+			opacity 140ms ease-out,
+			transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+			visibility 0s;
+		pointer-events: auto;
+		will-change: opacity, transform;
+	}
+
+	.reference-search-reveal.collapsed {
+		visibility: hidden;
+		opacity: 0;
+		transform: translateX(0.75rem);
+		transition:
+			opacity 140ms ease-out,
+			transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+			visibility 0s linear 180ms;
+		pointer-events: none;
+	}
+
+	button.reference-search__submit {
+		pointer-events: auto;
+	}
+
+	.search-submit__icon {
+		display: grid;
+		place-items: center;
 	}
 
 	button.reference-search__clear {
@@ -297,6 +348,27 @@
 		.typewriter-placeholder__cursor.blinking {
 			animation: none;
 			opacity: 1;
+		}
+	}
+
+	@media (hover: none) and (pointer: coarse) {
+		form,
+		.reference-search-reveal,
+		.reference-search-reveal.collapsed {
+			transition: none;
+		}
+
+		.reference-search-reveal,
+		.reference-search-reveal.collapsed {
+			transform: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reference-search-reveal,
+		.reference-search-reveal.collapsed {
+			transition: none;
+			transform: none;
 		}
 	}
 </style>

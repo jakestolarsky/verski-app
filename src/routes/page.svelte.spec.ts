@@ -180,7 +180,7 @@ describe('+page.svelte', () => {
 		await userEvent.click(recentLookupButton);
 
 		await expect.element(page.getByText('Second verse.')).toBeInTheDocument();
-		await expect.element(referenceInput).not.toBeInTheDocument();
+		await expect.element(referenceInput).not.toBeVisible();
 
 		await expandSearch();
 
@@ -415,7 +415,7 @@ describe('+page.svelte', () => {
 
 		const referenceInput = page.getByLabelText('Bible reference');
 
-		await expect.element(referenceInput).not.toBeInTheDocument();
+		await expect.element(referenceInput).not.toBeVisible();
 
 		await expandSearch();
 

@@ -83,7 +83,7 @@ describe('BibleLookupWorkspace', () => {
 			)
 			.not.toBeInTheDocument();
 
-		await expect.element(input).not.toBeInTheDocument();
+		await expect.element(input).not.toBeVisible();
 
 		await userEvent.click(
 			page.getByRole('button', {

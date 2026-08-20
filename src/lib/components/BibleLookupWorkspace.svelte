@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, tick } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import { addRecentLookup } from '$lib/application/add-recent-lookup';
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
@@ -52,6 +52,8 @@
 	let parseResult = $state<ParseReferenceResult | null>(null);
 	let lookupResult = $state<LookupPassageResult | null>(null);
 	let copyStatus = $state<CopyStatus>('idle');
+	let searchContainer = $state<HTMLDivElement>();
+	let keyboardInset = $state(0);
 
 	const passageHeading = $derived.by(() => {
 		const currentParseResult = parseResult;
@@ -65,6 +67,42 @@
 		const reference = formatBibleReference(currentParseResult.reference, bookName);
 
 		return reference;
+	});
+
+	onMount(() => {
+		const viewport = window.visualViewport;
+		const container = searchContainer;
+
+		if (viewport === null || container === undefined) {
+			return;
+		}
+
+		function updateKeyboardInset() {
+			const hasSearchFocus = container?.contains(document.activeElement) ?? false;
+
+			if (!hasSearchFocus) {
+				keyboardInset = 0;
+				return;
+			}
+
+			const layoutHeight = document.documentElement.clientHeight;
+
+			keyboardInset = Math.max(0, layoutHeight - viewport!.height - viewport!.offsetTop);
+		}
+
+		viewport.addEventListener('resize', updateKeyboardInset);
+		viewport.addEventListener('scroll', updateKeyboardInset);
+		container.addEventListener('focusin', updateKeyboardInset);
+		container.addEventListener('focusout', updateKeyboardInset);
+
+		updateKeyboardInset();
+
+		return () => {
+			viewport.removeEventListener('resize', updateKeyboardInset);
+			viewport.removeEventListener('scroll', updateKeyboardInset);
+			container.removeEventListener('focusin', updateKeyboardInset);
+			container.removeEventListener('focusout', updateKeyboardInset);
+		};
 	});
 
 	function getBookName(bookId: string): string {
@@ -287,7 +325,11 @@
 		onShowChapterRemainder={handleShowChapterRemainder}
 	/>
 
-	<div class="lookup-workspace__search">
+	<div
+		bind:this={searchContainer}
+		class="lookup-workspace__search"
+		style={`--verski-keyboard-inset: ${keyboardInset}px`}
+	>
 		<ReferenceSearchForm
 			bind:this={referenceSearchForm}
 			bind:value={referenceInput}
@@ -307,7 +349,10 @@
 
 	.lookup-workspace__search {
 		position: fixed;
-		inset-block-end: max(var(--verski-shell-padding-block), env(safe-area-inset-bottom, 0px));
+		inset-block-end: calc(
+			max(var(--verski-shell-padding-block), env(safe-area-inset-bottom, 0px)) +
+				var(--verski-keyboard-inset, 0px)
+		);
 		inset-inline-start: 50%;
 		z-index: var(--verski-layer-header);
 		width: 100%;
@@ -318,8 +363,7 @@
 		pointer-events: none;
 	}
 
-	.lookup-workspace__search :global(form),
-	.lookup-workspace__search :global(.reference-search-trigger) {
-		pointer-events: auto;
+	.lookup-workspace__search :global(form) {
+		pointer-events: none;
 	}
 </style>

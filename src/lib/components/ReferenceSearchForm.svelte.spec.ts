@@ -69,7 +69,7 @@ describe('ReferenceSearchForm', () => {
 		expect(clearCalls).toBe(1);
 	});
 
-	it('reports when the collapsed search should be expanded', async () => {
+	it('keeps the collapsed input out of keyboard navigation and reports expansion', async () => {
 		let expandCalls = 0;
 
 		render(ReferenceSearchForm, {
@@ -82,13 +82,14 @@ describe('ReferenceSearchForm', () => {
 			}
 		});
 
-		await expect.element(page.getByLabelText('Bible reference')).not.toBeInTheDocument();
+		const searchButton = page.getByRole('button', {
+			name: 'Search Bible'
+		});
 
-		await userEvent.click(
-			page.getByRole('button', {
-				name: 'Search Bible'
-			})
-		);
+		await userEvent.tab();
+		await expect.element(searchButton).toHaveFocus();
+
+		await userEvent.click(searchButton);
 
 		expect(expandCalls).toBe(1);
 	});
