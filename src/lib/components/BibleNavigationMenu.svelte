@@ -278,6 +278,8 @@
 		display: grid;
 		place-items: center;
 		transform: rotate(0deg);
+		transform-origin: center;
+		transition: transform 250ms ease-out;
 	}
 
 	.disclosure-icon.expanded {
@@ -545,6 +547,12 @@
 
 		.desktop-close-icon {
 			display: inline-flex;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.disclosure-icon {
+			transition: none;
 		}
 	}
 </style>
