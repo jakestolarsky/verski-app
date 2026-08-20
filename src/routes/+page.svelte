@@ -203,12 +203,23 @@
 	}
 
 	:global(body) {
+		position: relative;
 		min-height: 100%;
 		margin: 0;
-		background: var(--verski-app-background);
+		background: var(--verski-background);
+		isolation: isolate;
 	}
 
 	:global(body::before) {
+		content: '';
+		position: fixed;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background: var(--verski-app-background);
+	}
+
+	:global(body::after) {
 		content: '';
 		position: fixed;
 		inset: 0;
