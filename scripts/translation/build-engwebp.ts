@@ -9,12 +9,12 @@ import { protestantBookIdsBySourceCode } from './protestant-vpl-book-map.ts';
 const sourceUrl = new URL('../../bibles/engwebp_vpl.xml', import.meta.url);
 const outputUrl = new URL('../../static/translations/engwebp.json', import.meta.url);
 
-
 const manifest = {
 	id: 'engwebp',
 	name: 'World English Bible',
 	language: 'en-US',
 	version: '2026-08-10',
+	attribution: 'World English Bible — Public Domain',
 	license: 'Public Domain',
 	licenseUrl: 'https://ebible.org/legal.php',
 	source: 'https://ebible.org/bible/details.php?all=1&id=engwebp',

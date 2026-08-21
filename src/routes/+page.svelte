@@ -183,13 +183,6 @@
 		</section>
 	{/if}
 
-	{#if offlineStorageStatus === 'unavailable'}
-		<p role="status">
-			Offline storage is unavailable. This translation will remain available for the current
-			session.
-		</p>
-	{/if}
-
 	<BibleLookupWorkspace
 		bind:this={bibleLookupWorkspace}
 		bind:activeReference

@@ -75,15 +75,14 @@ if (sourceBookCodes.length !== protestantCanon.bookIds.length) {
 	);
 }
 
-export const protestantBookIdsBySourceCode: Readonly<Record<string, string>> =
-	Object.fromEntries(
-		sourceBookCodes.map((sourceBookCode, index) => {
-			const bookId = protestantCanon.bookIds[index];
+export const protestantBookIdsBySourceCode: Readonly<Record<string, string>> = Object.fromEntries(
+	sourceBookCodes.map((sourceBookCode, index) => {
+		const bookId = protestantCanon.bookIds[index];
 
-			if (!bookId) {
-				throw new Error(`No canonical book identifier for source code ${sourceBookCode}.`);
-			}
+		if (!bookId) {
+			throw new Error(`No canonical book identifier for source code ${sourceBookCode}.`);
+		}
 
-			return [sourceBookCode, bookId] as const;
-		})
-	);
+		return [sourceBookCode, bookId] as const;
+	})
+);

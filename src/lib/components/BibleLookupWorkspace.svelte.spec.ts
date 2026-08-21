@@ -13,6 +13,7 @@ const translationPackage = {
 		name: 'World English Bible',
 		language: 'en-US',
 		version: 'test',
+		attribution: 'World English Bible — Public Domain',
 		license: 'Public Domain',
 		licenseUrl: 'https://example.com/license',
 		source: 'https://example.com',

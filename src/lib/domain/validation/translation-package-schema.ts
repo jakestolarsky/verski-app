@@ -15,6 +15,7 @@ const translationManifestSchema = z.object({
 	name: nonEmptyTextSchema,
 	language: nonEmptyTextSchema,
 	version: nonEmptyTextSchema,
+	attribution: nonEmptyTextSchema,
 	license: nonEmptyTextSchema,
 	licenseUrl: z.url(),
 	source: z.url(),

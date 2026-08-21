@@ -3,6 +3,7 @@ export type TranslationManifest = {
 	name: string;
 	language: string;
 	version: string;
+	attribution: string;
 	license: string;
 	licenseUrl: string;
 	source: string;

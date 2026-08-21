@@ -7,6 +7,7 @@ const manifest = {
 	name: 'World English Bible',
 	language: 'en-US',
 	version: '2026-08-06',
+	attribution: 'World English Bible — Public Domain',
 	license: 'Public Domain',
 	licenseUrl: 'https://ebible.org/legal.php',
 	source: 'https://ebible.org/bible/details.php?all=1&id=engwebp',

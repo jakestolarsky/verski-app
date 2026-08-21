@@ -14,6 +14,7 @@ const manifest = {
 	name: 'Uwspółcześniona Biblia Gdańska',
 	language: 'pl-PL',
 	version: '2025-12-12',
+	attribution: '© 2018 Fundacja Wrota Nadziei',
 	license: 'CC BY-ND 4.0',
 	licenseUrl: 'https://creativecommons.org/licenses/by-nd/4.0/',
 	source: 'https://ebible.org/bible/details.php?all=1&id=polubg',
@@ -39,9 +40,7 @@ const translationPackage = createTranslationPackage(
 	protestantBookIdsBySourceCode
 );
 
-const generatedBookIds = [
-	...new Set(translationPackage.chapters.map((chapter) => chapter.bookId))
-];
+const generatedBookIds = [...new Set(translationPackage.chapters.map((chapter) => chapter.bookId))];
 
 const hasExpectedBooks =
 	generatedBookIds.length === manifest.bookIds.length &&
@@ -67,9 +66,7 @@ const generatedVerseCount = translationPackage.chapters.reduce(
 const expectedVerseCount = 31102;
 
 if (generatedVerseCount !== expectedVerseCount) {
-	throw new Error(
-		`Expected ${expectedVerseCount} verses, received ${generatedVerseCount}.`
-	);
+	throw new Error(`Expected ${expectedVerseCount} verses, received ${generatedVerseCount}.`);
 }
 
 for (const bookId of manifest.bookIds) {

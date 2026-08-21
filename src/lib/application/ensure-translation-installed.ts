@@ -18,7 +18,13 @@ export async function ensureTranslationInstalled(
 
 	const hasCurrentManifest =
 		installedManifest !== null &&
+		installedManifest.name === targetManifest.name &&
+		installedManifest.language === targetManifest.language &&
 		installedManifest.version === targetManifest.version &&
+		installedManifest.attribution === targetManifest.attribution &&
+		installedManifest.license === targetManifest.license &&
+		installedManifest.licenseUrl === targetManifest.licenseUrl &&
+		installedManifest.source === targetManifest.source &&
 		installedManifest.schemaVersion === targetManifest.schemaVersion &&
 		installedManifest.sourceChecksum === targetManifest.sourceChecksum &&
 		installedManifest.canonId === targetManifest.canonId &&

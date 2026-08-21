@@ -8,6 +8,7 @@ const validPackage = {
 		name: 'World English Bible',
 		language: 'en-US',
 		version: '2026-08-06',
+		attribution: 'World English Bible — Public Domain',
 		license: 'Public Domain',
 		licenseUrl: 'https://ebible.org/legal.php',
 		source: 'https://ebible.org/bible/details.php?all=1&id=engwebp',
@@ -129,6 +130,18 @@ describe('translationPackageSchema', () => {
 		const result = translationPackageSchema.safeParse({
 			...validPackage,
 			chapters: [validPackage.chapters[0], { ...validPackage.chapters[0] }]
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects an empty attribution', () => {
+		const result = translationPackageSchema.safeParse({
+			...validPackage,
+			manifest: {
+				...validPackage.manifest,
+				attribution: ''
+			}
 		});
 
 		expect(result.success).toBe(false);

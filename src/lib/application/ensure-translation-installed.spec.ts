@@ -9,6 +9,7 @@ const translationPackage = {
 		name: 'World English Bible',
 		language: 'en-US',
 		version: '2026-08-06',
+		attribution: 'World English Bible — Public Domain',
 		license: 'Public Domain',
 		licenseUrl: 'https://ebible.org/legal.php',
 		source: 'https://ebible.org/bible/details.php?all=1&id=engwebp',
@@ -138,5 +139,35 @@ describe('ensureTranslationInstalled', () => {
 
 		expect(result).toBe('installed');
 		expect(installCalls).toBe(1);
+	});
+
+	it('reinstalls a translation when its attribution changes', async () => {
+		let installedPackage: TranslationPackage | null = null;
+
+		const store: TranslationStore = {
+			async getTranslationManifest() {
+				return {
+					...translationPackage.manifest,
+					attribution: 'Outdated attribution'
+				};
+			},
+
+			async getInstalledChapterCount() {
+				return translationPackage.chapters.length;
+			},
+
+			async installTranslation(packageToInstall) {
+				installedPackage = packageToInstall;
+			},
+
+			async getChapter() {
+				return null;
+			}
+		};
+
+		const result = await ensureTranslationInstalled(store, translationPackage);
+
+		expect(result).toBe('installed');
+		expect(installedPackage).toEqual(translationPackage);
 	});
 });

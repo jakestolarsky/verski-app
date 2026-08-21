@@ -9,6 +9,7 @@ const translationPackage = {
 		name: 'Test translation',
 		language: 'en',
 		version: '1',
+		attribution: 'World English Bible — Public Domain',
 		license: 'Test license',
 		licenseUrl: 'https://example.com/license',
 		source: 'https://example.com/source',

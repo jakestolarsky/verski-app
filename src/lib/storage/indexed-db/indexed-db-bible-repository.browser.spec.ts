@@ -10,6 +10,7 @@ const translationPackage = {
 		language: 'en-US',
 		version: '2026-08-06',
 		license: 'Public Domain',
+		attribution: 'World English Bible — Public Domain',
 		licenseUrl: 'https://ebible.org/legal.php',
 		source: 'https://ebible.org/bible/details.php?all=1&id=engwebp',
 		sourceChecksum: 'sha256:4ea4c923cd292be353a3fc3fdf6aae75b385a8823dc9834129c20ff53f8caa70',
