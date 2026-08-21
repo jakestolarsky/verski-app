@@ -223,6 +223,7 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.copy-button__icon,
+		.copy-button__icon :global(svg) ,
 		.copy-button__icon.confirmed {
 			animation: none;
 		}
