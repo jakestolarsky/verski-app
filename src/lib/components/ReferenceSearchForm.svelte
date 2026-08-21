@@ -365,9 +365,14 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		form,
 		.reference-search-reveal,
 		.reference-search-reveal.collapsed {
 			transition: none;
+		}
+
+		.reference-search-reveal,
+		.reference-search-reveal.collapsed {
 			transform: none;
 		}
 	}
