@@ -37,14 +37,28 @@ export class IndexedDbBibleRepository implements TranslationStore {
 
 		const completion = waitForTransaction(transaction);
 		const chapterStore = transaction.objectStore(CHAPTER_STORE_NAME);
-
 		const translationStore = transaction.objectStore(TRANSLATION_STORE_NAME);
+		const translationIndex = chapterStore.index(CHAPTER_TRANSLATION_INDEX_NAME);
 
-		translationStore.put(translationPackage.manifest);
+		const cursorRequest = translationIndex.openCursor(
+			IDBKeyRange.only(translationPackage.manifest.id)
+		);
 
-		for (const chapter of translationPackage.chapters) {
-			chapterStore.put(chapter);
-		}
+		cursorRequest.onsuccess = () => {
+			const cursor = cursorRequest.result;
+
+			if (cursor !== null) {
+				cursor.delete();
+				cursor.continue();
+				return;
+			}
+
+			translationStore.put(translationPackage.manifest);
+
+			for (const chapter of translationPackage.chapters) {
+				chapterStore.put(chapter);
+			}
+		};
 
 		await completion;
 	}

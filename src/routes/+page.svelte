@@ -166,6 +166,13 @@
 		</div>
 	</header>
 
+	{#if offlineStorageStatus === 'unavailable'}
+		<p class="offline-storage-message" role="status">
+			Offline storage could not be restored. The bundled translation is still available, but recent
+			lookups and settings may not be saved.
+		</p>
+	{/if}
+
 	{#if activeReference === null}
 		<section class="brand-hero" aria-labelledby="verski-brand-heading">
 			<h1 id="verski-brand-heading" class="visually-hidden">Verski</h1>
@@ -266,6 +273,17 @@
 	.page-header__navigation,
 	.page-header__settings {
 		pointer-events: auto;
+	}
+
+	.offline-storage-message {
+		max-width: 40rem;
+		margin: var(--pico-spacing) auto 0;
+		padding: 0.75rem 1rem;
+		border: 1px solid var(--verski-border-subtle);
+		border-radius: var(--pico-border-radius);
+		background: color-mix(in srgb, var(--verski-surface) 40%, transparent);
+		color: var(--verski-text);
+		text-align: center;
 	}
 
 	@media (max-width: 36rem) {

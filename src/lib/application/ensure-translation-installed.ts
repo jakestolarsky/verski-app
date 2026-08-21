@@ -16,7 +16,7 @@ export async function ensureTranslationInstalled(
 		installedManifest.bookIds.length === targetManifest.bookIds.length &&
 		installedManifest.bookIds.every((bookId, index) => bookId === targetManifest.bookIds[index]);
 
-	const isCurrent =
+	const hasCurrentManifest =
 		installedManifest !== null &&
 		installedManifest.version === targetManifest.version &&
 		installedManifest.schemaVersion === targetManifest.schemaVersion &&
@@ -24,8 +24,12 @@ export async function ensureTranslationInstalled(
 		installedManifest.canonId === targetManifest.canonId &&
 		hasSameBooks;
 
-	if (isCurrent) {
-		return 'already-installed';
+	if (hasCurrentManifest) {
+		const installedChapterCount = await store.getInstalledChapterCount(targetManifest.id);
+
+		if (installedChapterCount === translationPackage.chapters.length) {
+			return 'already-installed';
+		}
 	}
 
 	await store.installTranslation(translationPackage);

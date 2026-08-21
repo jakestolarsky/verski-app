@@ -1,5 +1,5 @@
 import { page, userEvent } from 'vitest/browser';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { TranslationPackage } from '$lib/domain/translation-package';
 import Page from './+page.svelte';
@@ -454,5 +454,31 @@ describe('+page.svelte', () => {
 		await expect
 			.element(page.getByRole('button', { name: 'John 1', exact: true }))
 			.toHaveAttribute('aria-current', 'page');
+	});
+
+	it('uses the bundled translation when offline storage cannot be prepared', async () => {
+		const openDatabase = vi.spyOn(indexedDB, 'open').mockImplementation(() => {
+			throw new Error('Simulated IndexedDB failure');
+		});
+
+		try {
+			render(Page, { data });
+
+			const storageMessage = page.getByText(
+				'Offline storage could not be restored. The bundled translation is still available, but recent lookups and settings may not be saved.'
+			);
+
+			await expect.element(storageMessage).toBeVisible();
+			await expect.element(storageMessage).toHaveAttribute('role', 'status');
+
+			const referenceInput = page.getByLabelText('Bible reference');
+
+			await userEvent.fill(referenceInput, 'John 1:1');
+			await userEvent.keyboard('{Enter}');
+
+			await expect.element(page.getByText('First verse.')).toBeVisible();
+		} finally {
+			openDatabase.mockRestore();
+		}
 	});
 });

@@ -119,4 +119,34 @@ describe('IndexedDbBibleRepository', () => {
 
 		database.close();
 	});
+
+	it('removes chapters that are absent from a replacement package', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+		const database = await openBibleDatabase(databaseName);
+		const repository = new IndexedDbBibleRepository(database);
+
+		const packageWithExtraChapter = {
+			...translationPackage,
+			chapters: [
+				...translationPackage.chapters,
+				{
+					translationId: 'engwebp',
+					bookId: 'john',
+					chapter: 2,
+					verses: ['Extra chapter.']
+				}
+			]
+		} satisfies TranslationPackage;
+
+		await repository.installTranslation(packageWithExtraChapter);
+		await repository.installTranslation(translationPackage);
+
+		await expect(repository.getChapter('engwebp', 'john', 2)).resolves.toBeNull();
+
+		await expect(repository.getInstalledChapterCount('engwebp')).resolves.toBe(
+			translationPackage.chapters.length
+		);
+
+		database.close();
+	});
 });

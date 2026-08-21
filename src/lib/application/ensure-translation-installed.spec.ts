@@ -111,4 +111,32 @@ describe('ensureTranslationInstalled', () => {
 		expect(result).toBe('installed');
 		expect(installedPackage).toEqual(translationPackage);
 	});
+
+	it('reinstalls the current translation when stored chapters are incomplete', async () => {
+		let installCalls = 0;
+
+		const store: TranslationStore = {
+			async getTranslationManifest() {
+				return translationPackage.manifest;
+			},
+
+			async getInstalledChapterCount() {
+				return 0;
+			},
+
+			async installTranslation(packageToInstall) {
+				expect(packageToInstall).toEqual(translationPackage);
+				installCalls += 1;
+			},
+
+			async getChapter() {
+				return null;
+			}
+		};
+
+		const result = await ensureTranslationInstalled(store, translationPackage);
+
+		expect(result).toBe('installed');
+		expect(installCalls).toBe(1);
+	});
 });

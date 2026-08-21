@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { RecentLookup } from '../domain/recent-lookup';
 import type { TranslationPackage } from '../domain/translation-package';
 import { IndexedDbRecentLookupStore } from '../storage/indexed-db/indexed-db-recent-lookup-store';
-import { openBibleDatabase } from '../storage/indexed-db/open-bible-database';
+import { CHAPTER_STORE_NAME, openBibleDatabase } from '../storage/indexed-db/open-bible-database';
 import { prepareBrowserStorage } from './prepare-browser-storage';
 import { defaultUserSettings } from '../domain/user-settings';
 import { IndexedDbUserSettingsStore } from '../storage/indexed-db/indexed-db-user-settings-store';
@@ -115,5 +115,42 @@ describe('prepareBrowserStorage', () => {
 		});
 
 		storage.close();
+	});
+
+	it('restores a bundled translation when one of its stored chapters is missing', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+
+		const initialStorage = await prepareBrowserStorage(translationPackage, [], databaseName);
+		initialStorage.close();
+
+		const database = await openBibleDatabase(databaseName);
+
+		await new Promise<void>((resolve, reject) => {
+			const transaction = database.transaction(CHAPTER_STORE_NAME, 'readwrite');
+
+			transaction.objectStore(CHAPTER_STORE_NAME).delete(['engwebp', 'john', 1]);
+
+			transaction.oncomplete = () => {
+				resolve();
+			};
+
+			transaction.onerror = () => {
+				reject(transaction.error ?? new Error('Failed to delete the test chapter'));
+			};
+
+			transaction.onabort = () => {
+				reject(transaction.error ?? new Error('Deleting the test chapter was aborted'));
+			};
+		});
+
+		database.close();
+
+		const recoveredStorage = await prepareBrowserStorage(translationPackage, [], databaseName);
+
+		await expect(
+			recoveredStorage.bibleRepository.getChapter('engwebp', 'john', 1)
+		).resolves.toEqual(translationPackage.chapters[0]);
+
+		recoveredStorage.close();
 	});
 });
