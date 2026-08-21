@@ -6,19 +6,18 @@ import type { TranslationManifest } from '../../src/lib/domain/translation-packa
 import { createTranslationPackage } from './create-translation-package.ts';
 import { protestantBookIdsBySourceCode } from './protestant-vpl-book-map.ts';
 
-const sourceUrl = new URL('../../bibles/engwebp_vpl.xml', import.meta.url);
-const outputUrl = new URL('../../static/translations/engwebp.json', import.meta.url);
-
+const sourceUrl = new URL('../../bibles/polubg_vpl.xml', import.meta.url);
+const outputUrl = new URL('../../static/translations/polubg.json', import.meta.url);
 
 const manifest = {
-	id: 'engwebp',
-	name: 'World English Bible',
-	language: 'en-US',
-	version: '2026-08-10',
-	license: 'Public Domain',
-	licenseUrl: 'https://ebible.org/legal.php',
-	source: 'https://ebible.org/bible/details.php?all=1&id=engwebp',
-	sourceChecksum: 'sha256:7ec8c9f6bd8a426c464b72e708512a1a51e4f014e276d2ac8dc995959e2b6175',
+	id: 'polubg',
+	name: 'Uwspółcześniona Biblia Gdańska',
+	language: 'pl-PL',
+	version: '2025-12-12',
+	license: 'CC BY-ND 4.0',
+	licenseUrl: 'https://creativecommons.org/licenses/by-nd/4.0/',
+	source: 'https://ebible.org/bible/details.php?all=1&id=polubg',
+	sourceChecksum: 'sha256:15260b7b551446def9e253cd1ce1ef145bbfcdb9d172f4cf6f9f671d21f2c2cf',
 	schemaVersion: 1,
 	canonId: protestantCanon.id,
 	bookIds: [...protestantCanon.bookIds]
@@ -28,11 +27,11 @@ const sourceBytes = await readFile(sourceUrl);
 
 const actualChecksum = `sha256:${createHash('sha256').update(sourceBytes).digest('hex')}`;
 
-// if (actualChecksum !== manifest.sourceChecksum) {
-// 	throw new Error(
-// 		`Source checksum mismatch. Expected ${manifest.sourceChecksum}, but received ${actualChecksum}.`
-// 	);
-// }
+if (actualChecksum !== manifest.sourceChecksum) {
+	throw new Error(
+		`Source checksum mismatch. Expected ${manifest.sourceChecksum}, but received ${actualChecksum}.`
+	);
+}
 
 const translationPackage = createTranslationPackage(
 	sourceBytes.toString('utf8'),
@@ -40,7 +39,9 @@ const translationPackage = createTranslationPackage(
 	protestantBookIdsBySourceCode
 );
 
-const generatedBookIds = [...new Set(translationPackage.chapters.map((chapter) => chapter.bookId))];
+const generatedBookIds = [
+	...new Set(translationPackage.chapters.map((chapter) => chapter.bookId))
+];
 
 const hasExpectedBooks =
 	generatedBookIds.length === manifest.bookIds.length &&
@@ -55,6 +56,19 @@ const expectedChapterCount = 1189;
 if (translationPackage.chapters.length !== expectedChapterCount) {
 	throw new Error(
 		`Expected ${expectedChapterCount} chapters, received ${translationPackage.chapters.length}.`
+	);
+}
+
+const generatedVerseCount = translationPackage.chapters.reduce(
+	(total, chapter) => total + chapter.verses.length,
+	0
+);
+
+const expectedVerseCount = 31102;
+
+if (generatedVerseCount !== expectedVerseCount) {
+	throw new Error(
+		`Expected ${expectedVerseCount} verses, received ${generatedVerseCount}.`
 	);
 }
 
@@ -77,5 +91,5 @@ const json = `${JSON.stringify(translationPackage, null, 2)}\n`;
 await writeFile(outputUrl, json, 'utf8');
 
 console.log(
-	`Created static/translations/engwebp.json with ${generatedBookIds.length} books and ${translationPackage.chapters.length} chapters.`
+	`Created static/translations/polubg.json with ${generatedBookIds.length} books, ${translationPackage.chapters.length} chapters and ${generatedVerseCount} verses.`
 );
