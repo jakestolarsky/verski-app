@@ -200,6 +200,7 @@
 		min-width: 20rem;
 		min-height: 100%;
 		background-color: var(--verski-background);
+		overscroll-behavior-y: none;
 	}
 
 	:global(body) {
@@ -207,6 +208,7 @@
 		min-height: 100%;
 		margin: 0;
 		background: var(--verski-background);
+		overscroll-behavior-y: none;
 		isolation: isolate;
 	}
 
