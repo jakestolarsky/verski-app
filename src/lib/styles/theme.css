@@ -37,16 +37,14 @@
 	--verski-border-active: var(--verski-primary);
 	--verski-input-radius: 1rem;
 
-	--verski-input-border-gradient: linear-gradient(110deg,
-			var(--verski-orange) 0%,
-			var(--verski-orange-hover) 50%,
-			color-mix(in srgb,
-				var(--verski-orange) 45%,
-				var(--verski-cream)) 100%);
+	--verski-input-border-gradient: linear-gradient(
+		110deg,
+		var(--verski-orange) 0%,
+		var(--verski-orange-hover) 50%,
+		color-mix(in srgb, var(--verski-orange) 45%, var(--verski-cream)) 100%
+	);
 
-	--verski-input-focus-ring: color-mix(in srgb,
-			var(--verski-focus) 55%,
-			transparent);
+	--verski-input-focus-ring: color-mix(in srgb, var(--verski-focus) 55%, transparent);
 
 	--verski-state-hover-background: var(--verski-surface);
 	--verski-state-active-text: var(--verski-primary);
@@ -103,10 +101,7 @@
 	--verski-input-border: var(--verski-border-subtle);
 	--verski-input-text: var(--verski-ink);
 
-
-	--verski-input-placeholder: color-mix(in srgb,
-			var(--verski-cream) 60%,
-			var(--verski-charcoal));
+	--verski-input-placeholder: color-mix(in srgb, var(--verski-cream) 60%, var(--verski-charcoal));
 }
 
 /* Explicit dark theme */
@@ -123,9 +118,7 @@
 	--verski-input-background: var(--verski-brown);
 	--verski-input-border: var(--verski-border-subtle);
 	--verski-input-text: var(--verski-cream);
-	--verski-input-placeholder: color-mix(in srgb,
-			var(--verski-sand) 40%,
-			var(--verski-brown));
+	--verski-input-placeholder: color-mix(in srgb, var(--verski-sand) 40%, var(--verski-brown));
 
 	--verski-noise-opacity: 0.14;
 	--verski-noise-blend-mode: screen;
@@ -146,9 +139,7 @@
 		--verski-input-background: var(--verski-brown);
 		--verski-input-border: var(--verski-border-subtle);
 		--verski-input-text: var(--verski-cream);
-		--verski-input-placeholder: color-mix(in srgb,
-				var(--verski-sand) 40%,
-				var(--verski-brown));
+		--verski-input-placeholder: color-mix(in srgb, var(--verski-sand) 40%, var(--verski-brown));
 
 		--verski-noise-opacity: 0.14;
 		--verski-noise-blend-mode: screen;

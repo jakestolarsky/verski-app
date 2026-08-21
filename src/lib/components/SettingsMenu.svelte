@@ -269,7 +269,7 @@
 			{#if activeSection === 'display'}
 				<div
 					id="settings-panel-display"
-					class="settings-panel"
+					class="settings-panel settings-panel--display"
 					role="tabpanel"
 					aria-labelledby="settings-tab-display"
 				>
@@ -584,11 +584,6 @@
 		color: var(--verski-state-active-text);
 	}
 
-	.settings-tab[aria-selected='true'] {
-		border-block-end-color: var(--verski-border-active);
-		color: var(--verski-text);
-	}
-
 	.settings-tab:focus-visible {
 		outline: 2px solid var(--verski-focus);
 		outline-offset: 0.125rem;
@@ -793,10 +788,6 @@
 		flex: 0 0 auto;
 		align-items: center;
 		justify-content: flex-start;
-	}
-
-	.setting-row--toggle {
-		width: 100%;
 	}
 
 	.theme-controls {

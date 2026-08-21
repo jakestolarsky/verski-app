@@ -280,10 +280,6 @@
 		outline-offset: -2px;
 	}
 
-	button.reference-search-trigger {
-		margin-inline-start: auto;
-	}
-
 	button.reference-search__clear :global(svg) {
 		width: var(--verski-icon-size-action);
 		height: var(--verski-icon-size-action);

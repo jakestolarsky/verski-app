@@ -1,6 +1,5 @@
 import { isTheme, type Theme } from '../domain/user-settings';
 
-
 export const THEME_STORAGE_KEY = 'verski-theme';
 
 export function readStoredThemePreference(): Exclude<Theme, 'system'> | null {

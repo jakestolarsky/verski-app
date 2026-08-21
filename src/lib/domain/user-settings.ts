@@ -4,10 +4,7 @@ export const availableThemes = ['system', 'light', 'dark'] as const;
 export type Theme = (typeof availableThemes)[number];
 
 export function isTheme(value: unknown): value is Theme {
-	return (
-		typeof value === 'string' &&
-		availableThemes.includes(value as Theme)
-	);
+	return typeof value === 'string' && availableThemes.includes(value as Theme);
 }
 export type ReadingFontSize = 'small' | 'default' | 'large';
 

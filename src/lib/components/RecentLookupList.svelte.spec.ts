@@ -25,7 +25,7 @@ describe('RecentLookupList', () => {
 			onSelect(selected: RecentLookup) {
 				selectedLookup = selected;
 			},
-			onRemove() {},
+			onRemove() {}
 		});
 
 		const lookupButton = page.getByRole('button', {
@@ -48,7 +48,7 @@ describe('RecentLookupList', () => {
 			onSelect() {},
 			onRemove(selected: RecentLookup) {
 				removedLookup = selected;
-			},
+			}
 		});
 
 		await userEvent.click(
