@@ -14,7 +14,11 @@ test('starts offline and looks up a cached passage', async ({ context, page }) =
 	await onlineReferenceInput.fill('John 3:16');
 	await onlineReferenceInput.press('Enter');
 
-	await expect(page.getByText(/For God so loved the world/)).toBeVisible({
+	const onlinePassage = page.getByRole('region', {
+		name: 'John 3:16'
+	});
+
+	await expect(onlinePassage.getByText(/For God so loved the world/)).toBeVisible({
 		timeout: 15_000
 	});
 
@@ -32,7 +36,11 @@ test('starts offline and looks up a cached passage', async ({ context, page }) =
 	await referenceInput.fill('John 3:16');
 	await referenceInput.press('Enter');
 
-	await expect(offlinePage.getByText(/For God so loved the world/)).toBeVisible({
+	const offlinePassage = offlinePage.getByRole('region', {
+		name: 'John 3:16'
+	});
+
+	await expect(offlinePassage.getByText(/For God so loved the world/)).toBeVisible({
 		timeout: 15_000
 	});
 });
