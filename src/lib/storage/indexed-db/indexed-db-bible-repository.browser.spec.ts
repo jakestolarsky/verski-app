@@ -103,4 +103,20 @@ describe('IndexedDbBibleRepository', () => {
 
 		database.close();
 	});
+
+	it('counts installed chapters by translation', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+		const database = await openBibleDatabase(databaseName);
+		const repository = new IndexedDbBibleRepository(database);
+
+		await repository.installTranslation(translationPackage);
+
+		await expect(repository.getInstalledChapterCount('engwebp')).resolves.toBe(
+			translationPackage.chapters.length
+		);
+
+		await expect(repository.getInstalledChapterCount('missing-translation')).resolves.toBe(0);
+
+		database.close();
+	});
 });

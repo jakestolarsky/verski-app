@@ -4,7 +4,11 @@ import type {
 	TranslationPackage
 } from '../../domain/translation-package';
 import type { TranslationStore } from '../translation-store';
-import { CHAPTER_STORE_NAME, TRANSLATION_STORE_NAME } from './open-bible-database';
+import {
+	CHAPTER_STORE_NAME,
+	CHAPTER_TRANSLATION_INDEX_NAME,
+	TRANSLATION_STORE_NAME
+} from './open-bible-database';
 
 function waitForTransaction(transaction: IDBTransaction): Promise<void> {
 	return new Promise((resolve, reject) => {
@@ -43,6 +47,23 @@ export class IndexedDbBibleRepository implements TranslationStore {
 		}
 
 		await completion;
+	}
+
+	getInstalledChapterCount(translationId: string): Promise<number> {
+		return new Promise((resolve, reject) => {
+			const transaction = this.database.transaction(CHAPTER_STORE_NAME, 'readonly');
+			const chapterStore = transaction.objectStore(CHAPTER_STORE_NAME);
+			const translationIndex = chapterStore.index(CHAPTER_TRANSLATION_INDEX_NAME);
+			const request = translationIndex.count(translationId);
+
+			request.onsuccess = () => {
+				resolve(request.result);
+			};
+
+			request.onerror = () => {
+				reject(request.error ?? new Error('Failed to count installed Bible chapters'));
+			};
+		});
 	}
 
 	getChapter(

@@ -4,7 +4,8 @@ import {
 	openBibleDatabase,
 	RECENT_LOOKUP_STORE_NAME,
 	TRANSLATION_STORE_NAME,
-	SETTINGS_STORE_NAME
+	SETTINGS_STORE_NAME,
+	CHAPTER_TRANSLATION_INDEX_NAME
 } from './open-bible-database';
 
 describe('openBibleDatabase', () => {
@@ -20,6 +21,10 @@ describe('openBibleDatabase', () => {
 		const chapterStore = transaction.objectStore(CHAPTER_STORE_NAME);
 
 		expect(chapterStore.keyPath).toEqual(['translationId', 'bookId', 'chapter']);
+
+		expect(chapterStore.indexNames.contains(CHAPTER_TRANSLATION_INDEX_NAME)).toBe(true);
+
+		expect(chapterStore.index(CHAPTER_TRANSLATION_INDEX_NAME).keyPath).toBe('translationId');
 
 		expect(database.objectStoreNames.contains(TRANSLATION_STORE_NAME)).toBe(true);
 

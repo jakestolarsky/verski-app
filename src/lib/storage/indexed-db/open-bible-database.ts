@@ -3,7 +3,8 @@ export const TRANSLATION_STORE_NAME = 'translations';
 export const RECENT_LOOKUP_STORE_NAME = 'recent-lookups';
 export const SETTINGS_STORE_NAME = 'settings';
 
-const BIBLE_DATABASE_VERSION = 4;
+const BIBLE_DATABASE_VERSION = 5;
+export const CHAPTER_TRANSLATION_INDEX_NAME = 'by-translation-id';
 
 export function openBibleDatabase(databaseName = 'verski-bible'): Promise<IDBDatabase> {
 	return new Promise((resolve, reject) => {
@@ -11,10 +12,21 @@ export function openBibleDatabase(databaseName = 'verski-bible'): Promise<IDBDat
 
 		request.onupgradeneeded = () => {
 			const database = request.result;
+			const upgradeTransaction = request.transaction;
 
-			if (!database.objectStoreNames.contains(CHAPTER_STORE_NAME)) {
-				database.createObjectStore(CHAPTER_STORE_NAME, {
-					keyPath: ['translationId', 'bookId', 'chapter']
+			if (upgradeTransaction === null) {
+				throw new Error('IndexedDB upgrade transaction is unavailable');
+			}
+
+			const chapterStore = database.objectStoreNames.contains(CHAPTER_STORE_NAME)
+				? upgradeTransaction.objectStore(CHAPTER_STORE_NAME)
+				: database.createObjectStore(CHAPTER_STORE_NAME, {
+						keyPath: ['translationId', 'bookId', 'chapter']
+					});
+
+			if (!chapterStore.indexNames.contains(CHAPTER_TRANSLATION_INDEX_NAME)) {
+				chapterStore.createIndex(CHAPTER_TRANSLATION_INDEX_NAME, 'translationId', {
+					unique: false
 				});
 			}
 

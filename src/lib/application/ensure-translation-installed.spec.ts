@@ -42,6 +42,10 @@ describe('ensureTranslationInstalled', () => {
 
 			async getChapter() {
 				return null;
+			},
+
+			async getInstalledChapterCount() {
+				return 0;
 			}
 		};
 
@@ -65,6 +69,10 @@ describe('ensureTranslationInstalled', () => {
 
 			async getChapter() {
 				return null;
+			},
+
+			async getInstalledChapterCount() {
+				return translationPackage.chapters.length;
 			}
 		};
 
@@ -91,6 +99,10 @@ describe('ensureTranslationInstalled', () => {
 
 			async getChapter() {
 				return null;
+			},
+
+			async getInstalledChapterCount() {
+				return translationPackage.chapters.length;
 			}
 		};
 
