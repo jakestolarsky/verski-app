@@ -10,7 +10,7 @@ const verseTextSchema = z.string().refine((text) => text.trim().length > 0, {
 	message: 'Verse text cannot be empty'
 });
 
-const translationManifestSchema = z.object({
+export const translationManifestSchema = z.object({
 	id: nonEmptyTextSchema,
 	name: nonEmptyTextSchema,
 	language: nonEmptyTextSchema,
