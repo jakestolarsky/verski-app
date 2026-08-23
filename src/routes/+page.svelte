@@ -159,6 +159,7 @@
 			<SettingsMenu
 				settings={userSettings}
 				disabled={offlineStorageStatus === 'preparing'}
+				translationManifest={data.translationPackage.manifest}
 				recentLookupCount={recentLookups.length}
 				onChange={handleSettingsChange}
 				onClearRecentLookups={handleClearRecentLookups}

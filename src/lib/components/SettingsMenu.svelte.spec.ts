@@ -5,6 +5,22 @@ import { render } from 'vitest-browser-svelte';
 import { defaultUserSettings, type UserSettings } from '$lib/domain/user-settings';
 import SettingsMenu from './SettingsMenu.svelte';
 import { appMetadata } from '$lib/platform/app-metadata';
+import type { TranslationManifest } from '$lib/domain/translation-package';
+
+const translationManifest = {
+	id: 'engwebp',
+	name: 'World English Bible',
+	language: 'en-US',
+	version: '2026-08-10',
+	attribution: 'World English Bible — Public Domain',
+	license: 'Public Domain',
+	licenseUrl: 'https://ebible.org/legal.php',
+	source: 'https://ebible.org/bible/details.php?all=1&id=engwebp',
+	sourceChecksum: 'sha256:7ec8c9f6bd8a426c464b72e708512a1a51e4f014e276d2ac8dc995959e2b6175',
+	schemaVersion: 1,
+	canonId: 'protestant-66',
+	bookIds: ['john']
+} satisfies TranslationManifest;
 
 afterEach(() => {
 	delete document.documentElement.dataset.theme;
@@ -14,6 +30,7 @@ afterEach(() => {
 describe('SettingsMenu', () => {
 	it('opens an accessible settings dialog', async () => {
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange() {}
 		});
@@ -39,6 +56,7 @@ describe('SettingsMenu', () => {
 		let changedSettings: UserSettings | null = null;
 
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange(settings: UserSettings) {
 				changedSettings = settings;
@@ -67,6 +85,7 @@ describe('SettingsMenu', () => {
 
 	it('closes with Escape and returns focus to the settings button', async () => {
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange() {}
 		});
@@ -94,6 +113,7 @@ describe('SettingsMenu', () => {
 		let changedSettings: UserSettings | null = null;
 
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange(settings: UserSettings) {
 				changedSettings = settings;
@@ -125,6 +145,7 @@ describe('SettingsMenu', () => {
 		let changedSettings: UserSettings | null = null;
 
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange(settings: UserSettings) {
 				changedSettings = settings;
@@ -156,6 +177,7 @@ describe('SettingsMenu', () => {
 		let changedSettings: UserSettings | null = null;
 
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange(settings: UserSettings) {
 				changedSettings = settings;
@@ -187,6 +209,7 @@ describe('SettingsMenu', () => {
 
 	it('switches settings sections with pointer and keyboard', async () => {
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange() {}
 		});
@@ -219,6 +242,7 @@ describe('SettingsMenu', () => {
 		const onChange = () => {};
 
 		const screen = render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange
 		});
@@ -254,6 +278,7 @@ describe('SettingsMenu', () => {
 
 	it('disables decrement controls at the smallest reading values', async () => {
 		render(SettingsMenu, {
+			translationManifest,
 			settings: {
 				...defaultUserSettings,
 				reading: {
@@ -278,6 +303,7 @@ describe('SettingsMenu', () => {
 		let clearCalls = 0;
 
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			recentLookupCount: 3,
 			onChange() {},
@@ -302,6 +328,7 @@ describe('SettingsMenu', () => {
 
 	it('disables clearing when recent history is empty', async () => {
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			recentLookupCount: 0,
 			onChange() {}
@@ -313,8 +340,9 @@ describe('SettingsMenu', () => {
 		await expect.element(page.getByRole('button', { name: 'Clear history' })).toBeDisabled();
 	});
 
-	it('shows application metadata and repository in About', async () => {
+	it('shows application and translation metadata in About', async () => {
 		render(SettingsMenu, {
+			translationManifest,
 			settings: structuredClone(defaultUserSettings),
 			onChange() {}
 		});
@@ -329,5 +357,13 @@ describe('SettingsMenu', () => {
 		await expect
 			.element(page.getByRole('link', { name: 'GitHub repository' }))
 			.toHaveAttribute('href', appMetadata.repositoryUrl);
+
+		await expect.element(page.getByRole('heading', { name: 'Current translation' })).toBeVisible();
+
+		await expect.element(page.getByText(translationManifest.name)).toBeVisible();
+
+		await expect
+			.element(page.getByRole('link', { name: translationManifest.license }))
+			.toHaveAttribute('href', translationManifest.licenseUrl);
 	});
 });

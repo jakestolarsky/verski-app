@@ -9,6 +9,8 @@
 	} from '$lib/domain/user-settings';
 	import { applyThemePreference } from '$lib/platform/theme-preference';
 	import { appMetadata } from '$lib/platform/app-metadata';
+	import type { TranslationManifest } from '$lib/domain/translation-package';
+  import TranslationInfo from './TranslationInfo.svelte';
 
 	/* icons */
 	import SettingsIcon from '@lucide/svelte/icons/settings';
@@ -29,6 +31,7 @@
 		settings: UserSettings;
 		disabled?: boolean;
 		recentLookupCount?: number;
+		translationManifest: TranslationManifest;
 		onChange: (settings: UserSettings) => void | Promise<void>;
 		onClearRecentLookups?: () => void | Promise<void>;
 	};
@@ -75,6 +78,7 @@
 
 	let {
 		settings,
+		translationManifest,
 		disabled = false,
 		recentLookupCount = 0,
 		onChange,
@@ -448,6 +452,7 @@
 					tabindex="0"
 				>
 					<section class="about-section" aria-labelledby="about-heading">
+						<h3 id="about-heading">Application</h3>
 						<dl class="about-metadata">
 							<div>
 								<dt>Version</dt>
@@ -475,6 +480,9 @@
 							<span>GitHub repository</span>
 						</a>
 					</section>
+					
+					<TranslationInfo manifest={translationManifest} />
+
 				</div>
 			{/if}
 		</article>
@@ -901,6 +909,13 @@
 		margin: 0;
 		text-align: end;
 	}
+	
+	.about-section h3 {
+	margin-block-end: 1rem;
+	font-family: var(--verski-font-ui);
+	font-size: 1rem;
+	font-weight: var(--verski-font-weight-medium);
+}
 
 	.repository-link {
 		display: inline-flex;
