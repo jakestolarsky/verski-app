@@ -1,4 +1,6 @@
-export const CURRENT_USER_SETTINGS_VERSION = 1;
+import { BUNDLED_DEFAULT_TRANSLATION_ID } from './translation-catalog';
+
+export const CURRENT_USER_SETTINGS_VERSION = 2;
 
 export const availableThemes = ['system', 'light', 'dark'] as const;
 export type Theme = (typeof availableThemes)[number];
@@ -13,12 +15,14 @@ export type ReadingLineHeight = 'compact' | 'default' | 'relaxed';
 export type UserSettings = {
 	version: typeof CURRENT_USER_SETTINGS_VERSION;
 	theme: Theme;
+	selectedTranslationId: string;
 	reading: ReadingSettings;
 };
 
 export const defaultUserSettings: UserSettings = {
 	version: CURRENT_USER_SETTINGS_VERSION,
 	theme: 'system',
+	selectedTranslationId: BUNDLED_DEFAULT_TRANSLATION_ID,
 	reading: {
 		fontSize: 'default',
 		lineHeight: 'default',

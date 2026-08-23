@@ -20,8 +20,9 @@ describe('loadUserSettings', () => {
 		};
 
 		await expect(loadUserSettings(store)).resolves.toEqual({
-			version: 1,
+			version: 2,
 			theme: 'dark',
+			selectedTranslationId: 'engwebp',
 			reading: {
 				fontSize: 'large',
 				lineHeight: 'default',

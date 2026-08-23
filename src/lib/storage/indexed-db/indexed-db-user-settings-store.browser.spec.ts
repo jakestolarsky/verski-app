@@ -5,8 +5,9 @@ import { IndexedDbUserSettingsStore } from './indexed-db-user-settings-store';
 import { openBibleDatabase } from './open-bible-database';
 
 const settings = {
-	version: 1,
+	version: 2,
 	theme: 'dark',
+	selectedTranslationId: 'polubg',
 	reading: {
 		fontSize: 'large',
 		lineHeight: 'relaxed',

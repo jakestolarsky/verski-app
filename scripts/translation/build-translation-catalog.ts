@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 import { translationCatalogSchema } from '../../src/lib/domain/validation/translation-catalog-schema.ts';
 import { translationPackageSchema } from '../../src/lib/domain/validation/translation-package-schema.ts';
+import { BUNDLED_DEFAULT_TRANSLATION_ID } from '../../src/lib/domain/translation-catalog.ts';
 
 const translationSources = [
 	{
@@ -27,7 +28,7 @@ const translations = await Promise.all(
 );
 
 const catalog = translationCatalogSchema.parse({
-	defaultTranslationId: 'engwebp',
+	defaultTranslationId: BUNDLED_DEFAULT_TRANSLATION_ID,
 	translations
 });
 

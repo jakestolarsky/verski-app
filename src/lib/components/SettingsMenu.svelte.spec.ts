@@ -360,7 +360,7 @@ describe('SettingsMenu', () => {
 
 		await expect.element(page.getByRole('heading', { name: 'Current translation' })).toBeVisible();
 
-		await expect.element(page.getByText(translationManifest.name)).toBeVisible();
+		await expect.element(page.getByText(translationManifest.name, { exact: true })).toBeVisible();
 
 		await expect
 			.element(page.getByRole('link', { name: translationManifest.license }))

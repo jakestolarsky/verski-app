@@ -8,7 +8,22 @@ describe('migrateUserSettings', () => {
 		expect(migrateUserSettings(null)).toEqual(defaultUserSettings);
 	});
 
-	it('keeps valid version 1 settings', () => {
+	it('keeps valid version 2 settings', () => {
+		const storedSettings = {
+			version: 2,
+			theme: 'dark',
+			selectedTranslationId: 'polubg',
+			reading: {
+				fontSize: 'large',
+				lineHeight: 'relaxed',
+				showVerseNumbers: false
+			}
+		};
+
+		expect(migrateUserSettings(storedSettings)).toEqual(storedSettings);
+	});
+
+	it('migrates version 1 settings and preserves their existing values', () => {
 		const storedSettings = {
 			version: 1,
 			theme: 'dark',
@@ -19,7 +34,16 @@ describe('migrateUserSettings', () => {
 			}
 		};
 
-		expect(migrateUserSettings(storedSettings)).toEqual(storedSettings);
+		expect(migrateUserSettings(storedSettings)).toEqual({
+			version: 2,
+			theme: 'dark',
+			selectedTranslationId: 'engwebp',
+			reading: {
+				fontSize: 'large',
+				lineHeight: 'relaxed',
+				showVerseNumbers: false
+			}
+		});
 	});
 
 	it('fills missing version 1 properties with defaults', () => {
@@ -43,8 +67,9 @@ describe('migrateUserSettings', () => {
 
 	it('returns defaults for invalid values', () => {
 		const storedSettings = {
-			version: 1,
+			version: 2,
 			theme: 'neon',
+			selectedTranslationId: '',
 			reading: {
 				fontSize: 100,
 				lineHeight: 'enormous',

@@ -7,8 +7,9 @@ import { saveUserSettings } from './save-user-settings';
 describe('saveUserSettings', () => {
 	it('replaces the stored settings', async () => {
 		const settings = {
-			version: 1,
+			version: 2,
 			theme: 'dark',
+			selectedTranslationId: 'polubg',
 			reading: {
 				fontSize: 'large',
 				lineHeight: 'relaxed',

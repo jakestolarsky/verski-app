@@ -121,8 +121,9 @@ describe('prepareBrowserStorage', () => {
 		const settingsStore = new IndexedDbUserSettingsStore(database);
 
 		await settingsStore.replaceUserSettings({
-			version: 1,
+			version: 2,
 			theme: 'dark',
+			selectedTranslationId: 'engwebp',
 			reading: {
 				fontSize: 'large',
 				lineHeight: 'relaxed',
@@ -135,8 +136,9 @@ describe('prepareBrowserStorage', () => {
 		const storage = await prepareBrowserStorage([translationPackage], [], databaseName);
 
 		expect(storage.userSettings).toEqual({
-			version: 1,
+			version: 2,
 			theme: 'dark',
+			selectedTranslationId: 'engwebp',
 			reading: {
 				fontSize: 'large',
 				lineHeight: 'relaxed',
