@@ -2,7 +2,7 @@ import { addRecentLookup } from '../application/add-recent-lookup';
 import { ensureTranslationInstalled } from '../application/ensure-translation-installed';
 import type { RecentLookup } from '../domain/recent-lookup';
 import type { TranslationManifest, TranslationPackage } from '../domain/translation-package';
-import type { BibleRepository } from '../storage/bible-repository';
+import type { TranslationStore } from '../storage/translation-store';
 import { IndexedDbBibleRepository } from '../storage/indexed-db/indexed-db-bible-repository';
 import { IndexedDbRecentLookupStore } from '../storage/indexed-db/indexed-db-recent-lookup-store';
 import { openBibleDatabase } from '../storage/indexed-db/open-bible-database';
@@ -14,7 +14,7 @@ import { IndexedDbUserSettingsStore } from '../storage/indexed-db/indexed-db-use
 import type { UserSettingsStore } from '../storage/user-settings-store';
 
 export type PreparedBrowserStorage = {
-	bibleRepository: BibleRepository;
+	bibleRepository: TranslationStore;
 	recentLookupStore: RecentLookupStore | null;
 	recentLookups: RecentLookup[];
 	userSettingsStore: UserSettingsStore | null;
