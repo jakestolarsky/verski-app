@@ -33,6 +33,31 @@ const translationPackage = {
 	]
 } satisfies TranslationPackage;
 
+const polishTranslationPackage = {
+	manifest: {
+		id: 'polubg',
+		name: 'Uwspółcześniona Biblia Gdańska',
+		language: 'pl-PL',
+		version: '2025-12-12',
+		attribution: '© 2018 Fundacja Wrota Nadziei',
+		license: 'CC BY-ND 4.0',
+		licenseUrl: 'https://creativecommons.org/licenses/by-nd/4.0/',
+		source: 'https://ebible.org/bible/details.php?all=1&id=polubg',
+		sourceChecksum: 'sha256:15260b7b551446def9e253cd1ce1ef145bbfcdb9d172f4cf6f9f671d21f2c2cf',
+		schemaVersion: 1,
+		canonId: 'protestant-66',
+		bookIds: ['john']
+	},
+	chapters: [
+		{
+			translationId: 'polubg',
+			bookId: 'john',
+			chapter: 1,
+			verses: ['Na początku było Słowo.']
+		}
+	]
+} satisfies TranslationPackage;
+
 describe('prepareBrowserStorage', () => {
 	it('prepares Bible data and merges session history with stored history', async () => {
 		const databaseName = `verski-test-${crypto.randomUUID()}`;
@@ -63,7 +88,11 @@ describe('prepareBrowserStorage', () => {
 
 		database.close();
 
-		const storage = await prepareBrowserStorage(translationPackage, [sessionLookup], databaseName);
+		const storage = await prepareBrowserStorage(
+			[translationPackage],
+			[sessionLookup],
+			databaseName
+		);
 
 		expect(storage.recentLookups).toEqual([sessionLookup, storedLookup]);
 
@@ -103,7 +132,7 @@ describe('prepareBrowserStorage', () => {
 
 		database.close();
 
-		const storage = await prepareBrowserStorage(translationPackage, [], databaseName);
+		const storage = await prepareBrowserStorage([translationPackage], [], databaseName);
 
 		expect(storage.userSettings).toEqual({
 			version: 1,
@@ -121,7 +150,7 @@ describe('prepareBrowserStorage', () => {
 	it('restores a bundled translation when one of its stored chapters is missing', async () => {
 		const databaseName = `verski-test-${crypto.randomUUID()}`;
 
-		const initialStorage = await prepareBrowserStorage(translationPackage, [], databaseName);
+		const initialStorage = await prepareBrowserStorage([translationPackage], [], databaseName);
 		initialStorage.close();
 
 		const database = await openBibleDatabase(databaseName);
@@ -146,12 +175,45 @@ describe('prepareBrowserStorage', () => {
 
 		database.close();
 
-		const recoveredStorage = await prepareBrowserStorage(translationPackage, [], databaseName);
+		const recoveredStorage = await prepareBrowserStorage([translationPackage], [], databaseName);
 
 		await expect(
 			recoveredStorage.bibleRepository.getChapter('engwebp', 'john', 1)
 		).resolves.toEqual(translationPackage.chapters[0]);
 
 		recoveredStorage.close();
+	});
+
+	it('prepares every bundled translation package', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+
+		const storage = await prepareBrowserStorage(
+			[translationPackage, polishTranslationPackage],
+			[],
+			databaseName
+		);
+
+		expect(storage.installedTranslationManifests).toEqual([
+			translationPackage.manifest,
+			polishTranslationPackage.manifest
+		]);
+
+		await expect(storage.bibleRepository.getChapter('engwebp', 'john', 1)).resolves.toEqual(
+			translationPackage.chapters[0]
+		);
+
+		await expect(storage.bibleRepository.getChapter('polubg', 'john', 1)).resolves.toEqual(
+			polishTranslationPackage.chapters[0]
+		);
+
+		storage.close();
+	});
+
+	it('rejects preparing storage without a translation package', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+
+		await expect(prepareBrowserStorage([], [], databaseName)).rejects.toThrowError(
+			'At least one translation package is required'
+		);
 	});
 });

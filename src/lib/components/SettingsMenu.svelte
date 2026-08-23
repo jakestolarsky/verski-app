@@ -10,7 +10,7 @@
 	import { applyThemePreference } from '$lib/platform/theme-preference';
 	import { appMetadata } from '$lib/platform/app-metadata';
 	import type { TranslationManifest } from '$lib/domain/translation-package';
-  import TranslationInfo from './TranslationInfo.svelte';
+	import TranslationInfo from './TranslationInfo.svelte';
 
 	/* icons */
 	import SettingsIcon from '@lucide/svelte/icons/settings';
@@ -480,9 +480,8 @@
 							<span>GitHub repository</span>
 						</a>
 					</section>
-					
-					<TranslationInfo manifest={translationManifest} />
 
+					<TranslationInfo manifest={translationManifest} />
 				</div>
 			{/if}
 		</article>
@@ -909,13 +908,13 @@
 		margin: 0;
 		text-align: end;
 	}
-	
+
 	.about-section h3 {
-	margin-block-end: 1rem;
-	font-family: var(--verski-font-ui);
-	font-size: 1rem;
-	font-weight: var(--verski-font-weight-medium);
-}
+		margin-block-end: 1rem;
+		font-family: var(--verski-font-ui);
+		font-size: 1rem;
+		font-weight: var(--verski-font-weight-medium);
+	}
 
 	.repository-link {
 		display: inline-flex;

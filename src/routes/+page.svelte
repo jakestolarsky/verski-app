@@ -49,7 +49,7 @@
 
 		const legacyTheme = readStoredThemePreference();
 
-		void prepareBrowserStorage(data.translationPackage, recentLookups)
+		void prepareBrowserStorage([data.translationPackage], recentLookups)
 			.then((storage) => {
 				if (disposed) {
 					storage.close();

@@ -1,7 +1,7 @@
 import { addRecentLookup } from '../application/add-recent-lookup';
 import { ensureTranslationInstalled } from '../application/ensure-translation-installed';
 import type { RecentLookup } from '../domain/recent-lookup';
-import type { TranslationPackage } from '../domain/translation-package';
+import type { TranslationManifest, TranslationPackage } from '../domain/translation-package';
 import type { BibleRepository } from '../storage/bible-repository';
 import { IndexedDbBibleRepository } from '../storage/indexed-db/indexed-db-bible-repository';
 import { IndexedDbRecentLookupStore } from '../storage/indexed-db/indexed-db-recent-lookup-store';
@@ -19,14 +19,18 @@ export type PreparedBrowserStorage = {
 	recentLookups: RecentLookup[];
 	userSettingsStore: UserSettingsStore | null;
 	userSettings: UserSettings;
+	installedTranslationManifests: TranslationManifest[];
 	close: () => void;
 };
 
 export async function prepareBrowserStorage(
-	translationPackage: TranslationPackage,
+	translationPackages: readonly TranslationPackage[],
 	sessionLookups: readonly RecentLookup[],
 	databaseName?: string
 ): Promise<PreparedBrowserStorage> {
+	if (translationPackages.length === 0) {
+		throw new Error('At least one translation package is required');
+	}
 	const database = await openBibleDatabase(databaseName);
 
 	try {
@@ -64,10 +68,15 @@ export async function prepareBrowserStorage(
 			userSettingsStore = null;
 		}
 
-		await ensureTranslationInstalled(bibleRepository, translationPackage);
+		for (const translationPackage of translationPackages) {
+			await ensureTranslationInstalled(bibleRepository, translationPackage);
+		}
 
 		return {
 			bibleRepository,
+			installedTranslationManifests: translationPackages.map(
+				(translationPackage) => translationPackage.manifest
+			),
 			recentLookupStore,
 			recentLookups,
 			userSettingsStore,
