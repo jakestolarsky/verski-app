@@ -1,14 +1,9 @@
 import type { TranslationPackage } from '../domain/translation-package';
 import { translationPackageSchema } from '../domain/validation/translation-package-schema';
-
-export type StaticTranslationFetcher = (url: string) => Promise<{
-	ok: boolean;
-	status: number;
-	json(): Promise<unknown>;
-}>;
+import type { StaticJsonFetcher } from './static-json-fetcher';
 
 export async function loadStaticTranslationPackage(
-	fetcher: StaticTranslationFetcher,
+	fetcher: StaticJsonFetcher,
 	url: string
 ): Promise<TranslationPackage> {
 	const response = await fetcher(url);

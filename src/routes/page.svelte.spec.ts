@@ -6,6 +6,7 @@ import Page from './+page.svelte';
 import type { RecentLookup } from '$lib/domain/recent-lookup';
 import { IndexedDbRecentLookupStore } from '$lib/storage/indexed-db/indexed-db-recent-lookup-store';
 import { openBibleDatabase } from '$lib/storage/indexed-db/open-bible-database';
+import type { TranslationCatalog } from '$lib/domain/translation-catalog';
 
 const translationPackage = {
 	manifest: {
@@ -32,7 +33,18 @@ const translationPackage = {
 	]
 } satisfies TranslationPackage;
 
+const translationCatalog = {
+	defaultTranslationId: translationPackage.manifest.id,
+	translations: [
+		{
+			manifest: translationPackage.manifest,
+			packageUrl: '/translations/engwebp.json'
+		}
+	]
+} satisfies TranslationCatalog;
+
 const data = {
+	translationCatalog,
 	translationPackage
 };
 
