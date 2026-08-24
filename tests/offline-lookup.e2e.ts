@@ -44,3 +44,74 @@ test('starts offline and looks up a cached passage', async ({ context, page }) =
 		timeout: 15_000
 	});
 });
+
+test('restores the selected translation after a cold offline start', async ({ context, page }) => {
+	await page.goto('/');
+
+	await page.evaluate(async () => {
+		await navigator.serviceWorker.ready;
+	});
+
+	await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
+
+	await page.getByRole('button', { name: 'Open Bible navigation' }).click();
+
+	await page
+		.getByRole('button', {
+			name: 'Current translation: World English Bible'
+		})
+		.click();
+
+	await page
+		.getByRole('button', {
+			name: 'Uwspółcześniona Biblia Gdańska',
+			exact: true
+		})
+		.click();
+
+	const selectedTranslation = page.getByRole('button', {
+		name: 'Current translation: Uwspółcześniona Biblia Gdańska'
+	});
+
+	await expect(selectedTranslation).toBeVisible({
+		timeout: 15_000
+	});
+
+	await expect(selectedTranslation).toHaveAttribute('aria-expanded', 'false');
+
+	await page.getByRole('button', { name: 'Close Bible navigation' }).click();
+
+	await page.close();
+	await context.setOffline(true);
+
+	const offlinePage = await context.newPage();
+
+	await offlinePage.goto('/', {
+		waitUntil: 'domcontentloaded'
+	});
+
+	await offlinePage.getByRole('button', { name: 'Open Bible navigation' }).click();
+
+	await expect(
+		offlinePage.getByRole('button', {
+			name: 'Current translation: Uwspółcześniona Biblia Gdańska'
+		})
+	).toBeVisible({
+		timeout: 15_000
+	});
+
+	await offlinePage.getByRole('button', { name: 'Close Bible navigation' }).click();
+
+	const referenceInput = offlinePage.getByLabel('Bible reference');
+
+	await referenceInput.fill('John 3:16');
+	await referenceInput.press('Enter');
+
+	const passage = offlinePage.getByRole('region', {
+		name: 'John 3:16'
+	});
+
+	await expect(passage.getByText(/Tak bowiem Bóg umiłował świat/)).toBeVisible({
+		timeout: 15_000
+	});
+});

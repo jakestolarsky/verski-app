@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 
 import { base, build, files, prerendered, version } from '$service-worker';
+import { BUNDLED_DEFAULT_TRANSLATION_ID } from './lib/domain/translation-catalog';
 
 const worker = self as unknown as ServiceWorkerGlobalScope;
 
@@ -8,14 +9,20 @@ const APP_CACHE_PREFIX = 'verski-app-';
 const APP_CACHE = `${APP_CACHE_PREFIX}${version}`;
 const TRANSLATION_CACHE = 'verski-translations';
 
-const translationUrl = `${base}/translations/engwebp.json`;
+const TRANSLATION_PATH_PREFIX = `${base}/translations/`;
+const translationCatalogUrl = `${TRANSLATION_PATH_PREFIX}catalog.json`;
+const defaultTranslationUrl = `${TRANSLATION_PATH_PREFIX}${BUNDLED_DEFAULT_TRANSLATION_ID}.json`;
+
+function isTranslationAsset(pathname: string): boolean {
+	return pathname.startsWith(TRANSLATION_PATH_PREFIX) && pathname.endsWith('.json');
+}
 
 const appAssets = [
 	...new Set([
 		`${base}/`,
 		...build,
 		...prerendered,
-		...files.filter((file) => file !== translationUrl)
+		...files.filter((file) => !isTranslationAsset(file))
 	])
 ];
 
@@ -23,7 +30,9 @@ worker.addEventListener('install', (event) => {
 	event.waitUntil(
 		Promise.all([
 			caches.open(APP_CACHE).then((cache) => cache.addAll(appAssets)),
-			caches.open(TRANSLATION_CACHE).then((cache) => cache.add(translationUrl))
+			caches
+				.open(TRANSLATION_CACHE)
+				.then((cache) => cache.addAll([translationCatalogUrl, defaultTranslationUrl]))
 		])
 	);
 });
@@ -40,7 +49,7 @@ worker.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	if (url.pathname === translationUrl) {
+	if (isTranslationAsset(url.pathname)) {
 		event.respondWith(loadTranslation(request));
 		return;
 	}
