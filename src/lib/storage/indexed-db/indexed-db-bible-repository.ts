@@ -63,6 +63,33 @@ export class IndexedDbBibleRepository implements TranslationStore {
 		await completion;
 	}
 
+	async removeTranslation(translationId: string): Promise<void> {
+		const transaction = this.database.transaction(
+			[CHAPTER_STORE_NAME, TRANSLATION_STORE_NAME],
+			'readwrite'
+		);
+
+		const completion = waitForTransaction(transaction);
+		const chapterStore = transaction.objectStore(CHAPTER_STORE_NAME);
+		const translationStore = transaction.objectStore(TRANSLATION_STORE_NAME);
+		const translationIndex = chapterStore.index(CHAPTER_TRANSLATION_INDEX_NAME);
+
+		const cursorRequest = translationIndex.openCursor(IDBKeyRange.only(translationId));
+
+		cursorRequest.onsuccess = () => {
+			const cursor = cursorRequest.result;
+
+			if (cursor !== null) {
+				cursor.delete();
+				cursor.continue();
+				return;
+			}
+
+			translationStore.delete(translationId);
+		};
+
+		await completion;
+	}
 	getInstalledChapterCount(translationId: string): Promise<number> {
 		return new Promise((resolve, reject) => {
 			const transaction = this.database.transaction(CHAPTER_STORE_NAME, 'readonly');

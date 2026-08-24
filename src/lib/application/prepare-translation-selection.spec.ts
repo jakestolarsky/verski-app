@@ -53,7 +53,9 @@ function createTranslationStore(
 
 		async installTranslation(packageToInstall) {
 			onInstall(packageToInstall);
-		}
+		},
+
+        async removeTranslation() {}
 	};
 }
 

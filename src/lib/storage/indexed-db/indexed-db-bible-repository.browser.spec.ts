@@ -150,4 +150,47 @@ describe('IndexedDbBibleRepository', () => {
 
 		database.close();
 	});
+
+	it('removes only the requested translation', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+		const database = await openBibleDatabase(databaseName);
+		const repository = new IndexedDbBibleRepository(database);
+
+		const polishTranslationPackage = {
+			manifest: {
+				...translationPackage.manifest,
+				id: 'polubg',
+				name: 'Uwspółcześniona Biblia Gdańska',
+				language: 'pl-PL'
+			},
+			chapters: translationPackage.chapters.map((chapter) => ({
+				...chapter,
+				translationId: 'polubg',
+				verses: ['Na początku było Słowo.']
+			}))
+		} satisfies TranslationPackage;
+
+		await repository.installTranslation(translationPackage);
+		await repository.installTranslation(polishTranslationPackage);
+
+		await repository.removeTranslation('polubg');
+
+		await expect(repository.getTranslationManifest('polubg')).resolves.toBeNull();
+
+		await expect(repository.getInstalledChapterCount('polubg')).resolves.toBe(0);
+
+		await expect(repository.getChapter('polubg', 'john', 1)).resolves.toBeNull();
+
+		await expect(repository.getTranslationManifest('engwebp')).resolves.toEqual(
+			translationPackage.manifest
+		);
+
+		await expect(repository.getChapter('engwebp', 'john', 1)).resolves.toEqual(
+			translationPackage.chapters[0]
+		);
+
+		await expect(repository.removeTranslation('polubg')).resolves.toBeUndefined();
+
+		database.close();
+	});
 });

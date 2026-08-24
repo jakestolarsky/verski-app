@@ -41,6 +41,8 @@ describe('ensureTranslationInstalled', () => {
 				installedPackage = packageToInstall;
 			},
 
+			async removeTranslation() {},
+
 			async getChapter() {
 				return null;
 			},
@@ -63,6 +65,8 @@ describe('ensureTranslationInstalled', () => {
 			async getTranslationManifest() {
 				return translationPackage.manifest;
 			},
+
+			async removeTranslation() {},
 
 			async installTranslation() {
 				installCalls += 1;
@@ -98,6 +102,8 @@ describe('ensureTranslationInstalled', () => {
 				installedPackage = packageToInstall;
 			},
 
+			async removeTranslation() {},
+
 			async getChapter() {
 				return null;
 			},
@@ -130,6 +136,8 @@ describe('ensureTranslationInstalled', () => {
 				installCalls += 1;
 			},
 
+			async removeTranslation() {},
+
 			async getChapter() {
 				return null;
 			}
@@ -159,6 +167,8 @@ describe('ensureTranslationInstalled', () => {
 			async installTranslation(packageToInstall) {
 				installedPackage = packageToInstall;
 			},
+
+			async removeTranslation() {},
 
 			async getChapter() {
 				return null;
