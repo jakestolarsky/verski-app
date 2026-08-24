@@ -19,10 +19,13 @@
 		"build:translation:polubg": "node --experimental-strip-types scripts/translation/build-polubg.ts",
 		"build:pwa-icons": "node --experimental-strip-types scripts/pwa/generate-icons.ts",
 		"build:translation:catalog": "node --experimental-strip-types scripts/translation/build-translation-catalog.ts",
-		"build:translations": "npm run build:translation:engwebp && npm run build:translation:polubg && npm run build:translation:catalog"
+		"build:translations": "npm run build:translation:engwebp && npm run build:translation:polubg && npm run build:translation:catalog",
+		"machine-translate": "inlang machine translate --project project.inlang"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
+		"@inlang/cli": "^3.0.0",
+		"@inlang/paraglide-js": "^2.24.1",
 		"@playwright/test": "^1.60.0",
 		"@resvg/resvg-js": "^2.6.2",
 		"@sveltejs/adapter-auto": "^7.0.1",

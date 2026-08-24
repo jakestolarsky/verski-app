@@ -1,0 +1,6 @@
+{
+	"$schema": "https://inlang.com/schema/inlang-message-format",
+	"settings_language_label": "Język",
+	"language_english": "Angielski",
+	"language_polish": "Polski"
+}

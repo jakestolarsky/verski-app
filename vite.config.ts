@@ -1,3 +1,4 @@
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-auto';
@@ -28,6 +29,13 @@ export default defineConfig({
 		__VERSKI_APP_COMMIT__: JSON.stringify(getCommitIdentifier())
 	},
 	plugins: [
+		paraglideVitePlugin({
+			project: './project.inlang',
+			outdir: './src/lib/paraglide',
+			emitTsDeclarations: true,
+			strategy: ['cookie', 'baseLocale'],
+			cookieName: 'verski-locale'
+		}),
 		sveltekit({
 			compilerOptions: {
 				// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
