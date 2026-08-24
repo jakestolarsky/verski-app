@@ -2,12 +2,12 @@
 
 import { base, build, files, prerendered, version } from '$service-worker';
 import { BUNDLED_DEFAULT_TRANSLATION_ID } from './lib/domain/translation-catalog';
+import { TRANSLATION_CACHE_NAME } from './lib/platform/translation-cache';
 
 const worker = self as unknown as ServiceWorkerGlobalScope;
 
 const APP_CACHE_PREFIX = 'verski-app-';
 const APP_CACHE = `${APP_CACHE_PREFIX}${version}`;
-const TRANSLATION_CACHE = 'verski-translations';
 
 const TRANSLATION_PATH_PREFIX = `${base}/translations/`;
 const translationCatalogUrl = `${TRANSLATION_PATH_PREFIX}catalog.json`;
@@ -31,7 +31,7 @@ worker.addEventListener('install', (event) => {
 		Promise.all([
 			caches.open(APP_CACHE).then((cache) => cache.addAll(appAssets)),
 			caches
-				.open(TRANSLATION_CACHE)
+				.open(TRANSLATION_CACHE_NAME)
 				.then((cache) => cache.addAll([translationCatalogUrl, defaultTranslationUrl]))
 		])
 	);
@@ -73,7 +73,7 @@ async function removeOldAppCaches() {
 }
 
 async function loadTranslation(request: Request): Promise<Response> {
-	const cache = await caches.open(TRANSLATION_CACHE);
+	const cache = await caches.open(TRANSLATION_CACHE_NAME);
 
 	try {
 		const response = await fetch(request);
