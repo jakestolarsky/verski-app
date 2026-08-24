@@ -7,6 +7,7 @@ export interface TranslationStore extends BibleRepository {
 	removeTranslation(translationId: string): Promise<void>;
 
 	getTranslationManifest(translationId: string): Promise<TranslationManifest | null>;
+	getInstalledTranslationManifests(): Promise<TranslationManifest[]>;
 
 	getInstalledChapterCount(translationId: string): Promise<number>;
 }

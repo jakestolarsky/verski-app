@@ -218,4 +218,25 @@ describe('prepareBrowserStorage', () => {
 			'At least one translation package is required'
 		);
 	});
+
+	it('reports translations installed during a previous session', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+
+		const firstStorage = await prepareBrowserStorage(
+			[translationPackage, polishTranslationPackage],
+			[],
+			databaseName
+		);
+
+		firstStorage.close();
+
+		const restoredStorage = await prepareBrowserStorage([translationPackage], [], databaseName);
+
+		expect(restoredStorage.installedTranslationManifests).toEqual([
+			translationPackage.manifest,
+			polishTranslationPackage.manifest
+		]);
+
+		restoredStorage.close();
+	});
 });

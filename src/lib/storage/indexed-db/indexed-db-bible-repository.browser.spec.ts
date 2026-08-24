@@ -193,4 +193,18 @@ describe('IndexedDbBibleRepository', () => {
 
 		database.close();
 	});
+
+	it('lists installed translation manifests', async () => {
+		const databaseName = `verski-test-${crypto.randomUUID()}`;
+		const database = await openBibleDatabase(databaseName);
+		const repository = new IndexedDbBibleRepository(database);
+
+		await repository.installTranslation(translationPackage);
+
+		await expect(repository.getInstalledTranslationManifests()).resolves.toEqual([
+			translationPackage.manifest
+		]);
+
+		database.close();
+	});
 });

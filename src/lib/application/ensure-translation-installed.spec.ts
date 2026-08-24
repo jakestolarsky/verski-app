@@ -49,6 +49,9 @@ describe('ensureTranslationInstalled', () => {
 
 			async getInstalledChapterCount() {
 				return 0;
+			},
+			async getInstalledTranslationManifests() {
+				return [];
 			}
 		};
 
@@ -78,6 +81,9 @@ describe('ensureTranslationInstalled', () => {
 
 			async getInstalledChapterCount() {
 				return translationPackage.chapters.length;
+			},
+			async getInstalledTranslationManifests() {
+				return [];
 			}
 		};
 
@@ -110,6 +116,9 @@ describe('ensureTranslationInstalled', () => {
 
 			async getInstalledChapterCount() {
 				return translationPackage.chapters.length;
+			},
+			async getInstalledTranslationManifests() {
+				return [];
 			}
 		};
 
@@ -140,6 +149,9 @@ describe('ensureTranslationInstalled', () => {
 
 			async getChapter() {
 				return null;
+			},
+			async getInstalledTranslationManifests() {
+				return [];
 			}
 		};
 
@@ -172,6 +184,9 @@ describe('ensureTranslationInstalled', () => {
 
 			async getChapter() {
 				return null;
+			},
+			async getInstalledTranslationManifests() {
+				return [];
 			}
 		};
 

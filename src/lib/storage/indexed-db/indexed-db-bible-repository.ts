@@ -146,4 +146,22 @@ export class IndexedDbBibleRepository implements TranslationStore {
 			};
 		});
 	}
+
+	getInstalledTranslationManifests(): Promise<TranslationManifest[]> {
+		return new Promise((resolve, reject) => {
+			const transaction = this.database.transaction(TRANSLATION_STORE_NAME, 'readonly');
+
+			const translationStore = transaction.objectStore(TRANSLATION_STORE_NAME);
+
+			const request = translationStore.getAll();
+
+			request.onsuccess = () => {
+				resolve(request.result as TranslationManifest[]);
+			};
+
+			request.onerror = () => {
+				reject(request.error ?? new Error('Failed to read installed translation manifests'));
+			};
+		});
+	}
 }

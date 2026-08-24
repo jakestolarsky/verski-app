@@ -72,11 +72,11 @@ export async function prepareBrowserStorage(
 			await ensureTranslationInstalled(bibleRepository, translationPackage);
 		}
 
+		const installedTranslationManifests = await bibleRepository.getInstalledTranslationManifests();
+
 		return {
 			bibleRepository,
-			installedTranslationManifests: translationPackages.map(
-				(translationPackage) => translationPackage.manifest
-			),
+			installedTranslationManifests,
 			recentLookupStore,
 			recentLookups,
 			userSettingsStore,
