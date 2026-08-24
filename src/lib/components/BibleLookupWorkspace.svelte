@@ -69,6 +69,10 @@
 		return reference;
 	});
 
+	const currentTranslationLookups = $derived(
+		recentLookups.filter((lookup) => lookup.translationId === translationId)
+	);
+
 	onMount(() => {
 		const viewport = window.visualViewport;
 		const container = searchContainer;
@@ -308,7 +312,7 @@
 <div class="lookup-workspace">
 	{#if referenceInput === ''}
 		<RecentLookupList
-			lookups={recentLookups}
+			lookups={currentTranslationLookups}
 			onSelect={handleRecentLookupSelect}
 			onRemove={handleRecentLookupRemove}
 		/>

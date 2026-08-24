@@ -4,6 +4,7 @@ import { render } from 'vitest-browser-svelte';
 
 import type { BibleNavigationTestament } from '$lib/application/build-bible-navigation';
 import BibleNavigationMenu from './BibleNavigationMenu.svelte';
+import type { TranslationCatalogEntry } from '$lib/domain/translation-catalog';
 
 const navigation: BibleNavigationTestament[] = [
 	{
@@ -30,10 +31,36 @@ const navigation: BibleNavigationTestament[] = [
 	}
 ];
 
+const translations = [
+	{
+		manifest: {
+			id: 'engwebp',
+			name: 'World English Bible',
+			language: 'en-US',
+			version: 'test',
+			attribution: 'World English Bible — Public Domain',
+			license: 'Public Domain',
+			licenseUrl: 'https://example.com/license',
+			source: 'https://example.com/source',
+			sourceChecksum: `sha256:${'a'.repeat(64)}`,
+			schemaVersion: 1,
+			canonId: 'protestant-66',
+			bookIds: ['john']
+		},
+		packageUrl: '/translations/engwebp.json'
+	}
+] satisfies TranslationCatalogEntry[];
+
+const translationProps = {
+	translations,
+	selectedTranslationId: 'engwebp',
+	onTranslationSelect: () => true
+};
+
 describe('BibleNavigationMenu', () => {
 	it('opens an accessible navigation dialog', async () => {
 		render(BibleNavigationMenu, {
-			translationName: 'World English Bible',
+			...translationProps,
 			navigation,
 			onChapterSelect: () => true
 		});
@@ -60,14 +87,20 @@ describe('BibleNavigationMenu', () => {
 			.element(page.getByRole('button', { name: 'New Testament' }))
 			.toHaveAttribute('aria-expanded', 'false');
 
-		await expect.element(page.getByText('World English Bible')).toBeVisible();
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Current translation: World English Bible'
+				})
+			)
+			.toBeVisible();
 		await expect.element(page.getByRole('button', { name: 'Old Testament' })).toBeVisible();
 		await expect.element(page.getByRole('button', { name: 'New Testament' })).toBeVisible();
 	});
 
 	it('filters books by name', async () => {
 		render(BibleNavigationMenu, {
-			translationName: 'World English Bible',
+			...translationProps,
 			navigation,
 			onChapterSelect: () => true
 		});
@@ -83,7 +116,7 @@ describe('BibleNavigationMenu', () => {
 		let selection: { bookId: string; chapter: number } | null = null;
 
 		render(BibleNavigationMenu, {
-			translationName: 'World English Bible',
+			...translationProps,
 			navigation,
 			onChapterSelect(bookId: string, chapter: number) {
 				selection = { bookId, chapter };
@@ -117,7 +150,7 @@ describe('BibleNavigationMenu', () => {
 
 	it('stays open when the chapter cannot be selected', async () => {
 		render(BibleNavigationMenu, {
-			translationName: 'World English Bible',
+			...translationProps,
 			navigation,
 			onChapterSelect: () => false
 		});
@@ -146,7 +179,7 @@ describe('BibleNavigationMenu', () => {
 
 	it('closes with Escape and returns focus to its trigger', async () => {
 		render(BibleNavigationMenu, {
-			translationName: 'World English Bible',
+			...translationProps,
 			navigation,
 			onChapterSelect: () => true
 		});
@@ -166,7 +199,7 @@ describe('BibleNavigationMenu', () => {
 
 	it('marks and expands the currently selected chapter', async () => {
 		render(BibleNavigationMenu, {
-			translationName: 'World English Bible',
+			...translationProps,
 			navigation,
 			selectedBookId: 'john',
 			selectedChapter: 2,
@@ -200,7 +233,7 @@ describe('BibleNavigationMenu', () => {
 
 	it('shows an empty state when the translation has no available books', async () => {
 		render(BibleNavigationMenu, {
-			translationName: 'Empty translation',
+			...translationProps,
 			navigation: [],
 			onChapterSelect: () => true
 		});

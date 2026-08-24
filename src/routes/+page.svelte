@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 
 	import BibleLookupWorkspace from '$lib/components/BibleLookupWorkspace.svelte';
 	import type { RecentLookup } from '$lib/domain/recent-lookup';
@@ -7,7 +7,6 @@
 		prepareBrowserStorage,
 		type PreparedBrowserStorage
 	} from '$lib/platform/prepare-browser-storage';
-	import type { BibleRepository } from '$lib/storage/bible-repository';
 	import type { RecentLookupStore } from '$lib/storage/recent-lookup-store';
 	import { StaticBibleRepository } from '$lib/storage/static-bible-repository';
 	import type { PageData } from './$types';
@@ -20,6 +19,10 @@
 	import BibleNavigationMenu from '$lib/components/BibleNavigationMenu.svelte';
 	import type { BibleReference } from '$lib/domain/bible-reference';
 	import { clearRecentLookups } from '$lib/application/clear-recent-lookups';
+	import { prepareTranslationSelection } from '$lib/application/prepare-translation-selection';
+	import type { TranslationPackage } from '$lib/domain/translation-package';
+	import { loadStaticTranslationPackage } from '$lib/storage/load-static-translation-package';
+	import type { TranslationStore } from '$lib/storage/translation-store';
 
 	type BibleLookupWorkspaceHandle = {
 		openChapter: (bookId: string, chapter: number) => Promise<boolean>;
@@ -27,13 +30,14 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const bibleNavigation = $derived(buildBibleNavigation(data.translationPackage));
+	let activeTranslationPackage = $state<TranslationPackage>(untrack(() => data.translationPackage));
+	const bibleNavigation = $derived(buildBibleNavigation(activeTranslationPackage));
 
 	let bibleLookupWorkspace = $state<BibleLookupWorkspaceHandle>();
 
-	const staticRepository = $derived(new StaticBibleRepository(data.translationPackage));
-	let persistentRepository = $state<BibleRepository | null>(null);
-	const repository = $derived(persistentRepository ?? staticRepository);
+	const staticRepository = $derived(new StaticBibleRepository(activeTranslationPackage));
+	let translationStore = $state<TranslationStore | null>(null);
+	const repository = $derived(translationStore ?? staticRepository);
 
 	let recentLookups = $state<RecentLookup[]>([]);
 	let recentLookupStore = $state<RecentLookupStore | null>(null);
@@ -43,6 +47,52 @@
 	let userSettings = $state<UserSettings>(structuredClone(defaultUserSettings));
 	let userSettingsStore = $state<UserSettingsStore | null>(null);
 
+	async function loadTranslation(translationId: string): Promise<TranslationPackage | null> {
+		if (translationId === activeTranslationPackage.manifest.id) {
+			return activeTranslationPackage;
+		}
+
+		const catalogEntry = data.translationCatalog.translations.find(
+			(entry) => entry.manifest.id === translationId
+		);
+
+		if (catalogEntry === undefined) {
+			return null;
+		}
+
+		try {
+			return await prepareTranslationSelection(
+				catalogEntry,
+				(url) => loadStaticTranslationPackage(window.fetch.bind(window), url),
+				translationStore
+			);
+		} catch {
+			return null;
+		}
+	}
+
+	function applyTranslation(translationPackage: TranslationPackage) {
+		activeReference = null;
+		activeTranslationPackage = translationPackage;
+	}
+
+	async function handleTranslationSelect(translationId: string): Promise<boolean> {
+		const translationPackage = await loadTranslation(translationId);
+
+		if (translationPackage === null) {
+			return false;
+		}
+
+		await handleSettingsChange({
+			...userSettings,
+			selectedTranslationId: translationId
+		});
+
+		applyTranslation(translationPackage);
+
+		return true;
+	}
+
 	onMount(() => {
 		let preparedStorage: PreparedBrowserStorage | null = null;
 		let disposed = false;
@@ -50,16 +100,17 @@
 		const legacyTheme = readStoredThemePreference();
 
 		void prepareBrowserStorage([data.translationPackage], recentLookups)
-			.then((storage) => {
+			.then(async (storage) => {
 				if (disposed) {
 					storage.close();
 					return;
 				}
 
 				preparedStorage = storage;
-				persistentRepository = storage.bibleRepository;
+				translationStore = storage.bibleRepository;
 				recentLookupStore = storage.recentLookupStore;
 				recentLookups = storage.recentLookups;
+				userSettingsStore = storage.userSettingsStore;
 
 				let preparedSettings = storage.userSettings;
 
@@ -68,21 +119,42 @@
 						...preparedSettings,
 						theme: legacyTheme
 					};
+				}
 
-					if (storage.userSettingsStore !== null) {
-						void saveUserSettings(storage.userSettingsStore, preparedSettings);
-					}
+				applyThemePreference(preparedSettings.theme);
+
+				const restoredTranslationPackage = await loadTranslation(
+					preparedSettings.selectedTranslationId
+				);
+
+				if (disposed) {
+					return;
+				}
+
+				if (restoredTranslationPackage === null) {
+					preparedSettings = {
+						...preparedSettings,
+						selectedTranslationId: activeTranslationPackage.manifest.id
+					};
+				} else {
+					applyTranslation(restoredTranslationPackage);
 				}
 
 				userSettings = preparedSettings;
-				userSettingsStore = storage.userSettingsStore;
-				applyThemePreference(preparedSettings.theme);
+
+				if (userSettingsStore !== null) {
+					try {
+						await saveUserSettings(userSettingsStore, preparedSettings);
+					} catch {
+						userSettingsStore = null;
+					}
+				}
 
 				offlineStorageStatus = 'ready';
 			})
 			.catch(() => {
 				if (!disposed) {
-					persistentRepository = null;
+					translationStore = null;
 					recentLookupStore = null;
 					userSettingsStore = null;
 					offlineStorageStatus = 'unavailable';
@@ -96,7 +168,14 @@
 	});
 
 	async function handleSettingsChange(nextSettings: UserSettings) {
-		userSettings = nextSettings;
+		const settingsSnapshot = {
+			...nextSettings,
+			reading: {
+				...nextSettings.reading
+			}
+		} satisfies UserSettings;
+
+		userSettings = settingsSnapshot;
 
 		const settingsStore = userSettingsStore;
 
@@ -105,7 +184,7 @@
 		}
 
 		try {
-			await saveUserSettings(settingsStore, nextSettings);
+			await saveUserSettings(settingsStore, settingsSnapshot);
 		} catch {
 			userSettingsStore = null;
 		}
@@ -147,10 +226,13 @@
 	<header class="page-header">
 		<div class="page-header__navigation">
 			<BibleNavigationMenu
-				translationName={data.translationPackage.manifest.name}
+				translations={data.translationCatalog.translations}
+				selectedTranslationId={activeTranslationPackage.manifest.id}
+				translationSelectionDisabled={offlineStorageStatus === 'preparing'}
 				navigation={bibleNavigation}
 				selectedBookId={activeReference?.bookId ?? null}
 				selectedChapter={activeReference?.chapter ?? null}
+				onTranslationSelect={handleTranslationSelect}
 				onChapterSelect={handleChapterSelect}
 			/>
 		</div>
@@ -159,7 +241,7 @@
 			<SettingsMenu
 				settings={userSettings}
 				disabled={offlineStorageStatus === 'preparing'}
-				translationManifest={data.translationPackage.manifest}
+				translationManifest={activeTranslationPackage.manifest}
 				recentLookupCount={recentLookups.length}
 				onChange={handleSettingsChange}
 				onClearRecentLookups={handleClearRecentLookups}
@@ -184,16 +266,18 @@
 		</section>
 	{/if}
 
-	<BibleLookupWorkspace
-		bind:this={bibleLookupWorkspace}
-		bind:activeReference
-		{repository}
-		translationId={data.translationPackage.manifest.id}
-		translationName={data.translationPackage.manifest.name}
-		readingSettings={userSettings.reading}
-		bind:recentLookups
-		bind:recentLookupStore
-	/>
+	{#key activeTranslationPackage.manifest.id}
+		<BibleLookupWorkspace
+			bind:this={bibleLookupWorkspace}
+			bind:activeReference
+			{repository}
+			translationId={activeTranslationPackage.manifest.id}
+			translationName={activeTranslationPackage.manifest.name}
+			readingSettings={userSettings.reading}
+			bind:recentLookups
+			bind:recentLookupStore
+		/>
+	{/key}
 </main>
 
 <style>

@@ -4,6 +4,8 @@
 		BibleNavigationBook
 	} from '$lib/application/build-bible-navigation';
 	import type { BibleTestamentId } from '$lib/domain/bible-canon';
+	import type { TranslationCatalogEntry } from '$lib/domain/translation-catalog';
+	import TranslationSelector from './TranslationSelector.svelte';
 
 	/* icons */
 	import BookOpen from '@lucide/svelte/icons/book-open';
@@ -11,20 +13,27 @@
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 
 	type Props = {
-		translationName: string;
+		translations: readonly TranslationCatalogEntry[];
+		selectedTranslationId: string;
+		translationSelectionDisabled?: boolean;
 		navigation: BibleNavigationTestament[];
 		selectedBookId?: string | null;
 		selectedChapter?: number | null;
+		onTranslationSelect: (translationId: string) => boolean | Promise<boolean>;
 		onChapterSelect: (bookId: string, chapter: number) => boolean | Promise<boolean>;
 	};
 
 	let {
-		translationName,
+		translations,
+		selectedTranslationId,
+		translationSelectionDisabled = false,
 		navigation,
 		selectedBookId = null,
 		selectedChapter = null,
+		onTranslationSelect,
 		onChapterSelect
 	}: Props = $props();
+
 	let triggerElement = $state<HTMLButtonElement>();
 	let dialogElement = $state<HTMLDialogElement>();
 	let bookQuery = $state('');
@@ -150,9 +159,12 @@
 			</button>
 		</header>
 
-		<p class="translation-name" aria-label="Current translation" aria-current="true">
-			{translationName}
-		</p>
+		<TranslationSelector
+			{translations}
+			{selectedTranslationId}
+			disabled={translationSelectionDisabled}
+			onSelect={onTranslationSelect}
+		/>
 
 		<label class="visually-hidden" for="book-filter"> Find a book </label>
 
@@ -346,16 +358,6 @@
 		overflow: hidden;
 		clip-path: inset(50%);
 		white-space: nowrap;
-	}
-
-	.translation-name {
-		margin-bottom: var(--pico-spacing);
-		font-family: var(--verski-font-display);
-		font-size: clamp(1.25rem, 5vw, 1.75rem);
-		font-style: italic;
-		font-weight: var(--verski-font-weight-regular);
-		line-height: 1.2;
-		text-align: center;
 	}
 
 	.visually-hidden {

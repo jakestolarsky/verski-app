@@ -1,5 +1,5 @@
 import { page, userEvent } from 'vitest/browser';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { TranslationPackage } from '$lib/domain/translation-package';
 import Page from './+page.svelte';
@@ -7,6 +7,7 @@ import type { RecentLookup } from '$lib/domain/recent-lookup';
 import { IndexedDbRecentLookupStore } from '$lib/storage/indexed-db/indexed-db-recent-lookup-store';
 import { openBibleDatabase } from '$lib/storage/indexed-db/open-bible-database';
 import type { TranslationCatalog } from '$lib/domain/translation-catalog';
+import { IndexedDbUserSettingsStore } from '$lib/storage/indexed-db/indexed-db-user-settings-store';
 
 const translationPackage = {
 	manifest: {
@@ -33,12 +34,39 @@ const translationPackage = {
 	]
 } satisfies TranslationPackage;
 
+const polishTranslationPackage = {
+	manifest: {
+		...translationPackage.manifest,
+		id: 'polubg',
+		name: 'Uwspółcześniona Biblia Gdańska',
+		language: 'pl-PL',
+		version: '2025-12-12',
+		attribution: '© 2018 Fundacja Wrota Nadziei',
+		license: 'CC BY-ND 4.0',
+		licenseUrl: 'https://creativecommons.org/licenses/by-nd/4.0/',
+		source: 'https://ebible.org/bible/details.php?all=1&id=polubg',
+		sourceChecksum: `sha256:${'b'.repeat(64)}`
+	},
+	chapters: [
+		{
+			translationId: 'polubg',
+			bookId: 'john',
+			chapter: 1,
+			verses: ['Na początku było Słowo.', 'Ono było na początku u Boga.']
+		}
+	]
+} satisfies TranslationPackage;
+
 const translationCatalog = {
 	defaultTranslationId: translationPackage.manifest.id,
 	translations: [
 		{
 			manifest: translationPackage.manifest,
 			packageUrl: '/translations/engwebp.json'
+		},
+		{
+			manifest: polishTranslationPackage.manifest,
+			packageUrl: '/translations/polubg.json'
 		}
 	]
 } satisfies TranslationCatalog;
@@ -73,6 +101,10 @@ async function expandSearch(): Promise<void> {
 		})
 	);
 }
+
+afterEach(() => {
+	vi.restoreAllMocks();
+});
 
 describe('+page.svelte', () => {
 	it('looks up a valid reference submitted with Enter', async () => {
@@ -493,5 +525,76 @@ describe('+page.svelte', () => {
 		} finally {
 			openDatabase.mockRestore();
 		}
+	});
+
+	it('switches translation and restores it after remounting', async () => {
+		const fetchMock = vi.spyOn(window, 'fetch').mockImplementation(async (input) => {
+			if (input.toString() === '/translations/polubg.json') {
+				return Response.json(polishTranslationPackage);
+			}
+
+			return new Response(null, { status: 404 });
+		});
+
+		const firstRender = render(Page, { data });
+
+		await userEvent.click(page.getByRole('button', { name: 'Open Bible navigation' }));
+
+		const currentTranslation = page.getByRole('button', {
+			name: 'Current translation: World English Bible'
+		});
+
+		await expect.element(currentTranslation).toBeEnabled();
+		await userEvent.click(currentTranslation);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Uwspółcześniona Biblia Gdańska',
+				exact: true
+			})
+		);
+
+		const selectedTranslation = page.getByRole('button', {
+			name: 'Current translation: Uwspółcześniona Biblia Gdańska'
+		});
+
+		await expect.element(selectedTranslation).toBeVisible();
+		await expect.element(selectedTranslation).toHaveAttribute('aria-expanded', 'false');
+
+		const settingsDatabase = await openBibleDatabase();
+		const settingsStore = new IndexedDbUserSettingsStore(settingsDatabase);
+		const storedSettings = await settingsStore.getStoredUserSettings();
+
+		expect(storedSettings).toMatchObject({
+			selectedTranslationId: 'polubg'
+		});
+
+		settingsDatabase.close();
+
+		await userEvent.click(page.getByRole('button', { name: 'New Testament' }));
+		await userEvent.click(page.getByRole('button', { name: 'John', exact: true }));
+		await userEvent.click(page.getByRole('button', { name: 'John 1' }));
+
+		await expect.element(page.getByText('Na początku było Słowo.')).toBeVisible();
+
+		await firstRender.unmount();
+
+		render(Page, { data });
+
+		await expect.element(page.getByRole('button', { name: 'Settings' })).toBeEnabled();
+
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+
+		await userEvent.click(page.getByRole('button', { name: 'Open Bible navigation' }));
+
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Current translation: Uwspółcześniona Biblia Gdańska'
+				})
+			)
+			.toBeVisible();
+
+		expect(fetchMock).toHaveBeenCalledWith('/translations/polubg.json');
 	});
 });

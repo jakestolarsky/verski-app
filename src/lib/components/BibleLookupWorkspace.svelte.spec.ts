@@ -109,4 +109,42 @@ describe('BibleLookupWorkspace', () => {
 			)
 			.toBeInTheDocument();
 	});
+
+	it('shows recent lookups only for the active translation', async () => {
+		const repository = new StaticBibleRepository(translationPackage);
+
+		render(BibleLookupWorkspace, {
+			repository,
+			translationId: 'engwebp',
+			translationName: 'World English Bible',
+			recentLookups: [
+				{
+					translationId: 'engwebp',
+					reference: {
+						bookId: 'john',
+						chapter: 1,
+						verseStart: 1
+					},
+					searchedAt: 2
+				},
+				{
+					translationId: 'polubg',
+					reference: {
+						bookId: 'john',
+						chapter: 1,
+						verseStart: 2
+					},
+					searchedAt: 1
+				}
+			],
+			recentLookupStore: null,
+			readingSettings: defaultUserSettings.reading
+		});
+
+		await expect.element(page.getByRole('button', { name: 'John 1:1', exact: true })).toBeVisible();
+
+		await expect
+			.element(page.getByRole('button', { name: 'John 1:2', exact: true }))
+			.not.toBeInTheDocument();
+	});
 });
