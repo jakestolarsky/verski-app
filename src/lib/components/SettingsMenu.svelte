@@ -11,6 +11,8 @@
 	import { appMetadata } from '$lib/platform/app-metadata';
 	import type { TranslationManifest } from '$lib/domain/translation-package';
 	import TranslationInfo from './TranslationInfo.svelte';
+	import type { TranslationCatalogEntry } from '$lib/domain/translation-catalog';
+	import TranslationStorageSettings from './TranslationStorageSettings.svelte';
 
 	/* icons */
 	import SettingsIcon from '@lucide/svelte/icons/settings';
@@ -34,6 +36,13 @@
 		translationManifest: TranslationManifest;
 		onChange: (settings: UserSettings) => void | Promise<void>;
 		onClearRecentLookups?: () => void | Promise<void>;
+		translations?: readonly TranslationCatalogEntry[];
+		installedTranslationIds?: readonly string[];
+		activeTranslationId?: string;
+		defaultTranslationId?: string;
+		translationStorageDisabled?: boolean;
+		onInstallTranslation?: (translationId: string) => boolean | Promise<boolean>;
+		onRemoveTranslation?: (translationId: string) => boolean | Promise<boolean>;
 	};
 
 	type SettingsSection = 'display' | 'system' | 'about';
@@ -82,7 +91,14 @@
 		disabled = false,
 		recentLookupCount = 0,
 		onChange,
-		onClearRecentLookups = () => {}
+		onClearRecentLookups = () => {},
+		translations = [],
+		installedTranslationIds = [],
+		activeTranslationId = translationManifest.id,
+		defaultTranslationId = translationManifest.id,
+		translationStorageDisabled = false,
+		onInstallTranslation = () => false,
+		onRemoveTranslation = () => false
 	}: Props = $props();
 
 	let triggerElement = $state<HTMLButtonElement>();
@@ -441,6 +457,16 @@
 							<TrashIcon aria-hidden="true" />
 							<span>Clear history</span>
 						</button>
+
+						<TranslationStorageSettings
+							{translations}
+							{installedTranslationIds}
+							{activeTranslationId}
+							{defaultTranslationId}
+							disabled={translationStorageDisabled}
+							onInstall={onInstallTranslation}
+							onRemove={onRemoveTranslation}
+						/>
 					</section>
 				</div>
 			{:else}

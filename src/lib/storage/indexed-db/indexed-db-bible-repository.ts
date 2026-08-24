@@ -164,4 +164,36 @@ export class IndexedDbBibleRepository implements TranslationStore {
 			};
 		});
 	}
+
+	async getTranslationPackage(translationId: string): Promise<TranslationPackage | null> {
+		const transaction = this.database.transaction(
+			[CHAPTER_STORE_NAME, TRANSLATION_STORE_NAME],
+			'readonly'
+		);
+
+		const completion = waitForTransaction(transaction);
+
+		const translationStore = transaction.objectStore(TRANSLATION_STORE_NAME);
+
+		const chapterStore = transaction.objectStore(CHAPTER_STORE_NAME);
+
+		const translationIndex = chapterStore.index(CHAPTER_TRANSLATION_INDEX_NAME);
+
+		const manifestRequest = translationStore.get(translationId);
+
+		const chaptersRequest = translationIndex.getAll(IDBKeyRange.only(translationId));
+
+		await completion;
+
+		const manifest = manifestRequest.result as TranslationManifest | undefined;
+
+		if (manifest === undefined) {
+			return null;
+		}
+
+		return {
+			manifest,
+			chapters: chaptersRequest.result as ChapterRecord[]
+		};
+	}
 }

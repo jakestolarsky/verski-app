@@ -10,4 +10,5 @@ export interface TranslationStore extends BibleRepository {
 	getInstalledTranslationManifests(): Promise<TranslationManifest[]>;
 
 	getInstalledChapterCount(translationId: string): Promise<number>;
+	getTranslationPackage(translationId: string): Promise<TranslationPackage | null>;
 }

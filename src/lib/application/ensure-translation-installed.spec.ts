@@ -52,6 +52,9 @@ describe('ensureTranslationInstalled', () => {
 			},
 			async getInstalledTranslationManifests() {
 				return [];
+			},
+			async getTranslationPackage() {
+				return null;
 			}
 		};
 
@@ -82,8 +85,13 @@ describe('ensureTranslationInstalled', () => {
 			async getInstalledChapterCount() {
 				return translationPackage.chapters.length;
 			},
+
 			async getInstalledTranslationManifests() {
 				return [];
+			},
+
+			async getTranslationPackage() {
+				return null;
 			}
 		};
 
@@ -117,8 +125,13 @@ describe('ensureTranslationInstalled', () => {
 			async getInstalledChapterCount() {
 				return translationPackage.chapters.length;
 			},
+
 			async getInstalledTranslationManifests() {
 				return [];
+			},
+
+			async getTranslationPackage() {
+				return null;
 			}
 		};
 
@@ -150,8 +163,13 @@ describe('ensureTranslationInstalled', () => {
 			async getChapter() {
 				return null;
 			},
+
 			async getInstalledTranslationManifests() {
 				return [];
+			},
+
+			async getTranslationPackage() {
+				return null;
 			}
 		};
 
@@ -185,8 +203,13 @@ describe('ensureTranslationInstalled', () => {
 			async getChapter() {
 				return null;
 			},
+
 			async getInstalledTranslationManifests() {
 				return [];
+			},
+
+			async getTranslationPackage() {
+				return null;
 			}
 		};
 

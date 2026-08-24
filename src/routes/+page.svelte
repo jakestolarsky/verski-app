@@ -23,6 +23,8 @@
 	import type { TranslationPackage } from '$lib/domain/translation-package';
 	import { loadStaticTranslationPackage } from '$lib/storage/load-static-translation-package';
 	import type { TranslationStore } from '$lib/storage/translation-store';
+	import { removeInstalledTranslation } from '$lib/application/remove-installed-translation';
+	import { removeCachedTranslationPackage } from '$lib/platform/translation-cache';
 
 	type BibleLookupWorkspaceHandle = {
 		openChapter: (bookId: string, chapter: number) => Promise<boolean>;
@@ -37,6 +39,9 @@
 
 	const staticRepository = $derived(new StaticBibleRepository(activeTranslationPackage));
 	let translationStore = $state<TranslationStore | null>(null);
+	let installedTranslationIds = $state<string[]>(
+		untrack(() => [data.translationCatalog.defaultTranslationId])
+	);
 	const repository = $derived(translationStore ?? staticRepository);
 
 	let recentLookups = $state<RecentLookup[]>([]);
@@ -61,14 +66,26 @@
 		}
 
 		try {
-			return await prepareTranslationSelection(
+			const translationPackage = await prepareTranslationSelection(
 				catalogEntry,
 				(url) => loadStaticTranslationPackage(window.fetch.bind(window), url),
 				translationStore
 			);
+
+			markTranslationInstalled(translationPackage.manifest.id);
+
+			return translationPackage;
 		} catch {
 			return null;
 		}
+	}
+
+	function markTranslationInstalled(translationId: string) {
+		if (installedTranslationIds.includes(translationId)) {
+			return;
+		}
+
+		installedTranslationIds = [...installedTranslationIds, translationId];
 	}
 
 	function applyTranslation(translationPackage: TranslationPackage) {
@@ -108,6 +125,9 @@
 
 				preparedStorage = storage;
 				translationStore = storage.bibleRepository;
+				installedTranslationIds = storage.installedTranslationManifests.map(
+					(manifest) => manifest.id
+				);
 				recentLookupStore = storage.recentLookupStore;
 				recentLookups = storage.recentLookups;
 				userSettingsStore = storage.userSettingsStore;
@@ -215,6 +235,52 @@
 
 		return workspace.openChapter(bookId, chapter);
 	}
+
+	async function handleTranslationInstall(translationId: string): Promise<boolean> {
+		if (translationStore === null) {
+			return false;
+		}
+
+		const translationPackage = await loadTranslation(translationId);
+
+		return translationPackage !== null;
+	}
+
+	async function handleTranslationRemove(translationId: string): Promise<boolean> {
+		const store = translationStore;
+
+		if (store === null) {
+			return false;
+		}
+
+		const catalogEntry = data.translationCatalog.translations.find(
+			(entry) => entry.manifest.id === translationId
+		);
+
+		if (catalogEntry === undefined) {
+			return false;
+		}
+
+		try {
+			const result = await removeInstalledTranslation(
+				store,
+				catalogEntry,
+				activeTranslationPackage.manifest.id,
+				data.translationCatalog.defaultTranslationId,
+				removeCachedTranslationPackage
+			);
+
+			if (result !== 'removed') {
+				return false;
+			}
+
+			installedTranslationIds = installedTranslationIds.filter((id) => id !== translationId);
+
+			return true;
+		} catch {
+			return false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -242,9 +308,16 @@
 				settings={userSettings}
 				disabled={offlineStorageStatus === 'preparing'}
 				translationManifest={activeTranslationPackage.manifest}
+				translations={data.translationCatalog.translations}
+				{installedTranslationIds}
+				activeTranslationId={activeTranslationPackage.manifest.id}
+				defaultTranslationId={data.translationCatalog.defaultTranslationId}
+				translationStorageDisabled={translationStore === null}
 				recentLookupCount={recentLookups.length}
 				onChange={handleSettingsChange}
 				onClearRecentLookups={handleClearRecentLookups}
+				onInstallTranslation={handleTranslationInstall}
+				onRemoveTranslation={handleTranslationRemove}
 			/>
 		</div>
 	</header>

@@ -533,19 +533,26 @@ describe('+page.svelte', () => {
 				return Response.json(polishTranslationPackage);
 			}
 
-			return new Response(null, { status: 404 });
+			return new Response(null, {
+				status: 404
+			});
 		});
 
 		const firstRender = render(Page, { data });
 
-		await userEvent.click(page.getByRole('button', { name: 'Open Bible navigation' }));
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Open Bible navigation'
+			})
+		);
 
-		const currentTranslation = page.getByRole('button', {
+		const currentWebTranslation = page.getByRole('button', {
 			name: 'Current translation: World English Bible'
 		});
 
-		await expect.element(currentTranslation).toBeEnabled();
-		await userEvent.click(currentTranslation);
+		await expect.element(currentWebTranslation).toBeEnabled();
+
+		await userEvent.click(currentWebTranslation);
 
 		await userEvent.click(
 			page.getByRole('button', {
@@ -554,15 +561,53 @@ describe('+page.svelte', () => {
 			})
 		);
 
-		const selectedTranslation = page.getByRole('button', {
+		const currentPolishTranslation = page.getByRole('button', {
 			name: 'Current translation: Uwspółcześniona Biblia Gdańska'
 		});
 
-		await expect.element(selectedTranslation).toBeVisible();
-		await expect.element(selectedTranslation).toHaveAttribute('aria-expanded', 'false');
+		await expect.element(currentPolishTranslation).toBeVisible();
+
+		await expect.element(currentPolishTranslation).toHaveAttribute('aria-expanded', 'false');
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+
+		expect(fetchMock).toHaveBeenCalledWith('/translations/polubg.json');
+
+		await userEvent.click(currentPolishTranslation);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'World English Bible',
+				exact: true
+			})
+		);
+
+		const restoredWebTranslation = page.getByRole('button', {
+			name: 'Current translation: World English Bible'
+		});
+
+		await expect.element(restoredWebTranslation).toHaveAttribute('aria-expanded', 'false');
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+
+		fetchMock.mockRejectedValue(new TypeError('Simulated offline state'));
+
+		await userEvent.click(restoredWebTranslation);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Uwspółcześniona Biblia Gdańska',
+				exact: true
+			})
+		);
+
+		await expect.element(currentPolishTranslation).toHaveAttribute('aria-expanded', 'false');
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
 
 		const settingsDatabase = await openBibleDatabase();
 		const settingsStore = new IndexedDbUserSettingsStore(settingsDatabase);
+
 		const storedSettings = await settingsStore.getStoredUserSettings();
 
 		expect(storedSettings).toMatchObject({
@@ -571,9 +616,24 @@ describe('+page.svelte', () => {
 
 		settingsDatabase.close();
 
-		await userEvent.click(page.getByRole('button', { name: 'New Testament' }));
-		await userEvent.click(page.getByRole('button', { name: 'John', exact: true }));
-		await userEvent.click(page.getByRole('button', { name: 'John 1' }));
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'New Testament'
+			})
+		);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'John',
+				exact: true
+			})
+		);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'John 1'
+			})
+		);
 
 		await expect.element(page.getByText('Na początku było Słowo.')).toBeVisible();
 
@@ -581,11 +641,19 @@ describe('+page.svelte', () => {
 
 		render(Page, { data });
 
-		await expect.element(page.getByRole('button', { name: 'Settings' })).toBeEnabled();
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Settings'
+				})
+			)
+			.toBeEnabled();
 
-		expect(fetchMock).toHaveBeenCalledTimes(2);
-
-		await userEvent.click(page.getByRole('button', { name: 'Open Bible navigation' }));
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Open Bible navigation'
+			})
+		);
 
 		await expect
 			.element(
@@ -595,6 +663,6 @@ describe('+page.svelte', () => {
 			)
 			.toBeVisible();
 
-		expect(fetchMock).toHaveBeenCalledWith('/translations/polubg.json');
+		expect(fetchMock).toHaveBeenCalledTimes(1);
 	});
 });

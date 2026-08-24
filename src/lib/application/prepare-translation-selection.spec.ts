@@ -36,7 +36,8 @@ const catalogEntry = {
 } satisfies TranslationCatalogEntry;
 
 function createTranslationStore(
-	onInstall: (translationPackage: TranslationPackage) => void
+	onInstall: (translationPackage: TranslationPackage) => void,
+	installedPackage: TranslationPackage | null = null
 ): TranslationStore {
 	return {
 		async getChapter() {
@@ -44,18 +45,23 @@ function createTranslationStore(
 		},
 
 		async getTranslationManifest() {
-			return null;
+			return installedPackage?.manifest ?? null;
+		},
+
+		async getInstalledTranslationManifests() {
+			return installedPackage === null ? [] : [installedPackage.manifest];
 		},
 
 		async getInstalledChapterCount() {
-			return 0;
+			return installedPackage?.chapters.length ?? 0;
+		},
+
+		async getTranslationPackage() {
+			return installedPackage;
 		},
 
 		async installTranslation(packageToInstall) {
 			onInstall(packageToInstall);
-		},
-		async getInstalledTranslationManifests() {
-			return [];
 		},
 
 		async removeTranslation() {}
@@ -108,5 +114,27 @@ describe('prepareTranslationSelection', () => {
 		await expect(
 			prepareTranslationSelection(catalogEntry, async () => mismatchedPackage, null)
 		).rejects.toThrowError('Translation package polubg does not match its catalog entry.');
+	});
+
+	it('uses an installed package without loading it again', async () => {
+		let loadCalls = 0;
+		let installCalls = 0;
+
+		const store = createTranslationStore(() => {
+			installCalls += 1;
+		}, translationPackage);
+
+		const result = await prepareTranslationSelection(
+			catalogEntry,
+			async () => {
+				loadCalls += 1;
+				throw new Error('The network should not be used');
+			},
+			store
+		);
+
+		expect(result).toEqual(translationPackage);
+		expect(loadCalls).toBe(0);
+		expect(installCalls).toBe(0);
 	});
 });
