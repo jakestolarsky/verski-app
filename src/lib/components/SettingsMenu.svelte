@@ -52,12 +52,12 @@
 	type SettingsSection = 'display' | 'system' | 'about';
 
 	const settingsSections = [
-		{ id: 'display', label: 'Display' },
-		{ id: 'system', label: 'System' },
-		{ id: 'about', label: 'About' }
+		{ id: 'display', label: m.settings_tab_display },
+		{ id: 'system', label: m.settings_tab_system },
+		{ id: 'about', label: m.settings_tab_about }
 	] as const satisfies ReadonlyArray<{
 		id: SettingsSection;
-		label: string;
+		label: () => string;
 	}>;
 
 	let activeSection = $state<SettingsSection>('display');
@@ -65,10 +65,10 @@
 	const themeOptions = ['light', 'dark', 'system'] as const satisfies readonly Theme[];
 
 	const themeLabels = {
-		system: 'System',
-		light: 'Light',
-		dark: 'Dark'
-	} satisfies Record<Theme, string>;
+		system: m.settings_theme_system_label,
+		light: m.settings_theme_light_label,
+		dark: m.settings_theme_dark_label
+	} satisfies Record<Theme, () => string>;
 
 	const fontSizes = ['small', 'default', 'large'] as const satisfies readonly ReadingFontSize[];
 	const lineHeights = [
@@ -78,16 +78,16 @@
 	] as const satisfies readonly ReadingLineHeight[];
 
 	const fontSizeLabels = {
-		small: 'Small',
-		default: 'Default',
-		large: 'Large'
-	} satisfies Record<ReadingFontSize, string>;
+		small: m.settings_font_size_small,
+		default: m.settings_font_size_default,
+		large: m.settings_font_size_large
+	} satisfies Record<ReadingFontSize, () => string>;
 
 	const lineHeightLabels = {
-		compact: 'Compact',
-		default: 'Default',
-		relaxed: 'Relaxed'
-	} satisfies Record<ReadingLineHeight, string>;
+		compact: m.settings_line_height_compact,
+		default: m.settings_line_height_default,
+		relaxed: m.settings_line_height_relaxed
+	} satisfies Record<ReadingLineHeight, () => string>;
 
 	const localeLabels = {
 		en: m.language_english,
@@ -258,7 +258,7 @@
 		bind:this={triggerElement}
 		class="settings-trigger verski-round-action verski-round-action--secondary"
 		type="button"
-		aria-label="Settings"
+		aria-label={m.settings_trigger_label()}
 		aria-haspopup="dialog"
 		{disabled}
 		onclick={openMenu}
@@ -274,12 +274,12 @@
 	>
 		<article class="settings-dialog__content">
 			<header>
-				<h2 id="settings-heading">Settings</h2>
+				<h2 id="settings-heading">{m.settings_title()}</h2>
 
 				<button
 					class="settings-close verski-round-action verski-round-action--secondary"
 					type="button"
-					aria-label="Close settings"
+					aria-label={m.settings_close_label()}
 					onclick={closeMenu}
 				>
 					<SettingsIcon aria-hidden="true" />
@@ -289,7 +289,7 @@
 			<div
 				class="settings-tabs"
 				role="tablist"
-				aria-label="Settings sections"
+				aria-label={m.settings_sections_label()}
 				tabindex="-1"
 				onkeydown={handleTablistKeydown}
 			>
@@ -304,7 +304,7 @@
 						tabindex={activeSection === section.id ? 0 : -1}
 						onclick={() => selectSection(section.id)}
 					>
-						{section.label}
+						{section.label()}
 					</button>
 				{/each}
 			</div>
@@ -318,7 +318,7 @@
 				>
 					<section
 						class="reading-preview"
-						aria-label="Reading preview"
+						aria-label={m.settings_reading_preview_label()}
 						data-font-size={settings.reading.fontSize}
 						data-line-height={settings.reading.lineHeight}
 					>
@@ -332,22 +332,24 @@
 						</p>
 					</section>
 					<fieldset class="reading-controls">
-						<legend class="visually-hidden">Reading</legend>
+						<legend class="visually-hidden">{m.settings_reading_legend()}</legend>
 
 						<div class="setting-row">
 							<div class="setting-row__label">
 								<ALargeSmallIcon aria-hidden="true" />
-								<span>Text size</span>
+								<span>{m.settings_text_size()}</span>
 							</div>
 
 							<div class="setting-stepper">
 								<output class="visually-hidden" aria-live="polite">
-									Text size: {fontSizeLabels[settings.reading.fontSize]}
+									{m.settings_text_size_status({
+										value: fontSizeLabels[settings.reading.fontSize]()
+									})}
 								</output>
 
 								<button
 									type="button"
-									aria-label="Decrease text size"
+									aria-label={m.settings_decrease_text_size()}
 									disabled={settings.reading.fontSize === 'small'}
 									onclick={() => changeFontSize(-1)}
 								>
@@ -356,7 +358,7 @@
 
 								<button
 									type="button"
-									aria-label="Increase text size"
+									aria-label={m.settings_increase_text_size()}
 									disabled={settings.reading.fontSize === 'large'}
 									onclick={() => changeFontSize(1)}
 								>
@@ -368,17 +370,19 @@
 						<div class="setting-row">
 							<div class="setting-row__label">
 								<ArrowDownWideNarrowIcon aria-hidden="true" />
-								<span>Line spacing</span>
+								<span>{m.settings_line_spacing()}</span>
 							</div>
 
 							<div class="setting-stepper">
 								<output class="visually-hidden" aria-live="polite">
-									Line spacing: {lineHeightLabels[settings.reading.lineHeight]}
+									{m.settings_line_spacing_status({
+										value: lineHeightLabels[settings.reading.lineHeight]()
+									})}
 								</output>
 
 								<button
 									type="button"
-									aria-label="Decrease line spacing"
+									aria-label={m.settings_decrease_line_spacing()}
 									disabled={settings.reading.lineHeight === 'compact'}
 									onclick={() => changeLineHeight(-1)}
 								>
@@ -387,7 +391,7 @@
 
 								<button
 									type="button"
-									aria-label="Increase line spacing"
+									aria-label={m.settings_increase_line_spacing()}
 									disabled={settings.reading.lineHeight === 'relaxed'}
 									onclick={() => changeLineHeight(1)}
 								>
@@ -399,7 +403,7 @@
 						<div class="setting-row">
 							<div class="setting-row__label">
 								<TextInitialIcon aria-hidden="true" />
-								<span id="show-verse-numbers-label">Show verse numbers</span>
+								<span id="show-verse-numbers-label">{m.settings_show_verse_numbers()}</span>
 							</div>
 
 							<span class="setting-control-slot">
@@ -425,7 +429,7 @@
 						</div>
 					</fieldset>
 					<fieldset class="theme-controls">
-						<legend class="visually-hidden">Theme</legend>
+						<legend class="visually-hidden">{m.settings_theme_legend()}</legend>
 
 						{#each themeOptions as theme}
 							<label class="theme-option">
@@ -434,7 +438,7 @@
 									name="theme"
 									value={theme}
 									checked={settings.theme === theme}
-									aria-label={`${themeLabels[theme]} theme`}
+									aria-label={themeLabels[theme]()}
 									onchange={handleThemeChange}
 								/>
 
@@ -477,15 +481,14 @@
 					</section>
 
 					<section class="system-setting" aria-labelledby="history-settings-heading">
-						<h3 id="history-settings-heading">Recent lookups</h3>
+						<h3 id="history-settings-heading">{m.settings_recent_heading()}</h3>
 
 						{#if recentLookupCount === 0}
-							<p>There are no recent lookups to remove.</p>
+							<p>{m.settings_recent_empty()}</p>
+						{:else if recentLookupCount === 1}
+							<p>{m.settings_recent_remove_one()}</p>
 						{:else}
-							<p>
-								Remove all {recentLookupCount}
-								{recentLookupCount === 1 ? 'recent lookup' : 'recent lookups'}.
-							</p>
+							<p>{m.settings_recent_remove_many({ count: recentLookupCount })}</p>
 						{/if}
 
 						<button
@@ -495,7 +498,7 @@
 							onclick={onClearRecentLookups}
 						>
 							<TrashIcon aria-hidden="true" />
-							<span>Clear history</span>
+							<span>{m.settings_clear_history()}</span>
 						</button>
 
 						<TranslationStorageSettings
@@ -518,20 +521,20 @@
 					tabindex="0"
 				>
 					<section class="about-section" aria-labelledby="about-heading">
-						<h3 id="about-heading">Application</h3>
+						<h3 id="about-heading">{m.settings_application_heading()}</h3>
 						<dl class="about-metadata">
 							<div>
-								<dt>Version</dt>
+								<dt>{m.settings_metadata_version()}</dt>
 								<dd>{appMetadata.version}</dd>
 							</div>
 
 							<div>
-								<dt>Build</dt>
+								<dt>{m.settings_metadata_build()}</dt>
 								<dd><code>{appMetadata.commit}</code></dd>
 							</div>
 
 							<div>
-								<dt>Author</dt>
+								<dt>{m.settings_metadata_author()}</dt>
 								<dd>{appMetadata.author}</dd>
 							</div>
 						</dl>
@@ -543,7 +546,7 @@
 							rel="noreferrer"
 						>
 							<LinkIcon aria-hidden="true" />
-							<span>GitHub repository</span>
+							<span>{m.settings_github_repository()}</span>
 						</a>
 					</section>
 
