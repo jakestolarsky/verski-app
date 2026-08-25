@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { TranslationCatalogEntry } from '$lib/domain/translation-catalog';
+	import * as m from '$lib/paraglide/messages.js';
 
 	type Props = {
 		translations: readonly TranslationCatalogEntry[];
@@ -53,7 +54,7 @@
 </script>
 
 <section class="translation-storage" aria-labelledby="translation-storage-heading">
-	<h3 id="translation-storage-heading">Offline translations</h3>
+	<h3 id="translation-storage-heading">{m.translation_storage_heading()}</h3>
 
 	<ul>
 		{#each translations as translation (translation.manifest.id)}
@@ -69,16 +70,16 @@
 
 					<span>
 						{#if isDefault}
-							Bundled with Verski
+							{m.translation_status_bundled()}
 						{:else if installed}
-							Installed offline
+							{m.translation_status_installed()}
 						{:else}
-							Available to install
+							{m.translation_status_available()}
 						{/if}
 					</span>
 
 					{#if isActive && !isDefault}
-						<small>Select another translation before removing it.</small>
+						<small>{m.translation_active_remove_hint()}</small>
 					{/if}
 				</div>
 
@@ -87,27 +88,41 @@
 						<button
 							class="secondary outline"
 							type="button"
-							aria-label={`Remove ${translation.manifest.name}`}
+							aria-label={m.translation_remove_label({
+								name: translation.manifest.name
+							})}
 							disabled={disabled || pendingTranslationId !== null || isActive}
 							onclick={() => runOperation(translationId, 'remove')}
 						>
-							{isPending && operation === 'remove' ? 'Removing…' : 'Remove'}
+							{#if isPending && operation === 'remove'}
+								{m.translation_removing_action()}
+							{:else}
+								{m.translation_remove_action()}
+							{/if}
 						</button>
 					{:else}
 						<button
 							class="secondary outline"
 							type="button"
-							aria-label={`Install ${translation.manifest.name}`}
+							aria-label={m.translation_install_label({
+								name: translation.manifest.name
+							})}
 							disabled={disabled || pendingTranslationId !== null}
 							onclick={() => runOperation(translationId, 'install')}
 						>
-							{isPending && operation === 'install' ? 'Installing…' : 'Install'}
+							{#if isPending && operation === 'install'}
+								{m.translation_installing_action()}
+							{:else}
+								{m.translation_install_action()}
+							{/if}
 						</button>
 					{/if}
 				{/if}
 
 				{#if failedTranslationId === translationId}
-					<p class="translation-storage__error" role="alert">Could not update this translation.</p>
+					<p class="translation-storage__error" role="alert">
+						{m.translation_update_error()}
+					</p>
 				{/if}
 			</li>
 		{/each}

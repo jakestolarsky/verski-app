@@ -12,5 +12,20 @@ describe('settings messages', () => {
 		expect(m.settings_recent_remove_many({ count: 3 }, { locale: 'pl' })).toBe(
 			'Usuń wszystkie ostatnie wyszukiwania (3).'
 		);
+
+		expect(m.translation_storage_heading({}, { locale: 'pl' })).toBe('Tłumaczenia offline');
+
+		expect(
+			m.translation_remove_label(
+				{
+					name: 'Uwspółcześniona Biblia Gdańska'
+				},
+				{ locale: 'pl' }
+			)
+		).toBe('Usuń tłumaczenie Uwspółcześniona Biblia Gdańska');
+
+		expect(m.translation_current_heading({}, { locale: 'pl' })).toBe('Aktualne tłumaczenie');
+
+		expect(m.translation_official_source({}, { locale: 'pl' })).toBe('Oficjalne źródło');
 	});
 });
