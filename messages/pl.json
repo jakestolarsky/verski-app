@@ -58,5 +58,13 @@
 	"translation_metadata_attribution": "Informacje o autorstwie",
 	"translation_metadata_license": "Licencja",
 	"translation_metadata_source": "Źródło",
-	"translation_official_source": "Oficjalne źródło"
+	"translation_official_source": "Oficjalne źródło",
+	"search_reference_label": "Odnośnik biblijny",
+	"search_clear_label": "Wyczyść wyszukiwanie",
+	"search_submit_label": "Wyszukaj w Biblii",
+	"search_submitting_label": "Wyszukiwanie w Biblii",
+	"search_loading_status": "Wyszukiwanie fragmentu…",
+	"recent_heading": "Ostatnie",
+	"recent_heading_label": "Ostatnie wyszukiwania",
+	"recent_remove_label": "Usuń {reference} z ostatnich wyszukiwań"
 }

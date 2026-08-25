@@ -27,5 +27,18 @@ describe('settings messages', () => {
 		expect(m.translation_current_heading({}, { locale: 'pl' })).toBe('Aktualne tłumaczenie');
 
 		expect(m.translation_official_source({}, { locale: 'pl' })).toBe('Oficjalne źródło');
+
+		expect(m.search_reference_label({}, { locale: 'pl' })).toBe('Odnośnik biblijny');
+
+		expect(m.search_submit_label({}, { locale: 'pl' })).toBe('Wyszukaj w Biblii');
+
+		expect(
+			m.recent_remove_label(
+				{
+					reference: 'John 3:16'
+				},
+				{ locale: 'pl' }
+			)
+		).toBe('Usuń John 3:16 z ostatnich wyszukiwań');
 	});
 });

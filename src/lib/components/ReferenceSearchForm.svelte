@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createTypewriterPlaceholder } from './typewriter-placeholder.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import XIcon from '@lucide/svelte/icons/x';
@@ -82,7 +83,9 @@
 </script>
 
 <form class:collapsed onsubmit={handleSubmit}>
-	<label class="visually-hidden" for="reference">Bible reference</label>
+	<label class="visually-hidden" for="reference">
+		{m.search_reference_label()}
+	</label>
 
 	<div
 		id="reference-search-controls"
@@ -127,7 +130,7 @@
 				<button
 					class="reference-search__clear"
 					type="button"
-					aria-label="Clear"
+					aria-label={m.search_clear_label()}
 					disabled={isSubmitting}
 					onclick={handleClear}
 				>
@@ -140,7 +143,7 @@
 	<button
 		class="reference-search__submit verski-round-action"
 		type="submit"
-		aria-label={isSubmitting ? 'Searching Bible' : 'Search Bible'}
+		aria-label={isSubmitting ? m.search_submitting_label() : m.search_submit_label()}
 		aria-expanded={!collapsed}
 		aria-controls="reference-search-controls"
 		aria-busy={isSubmitting}
@@ -153,7 +156,9 @@
 	</button>
 
 	{#if isSubmitting}
-		<span class="visually-hidden" role="status">Looking up passage…</span>
+		<span class="visually-hidden" role="status">
+			{m.search_loading_status()}
+		</span>
 	{/if}
 </form>
 

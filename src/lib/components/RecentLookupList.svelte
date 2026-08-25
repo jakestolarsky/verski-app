@@ -2,6 +2,7 @@
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
 	import { bibleBooks } from '$lib/domain/bible-book';
 	import type { RecentLookup } from '$lib/domain/recent-lookup';
+	import * as m from '$lib/paraglide/messages.js';
 
 	/* icons */
 	import XIcon from '@lucide/svelte/icons/x';
@@ -41,9 +42,9 @@
 {#if lookups.length > 0}
 	<section class="recent-lookups" aria-labelledby="recent-lookups-heading">
 		<header class="recent-lookups__header">
-			<h2 id="recent-lookups-heading" aria-label="Recent lookups">
+			<h2 id="recent-lookups-heading" aria-label={m.recent_heading_label()}>
 				<RotateCcwClockIcon aria-hidden="true" />
-				<span aria-hidden="true">Recent</span>
+				<span aria-hidden="true">{m.recent_heading()}</span>
 			</h2>
 		</header>
 
@@ -53,7 +54,9 @@
 					<button
 						class="recent-lookups__remove secondary outline"
 						type="button"
-						aria-label={`Remove ${getLookupLabel(lookup)} from recent lookups`}
+						aria-label={m.recent_remove_label({
+							reference: getLookupLabel(lookup)
+						})}
 						onclick={() => onRemove(lookup)}
 					>
 						<XIcon aria-hidden="true" />

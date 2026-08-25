@@ -58,5 +58,13 @@
 	"translation_metadata_attribution": "Attribution",
 	"translation_metadata_license": "License",
 	"translation_metadata_source": "Source",
-	"translation_official_source": "Official source"
+	"translation_official_source": "Official source",
+	"search_reference_label": "Bible reference",
+	"search_clear_label": "Clear",
+	"search_submit_label": "Search Bible",
+	"search_submitting_label": "Searching Bible",
+	"search_loading_status": "Looking up passage…",
+	"recent_heading": "Recent",
+	"recent_heading_label": "Recent lookups",
+	"recent_remove_label": "Remove {reference} from recent lookups"
 }
