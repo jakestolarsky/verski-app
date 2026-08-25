@@ -5,6 +5,7 @@
 		ParseReferenceResult
 	} from '$lib/domain/parser/parse-reference';
 	import type { ReadingSettings } from '$lib/domain/user-settings';
+	import * as m from '$lib/paraglide/messages.js';
 
 	/*icons*/
 	import CheckIcon from '@lucide/svelte/icons/check';
@@ -35,14 +36,13 @@
 		onShowChapterRemainder
 	}: Props = $props();
 
-	const errorMessages: Record<ParseReferenceError, string> = {
-		'invalid-format': 'Enter a reference such as John 3:16.',
-		'invalid-structure': 'Chapter and verse numbers must be positive whole numbers.',
-		'unknown-book': 'That Bible book is not available.',
-		'invalid-verse-range': 'The ending verse cannot come before the starting verse.',
-		'ambiguous-book':
-			'That abbreviation matches more than one Bible book. Enter a longer book name.'
-	};
+	const errorMessages = {
+		'invalid-format': m.passage_error_invalid_format,
+		'invalid-structure': m.passage_error_invalid_structure,
+		'unknown-book': m.passage_error_unknown_book,
+		'invalid-verse-range': m.passage_error_invalid_verse_range,
+		'ambiguous-book': m.passage_error_ambiguous_book
+	} satisfies Record<ParseReferenceError, () => string>;
 </script>
 
 <section aria-labelledby={parseResult === null ? undefined : 'passage-heading'} aria-live="polite">
@@ -54,14 +54,14 @@
 		{/if}
 
 		{#if !parseResult.ok}
-			<p>{errorMessages[parseResult.error]}</p>
+			<p>{errorMessages[parseResult.error]()}</p>
 		{:else if lookupResult === null}
-			<p>Loading passage…</p>
+			<p>{m.passage_loading()}</p>
 		{:else if !lookupResult.ok}
 			{#if lookupResult.error === 'chapter-not-found'}
-				<p>This chapter is not available in the selected translation.</p>
+				<p>{m.passage_chapter_not_found()}</p>
 			{:else}
-				<p>That verse does not exist in this chapter.</p>
+				<p>{m.passage_verse_not_found()}</p>
 			{/if}
 		{:else}
 			<p
@@ -83,7 +83,7 @@
 			<button
 				class="copy-button"
 				type="button"
-				aria-label={copyStatus === 'copied' ? 'Copy passage again' : 'Copy passage'}
+				aria-label={copyStatus === 'copied' ? m.passage_copy_again_label() : m.passage_copy_label()}
 				onclick={onCopy}
 			>
 				<span
@@ -100,16 +100,20 @@
 			</button>
 
 			{#if copyStatus === 'copied'}
-				<p class="copy-status" role="status">Passage copied.</p>
+				<p class="copy-status" role="status">
+					{m.passage_copied_status()}
+				</p>
 			{:else if copyStatus === 'error'}
-				<p class="copy-status" role="alert">Passage could not be copied.</p>
+				<p class="copy-status" role="alert">
+					{m.passage_copy_error()}
+				</p>
 			{/if}
 
 			{#if lookupResult.hasMoreVerses}
 				<button
 					class="chapter-remainder-button"
 					type="button"
-					aria-label="Show rest of chapter"
+					aria-label={m.passage_show_chapter_remainder()}
 					onclick={onShowChapterRemainder}
 				>
 					<ChevronDownIcon aria-hidden="true" />

@@ -17,6 +17,7 @@
 	import ReferenceSearchForm from './ReferenceSearchForm.svelte';
 	import type { ReadingSettings } from '$lib/domain/user-settings';
 	import { expandPassageToChapterEnd } from '$lib/application/expand-passage-to-chapter-end';
+	import * as m from '$lib/paraglide/messages.js';
 
 	type ReferenceSearchFormHandle = {
 		focus: () => void;

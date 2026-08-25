@@ -40,5 +40,15 @@ describe('settings messages', () => {
 				{ locale: 'pl' }
 			)
 		).toBe('Usuń John 3:16 z ostatnich wyszukiwań');
+
+		expect(m.passage_heading_fallback({}, { locale: 'pl' })).toBe('Fragment');
+
+		expect(m.passage_error_unknown_book({}, { locale: 'pl' })).toBe(
+			'Ta księga biblijna nie jest dostępna.'
+		);
+
+		expect(m.passage_copy_again_label({}, { locale: 'pl' })).toBe('Skopiuj fragment ponownie');
+
+		expect(m.passage_show_chapter_remainder({}, { locale: 'pl' })).toBe('Pokaż resztę rozdziału');
 	});
 });

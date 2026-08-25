@@ -66,5 +66,19 @@
 	"search_loading_status": "Wyszukiwanie fragmentu…",
 	"recent_heading": "Ostatnie",
 	"recent_heading_label": "Ostatnie wyszukiwania",
-	"recent_remove_label": "Usuń {reference} z ostatnich wyszukiwań"
+	"recent_remove_label": "Usuń {reference} z ostatnich wyszukiwań",
+	"passage_heading_fallback": "Fragment",
+	"passage_error_invalid_format": "Wpisz odnośnik, na przykład J 3:16.",
+	"passage_error_invalid_structure": "Numery rozdziałów i wersetów muszą być dodatnimi liczbami całkowitymi.",
+	"passage_error_unknown_book": "Ta księga biblijna nie jest dostępna.",
+	"passage_error_invalid_verse_range": "Numer końcowego wersetu nie może być mniejszy od numeru początkowego.",
+	"passage_error_ambiguous_book": "Ten skrót pasuje do więcej niż jednej księgi biblijnej. Wpisz dłuższą nazwę księgi.",
+	"passage_loading": "Wczytywanie fragmentu…",
+	"passage_chapter_not_found": "Ten rozdział nie jest dostępny w wybranym tłumaczeniu.",
+	"passage_verse_not_found": "Ten werset nie istnieje w tym rozdziale.",
+	"passage_copy_label": "Skopiuj fragment",
+	"passage_copy_again_label": "Skopiuj fragment ponownie",
+	"passage_copied_status": "Fragment skopiowany.",
+	"passage_copy_error": "Nie udało się skopiować fragmentu.",
+	"passage_show_chapter_remainder": "Pokaż resztę rozdziału"
 }

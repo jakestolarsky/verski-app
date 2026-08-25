@@ -66,5 +66,19 @@
 	"search_loading_status": "Looking up passage…",
 	"recent_heading": "Recent",
 	"recent_heading_label": "Recent lookups",
-	"recent_remove_label": "Remove {reference} from recent lookups"
+	"recent_remove_label": "Remove {reference} from recent lookups",
+	"passage_heading_fallback": "Passage",
+	"passage_error_invalid_format": "Enter a reference such as John 3:16.",
+	"passage_error_invalid_structure": "Chapter and verse numbers must be positive whole numbers.",
+	"passage_error_unknown_book": "That Bible book is not available.",
+	"passage_error_invalid_verse_range": "The ending verse cannot come before the starting verse.",
+	"passage_error_ambiguous_book": "That abbreviation matches more than one Bible book. Enter a longer book name.",
+	"passage_loading": "Loading passage…",
+	"passage_chapter_not_found": "This chapter is not available in the selected translation.",
+	"passage_verse_not_found": "That verse does not exist in this chapter.",
+	"passage_copy_label": "Copy passage",
+	"passage_copy_again_label": "Copy passage again",
+	"passage_copied_status": "Passage copied.",
+	"passage_copy_error": "Passage could not be copied.",
+	"passage_show_chapter_remainder": "Show rest of chapter"
 }
