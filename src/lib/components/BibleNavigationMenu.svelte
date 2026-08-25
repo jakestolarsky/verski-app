@@ -6,6 +6,7 @@
 	import type { BibleTestamentId } from '$lib/domain/bible-canon';
 	import type { TranslationCatalogEntry } from '$lib/domain/translation-catalog';
 	import TranslationSelector from './TranslationSelector.svelte';
+	import * as m from '$lib/paraglide/messages';
 
 	/* icons */
 	import BookOpen from '@lucide/svelte/icons/book-open';
@@ -126,7 +127,7 @@
 	bind:this={triggerElement}
 	class="navigation-trigger verski-round-action verski-round-action--secondary"
 	type="button"
-	aria-label="Open Bible navigation"
+	aria-label={m.navigation_open_label()}
 	aria-haspopup="dialog"
 	onclick={openMenu}
 >
@@ -141,12 +142,12 @@
 >
 	<div bind:this={navigationPanelElement} class="navigation-panel">
 		<header class="navigation-header">
-			<h2 id="bible-navigation-heading">Bible navigation</h2>
+			<h2 id="bible-navigation-heading">{m.navigation_title()}</h2>
 
 			<button
 				class="navigation-close verski-round-action verski-round-action--secondary"
 				type="button"
-				aria-label="Close Bible navigation"
+				aria-label={m.navigation_close_label()}
 				onclick={closeMenu}
 			>
 				<span class="mobile-close-icon" aria-hidden="true">
@@ -166,26 +167,28 @@
 			onSelect={onTranslationSelect}
 		/>
 
-		<label class="visually-hidden" for="book-filter"> Find a book </label>
+		<label for="book-filter">{m.navigation_find_book_label()}</label>
 
 		<div class="book-filter">
 			<input
 				id="book-filter"
 				type="search"
-				placeholder="Find a book..."
+				placeholder={m.navigation_find_book_placeholder()}
 				autocomplete="off"
 				bind:value={bookQuery}
 			/>
 		</div>
 
 		{#if selectionError}
-			<p class="navigation-error" role="alert">Could not open the selected chapter.</p>
+			<p class="navigation-error" role="alert">
+				{m.navigation_chapter_open_error()}
+			</p>
 		{/if}
 
 		{#if navigation.length === 0}
-			<p role="status">No Bible books are available for this translation.</p>
+			<p>{m.navigation_no_books()}</p>
 		{:else if filteredNavigation.length === 0}
-			<p role="status">No books match your search.</p>
+			<p>{m.navigation_no_matches()}</p>
 		{:else}
 			{#each filteredNavigation as testament (testament.id)}
 				<section class="testament">
@@ -228,9 +231,13 @@
 
 									{#if expandedBookId === book.id}
 										{#if book.chapters.length === 0}
-											<p class="empty-book">No chapters available.</p>
+											<p class="empty-book">{m.navigation_no_chapters()}</p>
 										{:else}
-											<ul class="chapter-list" role="list" aria-label={`${book.name} chapters`}>
+											<ul
+												class="chapter-list"
+												role="list"
+												aria-label={m.navigation_book_chapters_label({ book: book.name })}
+											>
 												{#each book.chapters as chapter}
 													<li>
 														<button
@@ -352,15 +359,6 @@
 	}
 
 	.navigation-header h2 {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
-	}
-
-	.visually-hidden {
 		position: absolute;
 		width: 1px;
 		height: 1px;

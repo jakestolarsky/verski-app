@@ -80,5 +80,19 @@
 	"passage_copy_again_label": "Skopiuj fragment ponownie",
 	"passage_copied_status": "Fragment skopiowany.",
 	"passage_copy_error": "Nie udało się skopiować fragmentu.",
-	"passage_show_chapter_remainder": "Pokaż resztę rozdziału"
+	"passage_show_chapter_remainder": "Pokaż resztę rozdziału",
+	"navigation_open_label": "Otwórz nawigację po Biblii",
+	"navigation_title": "Nawigacja po Biblii",
+	"navigation_close_label": "Zamknij nawigację po Biblii",
+	"navigation_find_book_label": "Znajdź księgę",
+	"navigation_find_book_placeholder": "Znajdź księgę...",
+	"navigation_chapter_open_error": "Nie udało się otworzyć wybranego rozdziału.",
+	"navigation_no_books": "W tym tłumaczeniu nie ma dostępnych ksiąg biblijnych.",
+	"navigation_no_matches": "Żadna księga nie pasuje do wyszukiwania.",
+	"navigation_no_chapters": "Brak dostępnych rozdziałów.",
+	"navigation_book_chapters_label": "Rozdziały księgi {book}",
+	"translation_choose": "Wybierz tłumaczenie",
+	"translation_current_label": "Aktualne tłumaczenie: {name}",
+	"translation_loading": "Wczytywanie tłumaczenia...",
+	"translation_load_error": "Nie udało się wczytać wybranego tłumaczenia."
 }

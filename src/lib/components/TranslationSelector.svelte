@@ -1,7 +1,8 @@
 <script lang="ts">
-	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
-
 	import type { TranslationCatalogEntry } from '$lib/domain/translation-catalog';
+	import * as m from '$lib/paraglide/messages';
+
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
 	type Props = {
 		translations: readonly TranslationCatalogEntry[];
@@ -21,7 +22,7 @@
 	);
 
 	const selectedTranslationName = $derived(
-		selectedTranslation?.manifest.name ?? 'Choose translation'
+		selectedTranslation?.manifest.name ?? m.translation_choose()
 	);
 
 	function toggleChoices() {
@@ -62,7 +63,7 @@
 	<button
 		class="translation-selector__trigger"
 		type="button"
-		aria-label={`Current translation: ${selectedTranslationName}`}
+		aria-label={m.translation_current_label({ name: selectedTranslationName })}
 		aria-expanded={expanded}
 		aria-controls="translation-choices"
 		disabled={disabled || translations.length === 0}
@@ -97,12 +98,12 @@
 		</ul>
 
 		{#if isSelecting}
-			<p class="translation-selector__status" role="status">Loading translation…</p>
+			<p class="translation-selector__status" role="status">{m.translation_loading()}</p>
 		{/if}
 
 		{#if selectionError}
 			<p class="translation-selector__error" role="alert">
-				Could not load the selected translation.
+				{m.translation_load_error()}
 			</p>
 		{/if}
 	{/if}

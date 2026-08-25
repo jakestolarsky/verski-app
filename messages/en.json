@@ -80,5 +80,19 @@
 	"passage_copy_again_label": "Copy passage again",
 	"passage_copied_status": "Passage copied.",
 	"passage_copy_error": "Passage could not be copied.",
-	"passage_show_chapter_remainder": "Show rest of chapter"
+	"passage_show_chapter_remainder": "Show rest of chapter",
+	"navigation_open_label": "Open Bible navigation",
+	"navigation_title": "Bible navigation",
+	"navigation_close_label": "Close Bible navigation",
+	"navigation_find_book_label": "Find a book",
+	"navigation_find_book_placeholder": "Find a book...",
+	"navigation_chapter_open_error": "Could not open the selected chapter.",
+	"navigation_no_books": "No Bible books are available for this translation.",
+	"translation_load_error": "Could not load the selected translation.",
+	"navigation_no_matches": "No books match your search.",
+	"navigation_no_chapters": "No chapters available.",
+	"navigation_book_chapters_label": "{book} chapters",
+	"translation_choose": "Choose translation",
+	"translation_current_label": "Current translation: {name}",
+	"translation_loading": "Loading translation..."
 }

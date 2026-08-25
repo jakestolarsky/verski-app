@@ -51,4 +51,19 @@ describe('settings messages', () => {
 
 		expect(m.passage_show_chapter_remainder({}, { locale: 'pl' })).toBe('Pokaż resztę rozdziału');
 	});
+
+	it('provides localized Bible navigation messages', () => {
+		expect(m.navigation_title({}, { locale: 'en' })).toBe('Bible navigation');
+		expect(m.navigation_title({}, { locale: 'pl' })).toBe('Nawigacja po Biblii');
+
+		expect(m.navigation_book_chapters_label({ book: 'Ewangelia Jana' }, { locale: 'pl' })).toBe(
+			'Rozdziały księgi Ewangelia Jana'
+		);
+	});
+
+	it('provides localized translation selector messages', () => {
+		expect(
+			m.translation_current_label({ name: 'Uwspółcześniona Biblia Gdańska' }, { locale: 'pl' })
+		).toBe('Aktualne tłumaczenie: Uwspółcześniona Biblia Gdańska');
+	});
 });
