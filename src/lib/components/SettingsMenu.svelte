@@ -1,6 +1,9 @@
 <script lang="ts">
 	import {
+		availableLocales,
+		isAppLocale,
 		isTheme,
+		type AppLocale,
 		type ReadingFontSize,
 		type ReadingLineHeight,
 		type ReadingSettings,
@@ -13,6 +16,7 @@
 	import TranslationInfo from './TranslationInfo.svelte';
 	import type { TranslationCatalogEntry } from '$lib/domain/translation-catalog';
 	import TranslationStorageSettings from './TranslationStorageSettings.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	/* icons */
 	import SettingsIcon from '@lucide/svelte/icons/settings';
@@ -84,6 +88,11 @@
 		default: 'Default',
 		relaxed: 'Relaxed'
 	} satisfies Record<ReadingLineHeight, string>;
+
+	const localeLabels = {
+		en: m.language_english,
+		pl: m.language_polish
+	} satisfies Record<AppLocale, () => string>;
 
 	let {
 		settings,
@@ -160,6 +169,20 @@
 		event.preventDefault();
 		activeSection = nextSection.id;
 		nextTab.focus();
+	}
+
+	async function handleLocaleChange(event: Event) {
+		const select = event.currentTarget as HTMLSelectElement;
+		const locale = select.value;
+
+		if (!isAppLocale(locale)) {
+			return;
+		}
+
+		await onChange({
+			...settings,
+			locale
+		});
 	}
 
 	async function updateReadingSettings(reading: ReadingSettings) {
@@ -436,6 +459,23 @@
 					aria-labelledby="settings-tab-system"
 					tabindex="0"
 				>
+					<section
+						class="system-setting language-setting"
+						aria-labelledby="language-settings-heading"
+					>
+						<h3 id="language-settings-heading">{m.settings_language_label()}</h3>
+
+						<label class="visually-hidden" for="language-select">
+							{m.settings_language_label()}
+						</label>
+
+						<select id="language-select" value={settings.locale} onchange={handleLocaleChange}>
+							{#each availableLocales as locale}
+								<option value={locale}>{localeLabels[locale]()}</option>
+							{/each}
+						</select>
+					</section>
+
 					<section class="system-setting" aria-labelledby="history-settings-heading">
 						<h3 id="history-settings-heading">Recent lookups</h3>
 
@@ -894,6 +934,14 @@
 		font-family: var(--verski-font-ui);
 		font-size: 1rem;
 		font-weight: var(--verski-font-weight-medium);
+	}
+
+	.language-setting {
+		margin-block-end: 1.5rem;
+	}
+
+	.language-setting select {
+		margin: 0;
 	}
 
 	.system-setting p {

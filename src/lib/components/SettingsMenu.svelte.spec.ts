@@ -366,4 +366,32 @@ describe('SettingsMenu', () => {
 			.element(page.getByRole('link', { name: translationManifest.license }))
 			.toHaveAttribute('href', translationManifest.licenseUrl);
 	});
+
+	it('reports a locale change from the System section', async () => {
+		let changedSettings: UserSettings | null = null;
+
+		render(SettingsMenu, {
+			translationManifest,
+			settings: structuredClone(defaultUserSettings),
+			onChange(settings: UserSettings) {
+				changedSettings = settings;
+			}
+		});
+
+		await userEvent.click(page.getByRole('button', { name: 'Settings' }));
+		await userEvent.click(page.getByRole('tab', { name: 'System' }));
+
+		const languageSelect = page.getByRole('combobox', {
+			name: 'Language'
+		});
+
+		await expect.element(languageSelect).toHaveValue('en');
+
+		await userEvent.selectOptions(languageSelect, 'pl');
+
+		expect(changedSettings).toEqual({
+			...defaultUserSettings,
+			locale: 'pl'
+		});
+	});
 });

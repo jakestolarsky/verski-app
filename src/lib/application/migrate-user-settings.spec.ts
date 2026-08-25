@@ -8,7 +8,23 @@ describe('migrateUserSettings', () => {
 		expect(migrateUserSettings(null)).toEqual(defaultUserSettings);
 	});
 
-	it('keeps valid version 2 settings', () => {
+	it('keeps valid version 3 settings', () => {
+		const storedSettings = {
+			version: 3,
+			locale: 'pl',
+			theme: 'dark',
+			selectedTranslationId: 'polubg',
+			reading: {
+				fontSize: 'large',
+				lineHeight: 'relaxed',
+				showVerseNumbers: false
+			}
+		};
+
+		expect(migrateUserSettings(storedSettings)).toEqual(storedSettings);
+	});
+
+	it('migrates version 2 settings and adds the default locale', () => {
 		const storedSettings = {
 			version: 2,
 			theme: 'dark',
@@ -20,7 +36,17 @@ describe('migrateUserSettings', () => {
 			}
 		};
 
-		expect(migrateUserSettings(storedSettings)).toEqual(storedSettings);
+		expect(migrateUserSettings(storedSettings)).toEqual({
+			version: 3,
+			locale: 'en',
+			theme: 'dark',
+			selectedTranslationId: 'polubg',
+			reading: {
+				fontSize: 'large',
+				lineHeight: 'relaxed',
+				showVerseNumbers: false
+			}
+		});
 	});
 
 	it('migrates version 1 settings and preserves their existing values', () => {
@@ -35,7 +61,8 @@ describe('migrateUserSettings', () => {
 		};
 
 		expect(migrateUserSettings(storedSettings)).toEqual({
-			version: 2,
+			version: 3,
+			locale: 'en',
 			theme: 'dark',
 			selectedTranslationId: 'engwebp',
 			reading: {
@@ -65,9 +92,10 @@ describe('migrateUserSettings', () => {
 		});
 	});
 
-	it('returns defaults for invalid values', () => {
+	it('returns defaults for invalid current values', () => {
 		const storedSettings = {
-			version: 2,
+			version: 3,
+			locale: 'unsupported',
 			theme: 'neon',
 			selectedTranslationId: '',
 			reading: {
@@ -84,6 +112,7 @@ describe('migrateUserSettings', () => {
 		expect(
 			migrateUserSettings({
 				version: 99,
+				locale: 'pl',
 				theme: 'dark'
 			})
 		).toEqual(defaultUserSettings);

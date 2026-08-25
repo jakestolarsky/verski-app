@@ -25,6 +25,7 @@
 	import type { TranslationStore } from '$lib/storage/translation-store';
 	import { removeInstalledTranslation } from '$lib/application/remove-installed-translation';
 	import { removeCachedTranslationPackage } from '$lib/platform/translation-cache';
+	import { getLocale, setLocale } from '$lib/paraglide/runtime.js';
 
 	type BibleLookupWorkspaceHandle = {
 		openChapter: (bookId: string, chapter: number) => Promise<boolean>;
@@ -49,7 +50,10 @@
 	let activeReference = $state<BibleReference | null>(null);
 	let offlineStorageStatus = $state<'preparing' | 'ready' | 'unavailable'>('preparing');
 
-	let userSettings = $state<UserSettings>(structuredClone(defaultUserSettings));
+	let userSettings = $state<UserSettings>({
+		...structuredClone(defaultUserSettings),
+		locale: getLocale()
+	});
 	let userSettingsStore = $state<UserSettingsStore | null>(null);
 
 	async function loadTranslation(translationId: string): Promise<TranslationPackage | null> {
@@ -170,6 +174,11 @@
 					}
 				}
 
+				if (preparedSettings.locale !== getLocale()) {
+					await setLocale(preparedSettings.locale);
+					return;
+				}
+
 				offlineStorageStatus = 'ready';
 			})
 			.catch(() => {
@@ -199,14 +208,16 @@
 
 		const settingsStore = userSettingsStore;
 
-		if (settingsStore === null) {
-			return;
+		if (settingsStore !== null) {
+			try {
+				await saveUserSettings(settingsStore, settingsSnapshot);
+			} catch {
+				userSettingsStore = null;
+			}
 		}
 
-		try {
-			await saveUserSettings(settingsStore, settingsSnapshot);
-		} catch {
-			userSettingsStore = null;
+		if (settingsSnapshot.locale !== getLocale()) {
+			await setLocale(settingsSnapshot.locale);
 		}
 	}
 

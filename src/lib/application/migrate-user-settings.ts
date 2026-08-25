@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
 	CURRENT_USER_SETTINGS_VERSION,
+	availableLocales,
 	availableThemes,
 	defaultUserSettings,
 	type UserSettings
@@ -25,8 +26,16 @@ const versionOneSettingsSchema = z.object({
 	reading: readingSettingsSchema
 });
 
+const versionTwoSettingsSchema = z.object({
+	version: z.literal(2),
+	theme: themeSchema,
+	selectedTranslationId: z.string().trim().min(1),
+	reading: readingSettingsSchema
+});
+
 const currentSettingsSchema: z.ZodType<UserSettings> = z.object({
 	version: z.literal(CURRENT_USER_SETTINGS_VERSION),
+	locale: z.enum(availableLocales),
 	theme: themeSchema,
 	selectedTranslationId: z.string().trim().min(1),
 	reading: readingSettingsSchema
@@ -39,12 +48,23 @@ export function migrateUserSettings(storedValue: unknown): UserSettings {
 		return currentResult.data;
 	}
 
+	const versionTwoResult = versionTwoSettingsSchema.safeParse(storedValue);
+
+	if (versionTwoResult.success) {
+		return {
+			...versionTwoResult.data,
+			version: CURRENT_USER_SETTINGS_VERSION,
+			locale: defaultUserSettings.locale
+		};
+	}
+
 	const versionOneResult = versionOneSettingsSchema.safeParse(storedValue);
 
 	if (versionOneResult.success) {
 		return {
 			...versionOneResult.data,
 			version: CURRENT_USER_SETTINGS_VERSION,
+			locale: defaultUserSettings.locale,
 			selectedTranslationId: defaultUserSettings.selectedTranslationId
 		};
 	}
