@@ -101,4 +101,41 @@ describe('buildBibleNavigation', () => {
 
 		expect(buildBibleNavigation(unsupportedPackage)).toEqual([]);
 	});
+
+	it('builds navigation names for the selected locale', () => {
+		expect(buildBibleNavigation(translationPackage, 'pl')).toEqual([
+			{
+				id: 'old',
+				name: 'Stary Testament',
+				books: [
+					{
+						id: 'genesis',
+						name: 'Księga Rodzaju',
+						chapters: [1, 2]
+					},
+					{
+						id: 'tobit',
+						name: 'Księga Tobiasza',
+						chapters: [1]
+					}
+				]
+			},
+			{
+				id: 'new',
+				name: 'Nowy Testament',
+				books: [
+					{
+						id: 'matthew',
+						name: 'Ewangelia Mateusza',
+						chapters: [1]
+					},
+					{
+						id: 'john',
+						name: 'Ewangelia Jana',
+						chapters: [3]
+					}
+				]
+			}
+		]);
+	});
 });

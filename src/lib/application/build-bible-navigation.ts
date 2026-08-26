@@ -1,7 +1,8 @@
-import { bibleBooks } from '$lib/domain/bible-book';
 import { findBibleCanon, type BibleTestamentId } from '$lib/domain/bible-canon';
 import type { TranslationPackage } from '$lib/domain/translation-package';
 import { getBibleBookName } from '$lib/domain/bible-book-localization';
+import type { AppLocale } from '$lib/domain/user-settings';
+import { getBibleTestamentName } from '$lib/domain/bible-testament-localization';
 
 export type BibleNavigationBook = {
 	id: string;
@@ -15,10 +16,9 @@ export type BibleNavigationTestament = {
 	books: BibleNavigationBook[];
 };
 
-const bibleBookById = new Map(bibleBooks.map((book) => [book.id, book]));
-
 export function buildBibleNavigation(
-	translationPackage: TranslationPackage
+	translationPackage: TranslationPackage,
+	locale: AppLocale = 'en'
 ): BibleNavigationTestament[] {
 	const canon = findBibleCanon(translationPackage.manifest.canonId);
 
@@ -43,12 +43,12 @@ export function buildBibleNavigation(
 	return canon.testaments
 		.map((testament) => ({
 			id: testament.id,
-			name: testament.name,
+			name: getBibleTestamentName(testament.id, locale),
 			books: testament.bookIds
 				.filter((bookId) => declaredBookIds.has(bookId))
 				.map((bookId) => ({
 					id: bookId,
-					name: getBibleBookName(bookId, 'en'),
+					name: getBibleBookName(bookId, locale),
 					chapters: [...(chaptersByBookId.get(bookId) ?? [])].sort(
 						(first, second) => first - second
 					)
