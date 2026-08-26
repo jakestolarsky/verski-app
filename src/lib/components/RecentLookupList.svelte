@@ -7,6 +7,7 @@
 	/* icons */
 	import XIcon from '@lucide/svelte/icons/x';
 	import RotateCcwClockIcon from '@lucide/svelte/icons/rotate-ccw-clock';
+	import { getBibleBookName } from '$lib/domain/bible-book-localization';
 
 	type Props = {
 		lookups: readonly RecentLookup[];
@@ -17,7 +18,7 @@
 	let { lookups, onSelect, onRemove }: Props = $props();
 
 	function getBookName(bookId: string): string {
-		return bibleBooks.find((book) => book.id === bookId)?.names[0] ?? bookId;
+		return getBibleBookName(bookId, 'en');
 	}
 
 	function getLookupLabel(lookup: RecentLookup): string {

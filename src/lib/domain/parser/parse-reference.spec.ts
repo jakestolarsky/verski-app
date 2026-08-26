@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseReference } from './parse-reference';
 import type { BibleBook } from '../bible-book';
+import type { BibleBookAliasesProvider } from '../bible-book-localization';
 
 describe('parseReference', () => {
 	it('parses a strict John chapter and verse reference', () => {
@@ -192,20 +193,11 @@ describe('parseReference', () => {
 	});
 
 	it('reports an ambiguous book alias', () => {
-		const books: BibleBook[] = [
-			{
-				id: 'john',
-				names: ['John'],
-				abbreviations: ['J']
-			},
-			{
-				id: 'james',
-				names: ['James'],
-				abbreviations: ['J']
-			}
-		];
+		const books: BibleBook[] = [{ id: 'john' }, { id: 'james' }];
 
-		expect(parseReference('J 1:1', books)).toEqual({
+		const ambiguousAliases: BibleBookAliasesProvider = () => ['J'];
+
+		expect(parseReference('J 1:1', books, ambiguousAliases)).toEqual({
 			ok: false,
 			error: 'ambiguous-book'
 		});
@@ -221,4 +213,57 @@ describe('parseReference', () => {
 			}
 		});
 	});
+});
+
+describe('language-independent book matching', () => {
+	it.each([
+		{
+			input: 'John 3:16',
+			bookId: 'john',
+			chapter: 3,
+			verseStart: 16
+		},
+		{
+			input: 'Ewangelia Jana 3:16',
+			bookId: 'john',
+			chapter: 3,
+			verseStart: 16
+		},
+		{
+			input: 'Job 1:1',
+			bookId: 'job',
+			chapter: 1,
+			verseStart: 1
+		},
+		{
+			input: 'Księga Hioba 1:1',
+			bookId: 'job',
+			chapter: 1,
+			verseStart: 1
+		},
+		{
+			input: '1 Corinthians 13:4',
+			bookId: '1-corinthians',
+			chapter: 13,
+			verseStart: 4
+		},
+		{
+			input: '1 List do Koryntian 13:4',
+			bookId: '1-corinthians',
+			chapter: 13,
+			verseStart: 4
+		}
+	])(
+		'parses $input without depending on the UI locale',
+		({ input, bookId, chapter, verseStart }) => {
+			expect(parseReference(input)).toEqual({
+				ok: true,
+				reference: {
+					bookId,
+					chapter,
+					verseStart
+				}
+			});
+		}
+	);
 });

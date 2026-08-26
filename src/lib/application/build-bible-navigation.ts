@@ -1,6 +1,7 @@
 import { bibleBooks } from '$lib/domain/bible-book';
 import { findBibleCanon, type BibleTestamentId } from '$lib/domain/bible-canon';
 import type { TranslationPackage } from '$lib/domain/translation-package';
+import { getBibleBookName } from '$lib/domain/bible-book-localization';
 
 export type BibleNavigationBook = {
 	id: string;
@@ -47,7 +48,7 @@ export function buildBibleNavigation(
 				.filter((bookId) => declaredBookIds.has(bookId))
 				.map((bookId) => ({
 					id: bookId,
-					name: bibleBookById.get(bookId)?.names[0] ?? bookId,
+					name: getBibleBookName(bookId, 'en'),
 					chapters: [...(chaptersByBookId.get(bookId) ?? [])].sort(
 						(first, second) => first - second
 					)

@@ -4,6 +4,7 @@ import { normalizeReferenceInput } from './normalize-reference-input';
 import { matchBookAlias } from './match-book-alias';
 import { validateReference, type ReferenceValidationError } from '../validation/validate-reference';
 import { normalizeBookAlias } from './normalize-book-alias';
+import { getBibleBookAliases, type BibleBookAliasesProvider } from '../bible-book-localization';
 
 export type ParseReferenceError = 'invalid-format' | 'ambiguous-book' | ReferenceValidationError;
 
@@ -66,12 +67,16 @@ function parseReferenceParts(input: string): ReferenceParts | null {
 	};
 }
 
-function parseCompactReferenceParts(input: string, books: BibleBook[]): ReferenceParts | null {
+function parseCompactReferenceParts(
+	input: string,
+	books: readonly BibleBook[],
+	getAliases: BibleBookAliasesProvider
+): ReferenceParts | null {
 	const normalizedInput = normalizeBookAlias(input);
 	const matches = new Map<string, ReferenceParts>();
 
 	for (const book of books) {
-		const aliases = [...book.names, ...book.abbreviations];
+		const aliases = getAliases(book.id);
 
 		for (const alias of aliases) {
 			const normalizedAlias = normalizeBookAlias(alias);
@@ -103,11 +108,13 @@ function parseCompactReferenceParts(input: string, books: BibleBook[]): Referenc
 
 export function parseReference(
 	input: string,
-	books: BibleBook[] = bibleBooks
+	books: readonly BibleBook[] = bibleBooks,
+	getAliases: BibleBookAliasesProvider = getBibleBookAliases
 ): ParseReferenceResult {
 	const normalizedInput = normalizeReferenceInput(input);
 	const parts =
-		parseReferenceParts(normalizedInput) ?? parseCompactReferenceParts(normalizedInput, books);
+		parseReferenceParts(normalizedInput) ??
+		parseCompactReferenceParts(normalizedInput, books, getAliases);
 
 	if (!parts) {
 		return {
@@ -118,7 +125,7 @@ export function parseReference(
 
 	const { bookAlias, chapterText, verseStartText, verseEndText } = parts;
 
-	const bookMatches = matchBookAlias(bookAlias, books);
+	const bookMatches = matchBookAlias(bookAlias, books, getAliases);
 
 	if (bookMatches.length === 0) {
 		return {

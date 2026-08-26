@@ -1,26 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { bibleBooks } from '../bible-book';
-import type { BibleBook } from '../bible-book';
 import { matchBookAlias } from './match-book-alias';
 
 const books = bibleBooks.filter((book) => book.id === 'john');
-const johnBook: BibleBook = {
-	id: 'john',
-	names: ['John'],
-	abbreviations: ['Jn', 'J']
-}
 
 describe('matchBookAlias', () => {
 	it('matches a canonical book name', () => {
-		expect(matchBookAlias('John', books)).toEqual([johnBook]);
+		expect(matchBookAlias('John', books).map((book) => book.id)).toEqual(['john']);
 	});
 
 	it('matches a book abbreviation', () => {
-		expect(matchBookAlias('Jn', books)).toEqual([johnBook]);
+		expect(matchBookAlias('Jn', books).map((book) => book.id)).toEqual(['john']);
 	});
 
 	it('matches aliases without requiring exact casing', () => {
-		expect(matchBookAlias('john', books)).toEqual([johnBook]);
+		expect(matchBookAlias('john', books).map((book) => book.id)).toEqual(['john']);
 	});
 
 	it('returns no matches for an unknown alias', () => {

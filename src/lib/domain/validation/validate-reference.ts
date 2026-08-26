@@ -14,7 +14,7 @@ export type ReferenceValidationResult =
 			error: ReferenceValidationError;
 	  };
 
-export function validateReference(input: unknown, books: BibleBook[]): ReferenceValidationResult {
+export function validateReference(input: unknown, books: readonly BibleBook[]): ReferenceValidationResult {
 	const structuralResult = bibleReferenceSchema.safeParse(input);
 
 	if (!structuralResult.success) {

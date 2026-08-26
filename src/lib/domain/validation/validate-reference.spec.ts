@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { johnBook } from '../bible-book';
+import type { BibleBook } from '../bible-book';
 import { validateReference } from './validate-reference';
 
-const books = [johnBook];
+const books: BibleBook[] = [
+	{
+		id: 'john'
+	}
+];
 
 describe('validateReference', () => {
 	it('accepts a valid reference for a known book', () => {

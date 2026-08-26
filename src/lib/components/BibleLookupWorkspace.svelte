@@ -18,6 +18,7 @@
 	import type { ReadingSettings } from '$lib/domain/user-settings';
 	import { expandPassageToChapterEnd } from '$lib/application/expand-passage-to-chapter-end';
 	import * as m from '$lib/paraglide/messages.js';
+	import { getBibleBookName } from '$lib/domain/bible-book-localization';
 
 	type ReferenceSearchFormHandle = {
 		focus: () => void;
@@ -111,7 +112,7 @@
 	});
 
 	function getBookName(bookId: string): string {
-		return bibleBooks.find((book) => book.id === bookId)?.names[0] ?? bookId;
+		return getBibleBookName(bookId, 'en');
 	}
 
 	async function performLookup(reference: BibleReference): Promise<boolean> {
