@@ -5,15 +5,34 @@
 		ParseReferenceResult
 	} from '$lib/domain/parser/parse-reference';
 	import * as m from '$lib/paraglide/messages.js';
+
 	import XIcon from '@lucide/svelte/icons/x';
+
+	type DismissReason = 'manual' | 'timeout';
 
 	type Props = {
 		parseResult: ParseReferenceResult | null;
 		lookupResult: LookupPassageResult | null;
-		onDismiss: () => void | Promise<void>;
+		onDismiss: (reason: DismissReason) => void | Promise<void>;
 	};
 
+	const toastDuration = 5000;
+
 	let { parseResult, lookupResult, onDismiss }: Props = $props();
+
+	$effect(() => {
+		if (message === null) {
+			return;
+		}
+
+		const timeoutId = window.setTimeout(() => {
+			void onDismiss('timeout');
+		}, toastDuration);
+
+		return () => {
+			window.clearTimeout(timeoutId);
+		};
+	});
 
 	const parseErrorMessages = {
 		'invalid-format': m.passage_error_invalid_format,
@@ -46,7 +65,11 @@
 	<div class="lookup-error-toast" role="alert">
 		<p>{message}</p>
 
-		<button type="button" aria-label={m.lookup_error_dismiss_label()} onclick={onDismiss}>
+		<button
+			type="button"
+			aria-label={m.lookup_error_dismiss_label()}
+			onclick={() => onDismiss('manual')}
+		>
 			<XIcon aria-hidden="true" />
 		</button>
 	</div>

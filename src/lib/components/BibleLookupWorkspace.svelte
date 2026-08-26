@@ -314,12 +314,18 @@
 		referenceSearchForm?.focus();
 	}
 
-	async function handleDismissLookupError() {
+	type LookupErrorDismissReason = 'manual' | 'timeout';
+
+	async function handleDismissLookupError(reason: LookupErrorDismissReason) {
 		parseResult = null;
 		lookupResult = null;
 		activeReference = null;
 		copyStatus = 'idle';
 		isSearchExpanded = true;
+
+		if (reason === 'timeout') {
+			return;
+		}
 
 		await tick();
 		referenceSearchForm?.focus();
