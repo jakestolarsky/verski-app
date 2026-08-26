@@ -94,5 +94,6 @@
 	"translation_choose": "Wybierz tłumaczenie",
 	"translation_current_label": "Aktualne tłumaczenie: {name}",
 	"translation_loading": "Wczytywanie tłumaczenia...",
-	"translation_load_error": "Nie udało się wczytać wybranego tłumaczenia."
+	"translation_load_error": "Nie udało się wczytać wybranego tłumaczenia.",
+	"offline_storage_unavailable": "Nie udało się przywrócić danych offline. Wbudowane tłumaczenie nadal jest dostępne, ale ostatnie wyszukiwania i ustawienia mogą nie zostać zapisane."
 }

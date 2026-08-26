@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
 
+	import * as m from '$lib/paraglide/messages.js';
 	import BibleLookupWorkspace from '$lib/components/BibleLookupWorkspace.svelte';
 	import type { RecentLookup } from '$lib/domain/recent-lookup';
 	import {
@@ -339,8 +340,7 @@
 
 	{#if offlineStorageStatus === 'unavailable'}
 		<p class="offline-storage-message" role="status">
-			Offline storage could not be restored. The bundled translation is still available, but recent
-			lookups and settings may not be saved.
+			{m.offline_storage_unavailable()}
 		</p>
 	{/if}
 

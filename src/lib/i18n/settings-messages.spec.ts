@@ -66,4 +66,10 @@ describe('settings messages', () => {
 			m.translation_current_label({ name: 'Uwspółcześniona Biblia Gdańska' }, { locale: 'pl' })
 		).toBe('Aktualne tłumaczenie: Uwspółcześniona Biblia Gdańska');
 	});
+
+	it('translates the offline storage warning', () => {
+		expect(m.offline_storage_unavailable({}, { locale: 'pl' })).toBe(
+			'Nie udało się przywrócić danych offline. Wbudowane tłumaczenie nadal jest dostępne, ale ostatnie wyszukiwania i ustawienia mogą nie zostać zapisane.'
+		);
+	});
 });

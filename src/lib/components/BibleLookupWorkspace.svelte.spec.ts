@@ -1,5 +1,5 @@
 import { page, userEvent } from 'vitest/browser';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 
 import type { TranslationPackage } from '$lib/domain/translation-package';
@@ -31,6 +31,10 @@ const translationPackage = {
 		}
 	]
 } satisfies TranslationPackage;
+
+afterEach(() => {
+	vi.restoreAllMocks();
+});
 
 describe('BibleLookupWorkspace', () => {
 	it('looks up a passage and makes it available in recent history', async () => {
@@ -196,5 +200,35 @@ describe('BibleLookupWorkspace', () => {
 				})
 			)
 			.toBeInTheDocument();
+	});
+
+	it('copies the reference using the selected display locale', async () => {
+		const repository = new StaticBibleRepository(translationPackage);
+		const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
+
+		render(BibleLookupWorkspace, {
+			repository,
+			locale: 'pl',
+			translationId: translationPackage.manifest.id,
+			translationName: translationPackage.manifest.name,
+			recentLookups: [],
+			recentLookupStore: null,
+			readingSettings: defaultUserSettings.reading
+		});
+
+		const input = page.getByLabelText('Bible reference');
+
+		await userEvent.fill(input, 'John 1:2');
+		await userEvent.keyboard('{Enter}');
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Copy passage'
+			})
+		);
+
+		expect(writeText).toHaveBeenCalledWith(
+			'Ewangelia Jana 1:2 (World English Bible)\n\nSecond verse.'
+		);
 	});
 });

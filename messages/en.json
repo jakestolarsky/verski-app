@@ -94,5 +94,6 @@
 	"navigation_book_chapters_label": "{book} chapters",
 	"translation_choose": "Choose translation",
 	"translation_current_label": "Current translation: {name}",
-	"translation_loading": "Loading translation..."
+	"translation_loading": "Loading translation...",
+	"offline_storage_unavailable": "Offline storage could not be restored. The bundled translation is still available, but recent lookups and settings may not be saved."
 }
