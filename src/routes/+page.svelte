@@ -33,8 +33,18 @@
 
 	let { data }: { data: PageData } = $props();
 
+	let userSettings = $state<UserSettings>({
+		...structuredClone(defaultUserSettings),
+		locale: getLocale()
+	});
+
+	let userSettingsStore = $state<UserSettingsStore | null>(null);
+
 	let activeTranslationPackage = $state<TranslationPackage>(untrack(() => data.translationPackage));
-	const bibleNavigation = $derived(buildBibleNavigation(activeTranslationPackage));
+
+	const bibleNavigation = $derived(
+		buildBibleNavigation(activeTranslationPackage, userSettings.locale)
+	);
 
 	let bibleLookupWorkspace = $state<BibleLookupWorkspaceHandle>();
 
@@ -49,12 +59,6 @@
 	let recentLookupStore = $state<RecentLookupStore | null>(null);
 	let activeReference = $state<BibleReference | null>(null);
 	let offlineStorageStatus = $state<'preparing' | 'ready' | 'unavailable'>('preparing');
-
-	let userSettings = $state<UserSettings>({
-		...structuredClone(defaultUserSettings),
-		locale: getLocale()
-	});
-	let userSettingsStore = $state<UserSettingsStore | null>(null);
 
 	async function loadTranslation(translationId: string): Promise<TranslationPackage | null> {
 		if (translationId === activeTranslationPackage.manifest.id) {
