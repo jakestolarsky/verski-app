@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
-	import { bibleBooks } from '$lib/domain/bible-book';
 	import type { RecentLookup } from '$lib/domain/recent-lookup';
 	import * as m from '$lib/paraglide/messages.js';
+	import type { AppLocale } from '$lib/domain/user-settings';
 
 	/* icons */
 	import XIcon from '@lucide/svelte/icons/x';
@@ -10,15 +10,16 @@
 	import { getBibleBookName } from '$lib/domain/bible-book-localization';
 
 	type Props = {
+		locale: AppLocale;
 		lookups: readonly RecentLookup[];
 		onSelect: (lookup: RecentLookup) => void;
 		onRemove: (lookup: RecentLookup) => void | Promise<void>;
 	};
 
-	let { lookups, onSelect, onRemove }: Props = $props();
+	let { locale, lookups, onSelect, onRemove }: Props = $props();
 
 	function getBookName(bookId: string): string {
-		return getBibleBookName(bookId, 'en');
+		return getBibleBookName(bookId, locale);
 	}
 
 	function getLookupLabel(lookup: RecentLookup): string {

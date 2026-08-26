@@ -5,7 +5,6 @@
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
 	import { lookupPassage, type LookupPassageResult } from '$lib/application/lookup-passage';
 	import { recordRecentLookup } from '$lib/application/record-recent-lookup';
-	import { bibleBooks } from '$lib/domain/bible-book';
 	import type { BibleReference } from '$lib/domain/bible-reference';
 	import { parseReference, type ParseReferenceResult } from '$lib/domain/parser/parse-reference';
 	import type { RecentLookup } from '$lib/domain/recent-lookup';
@@ -15,7 +14,7 @@
 	import PassageResult from './PassageResult.svelte';
 	import RecentLookupList from './RecentLookupList.svelte';
 	import ReferenceSearchForm from './ReferenceSearchForm.svelte';
-	import type { ReadingSettings } from '$lib/domain/user-settings';
+	import type { AppLocale, ReadingSettings } from '$lib/domain/user-settings';
 	import { expandPassageToChapterEnd } from '$lib/application/expand-passage-to-chapter-end';
 	import * as m from '$lib/paraglide/messages.js';
 	import { getBibleBookName } from '$lib/domain/bible-book-localization';
@@ -32,6 +31,7 @@
 		repository: BibleRepository;
 		translationId: string;
 		translationName: string;
+		locale: AppLocale;
 		recentLookups: RecentLookup[];
 		recentLookupStore: RecentLookupStore | null;
 		readingSettings: ReadingSettings;
@@ -42,6 +42,7 @@
 		repository,
 		translationId,
 		translationName,
+		locale,
 		recentLookups = $bindable(),
 		recentLookupStore = $bindable(),
 		readingSettings,
@@ -112,7 +113,7 @@
 	});
 
 	function getBookName(bookId: string): string {
-		return getBibleBookName(bookId, 'en');
+		return getBibleBookName(bookId, locale);
 	}
 
 	async function performLookup(reference: BibleReference): Promise<boolean> {
@@ -314,6 +315,7 @@
 <div class="lookup-workspace">
 	{#if referenceInput === ''}
 		<RecentLookupList
+			{locale}
 			lookups={currentTranslationLookups}
 			onSelect={handleRecentLookupSelect}
 			onRemove={handleRecentLookupRemove}

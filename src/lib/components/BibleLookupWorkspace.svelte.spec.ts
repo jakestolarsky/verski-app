@@ -38,6 +38,7 @@ describe('BibleLookupWorkspace', () => {
 
 		render(BibleLookupWorkspace, {
 			repository,
+			locale: 'en',
 			translationId: translationPackage.manifest.id,
 			translationName: translationPackage.manifest.name,
 			recentLookups: [],
@@ -115,6 +116,7 @@ describe('BibleLookupWorkspace', () => {
 
 		render(BibleLookupWorkspace, {
 			repository,
+			locale: 'en',
 			translationId: 'engwebp',
 			translationName: 'World English Bible',
 			recentLookups: [
@@ -146,5 +148,53 @@ describe('BibleLookupWorkspace', () => {
 		await expect
 			.element(page.getByRole('button', { name: 'John 1:2', exact: true }))
 			.not.toBeInTheDocument();
+	});
+
+	it('displays localized book names while accepting another language in the input', async () => {
+		const repository = new StaticBibleRepository(translationPackage);
+
+		render(BibleLookupWorkspace, {
+			repository,
+			locale: 'pl',
+			translationId: translationPackage.manifest.id,
+			translationName: translationPackage.manifest.name,
+			recentLookups: [],
+			recentLookupStore: null,
+			readingSettings: defaultUserSettings.reading
+		});
+
+		const input = page.getByLabelText('Bible reference');
+
+		await userEvent.fill(input, 'John 1:2');
+		await userEvent.keyboard('{Enter}');
+
+		await expect
+			.element(
+				page.getByRole('heading', {
+					name: 'Ewangelia Jana 1:2'
+				})
+			)
+			.toBeInTheDocument();
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Search Bible'
+			})
+		);
+
+		await userEvent.click(
+			page.getByRole('button', {
+				name: 'Clear'
+			})
+		);
+
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Ewangelia Jana 1:2',
+					exact: true
+				})
+			)
+			.toBeInTheDocument();
 	});
 });

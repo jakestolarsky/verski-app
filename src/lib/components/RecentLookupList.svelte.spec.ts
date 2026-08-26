@@ -22,6 +22,7 @@ describe('RecentLookupList', () => {
 
 		render(RecentLookupList, {
 			lookups: [lookup],
+			locale: 'en',
 			onSelect(selected: RecentLookup) {
 				selectedLookup = selected;
 			},
@@ -45,6 +46,7 @@ describe('RecentLookupList', () => {
 
 		render(RecentLookupList, {
 			lookups: [lookup],
+			locale: 'en',
 			onSelect() {},
 			onRemove(selected: RecentLookup) {
 				removedLookup = selected;
@@ -58,5 +60,23 @@ describe('RecentLookupList', () => {
 		);
 
 		expect(removedLookup).toEqual(lookup);
+	});
+
+	it('formats references using the selected locale', async () => {
+		render(RecentLookupList, {
+			locale: 'pl',
+			lookups: [lookup],
+			onSelect() {},
+			onRemove() {}
+		});
+
+		await expect
+			.element(
+				page.getByRole('button', {
+					name: 'Ewangelia Jana 3:16-18',
+					exact: true
+				})
+			)
+			.toBeInTheDocument();
 	});
 });

@@ -359,6 +359,7 @@
 			bind:this={bibleLookupWorkspace}
 			bind:activeReference
 			{repository}
+			locale={userSettings.locale}
 			translationId={activeTranslationPackage.manifest.id}
 			translationName={activeTranslationPackage.manifest.name}
 			readingSettings={userSettings.reading}
