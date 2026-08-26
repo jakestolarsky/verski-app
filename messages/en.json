@@ -95,5 +95,6 @@
 	"translation_choose": "Choose translation",
 	"translation_current_label": "Current translation: {name}",
 	"translation_loading": "Loading translation...",
-	"offline_storage_unavailable": "Offline storage could not be restored. The bundled translation is still available, but recent lookups and settings may not be saved."
+	"offline_storage_unavailable": "Offline storage could not be restored. The bundled translation is still available, but recent lookups and settings may not be saved.",
+	"lookup_error_dismiss_label": "Dismiss error"
 }

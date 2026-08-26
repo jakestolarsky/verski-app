@@ -33,26 +33,6 @@ describe('PassageResult', () => {
 			.not.toBeInTheDocument();
 	});
 
-	it('shows a parser error', async () => {
-		const parseResult = {
-			ok: false,
-			error: 'unknown-book'
-		} satisfies ParseReferenceResult;
-
-		render(PassageResult, {
-			heading: 'Passage',
-			translationName: 'World English Bible',
-			parseResult,
-			lookupResult: null,
-			copyStatus: 'idle',
-			readingSettings: defaultUserSettings.reading,
-			onCopy() {},
-			onShowChapterRemainder() {}
-		});
-
-		await expect.element(page.getByText('That Bible book is not available.')).toBeInTheDocument();
-	});
-
 	it('renders a passage and reports the copy action', async () => {
 		const parseResult = {
 			ok: true,

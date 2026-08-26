@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick } from 'svelte';
+
 	import { addRecentLookup } from '$lib/application/add-recent-lookup';
 	import { formatBibleReference } from '$lib/application/format-bible-reference';
 	import { formatPassageForCopy } from '$lib/application/format-passage-for-copy';
@@ -11,13 +12,15 @@
 	import type { BibleRepository } from '$lib/storage/bible-repository';
 	import type { RecentLookupStore } from '$lib/storage/recent-lookup-store';
 	import { removeRecentLookup, withoutRecentLookup } from '$lib/application/remove-recent-lookup';
-	import PassageResult from './PassageResult.svelte';
-	import RecentLookupList from './RecentLookupList.svelte';
-	import ReferenceSearchForm from './ReferenceSearchForm.svelte';
 	import type { AppLocale, ReadingSettings } from '$lib/domain/user-settings';
 	import { expandPassageToChapterEnd } from '$lib/application/expand-passage-to-chapter-end';
 	import * as m from '$lib/paraglide/messages.js';
 	import { getBibleBookName } from '$lib/domain/bible-book-localization';
+
+	import PassageResult from './PassageResult.svelte';
+	import RecentLookupList from './RecentLookupList.svelte';
+	import ReferenceSearchForm from './ReferenceSearchForm.svelte';
+	import LookupErrorToast from './LookupErrorToast.svelte';
 
 	type ReferenceSearchFormHandle = {
 		focus: () => void;
@@ -310,6 +313,17 @@
 		await tick();
 		referenceSearchForm?.focus();
 	}
+
+	async function handleDismissLookupError() {
+		parseResult = null;
+		lookupResult = null;
+		activeReference = null;
+		copyStatus = 'idle';
+		isSearchExpanded = true;
+
+		await tick();
+		referenceSearchForm?.focus();
+	}
 </script>
 
 <div class="lookup-workspace">
@@ -321,6 +335,8 @@
 			onRemove={handleRecentLookupRemove}
 		/>
 	{/if}
+
+	<LookupErrorToast {parseResult} {lookupResult} onDismiss={handleDismissLookupError} />
 
 	<PassageResult
 		heading={passageHeading}

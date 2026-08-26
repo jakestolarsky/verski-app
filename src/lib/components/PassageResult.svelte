@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { LookupPassageResult } from '$lib/application/lookup-passage';
 	import type {
-		ParseReferenceError,
 		ParseReferenceResult
 	} from '$lib/domain/parser/parse-reference';
 	import type { ReadingSettings } from '$lib/domain/user-settings';
@@ -35,34 +34,23 @@
 		onCopy,
 		onShowChapterRemainder
 	}: Props = $props();
-
-	const errorMessages = {
-		'invalid-format': m.passage_error_invalid_format,
-		'invalid-structure': m.passage_error_invalid_structure,
-		'unknown-book': m.passage_error_unknown_book,
-		'invalid-verse-range': m.passage_error_invalid_verse_range,
-		'ambiguous-book': m.passage_error_ambiguous_book
-	} satisfies Record<ParseReferenceError, () => string>;
 </script>
 
-<section aria-labelledby={parseResult === null ? undefined : 'passage-heading'} aria-live="polite">
-	{#if parseResult !== null}
+<section
+	aria-labelledby={parseResult?.ok && (lookupResult === null || lookupResult.ok)
+		? 'passage-heading'
+		: undefined}
+	aria-live="polite"
+>
+	{#if parseResult?.ok && (lookupResult === null || lookupResult.ok)}
 		<h2 id="passage-heading" class="passage-heading">{heading}</h2>
 
-		{#if parseResult.ok && lookupResult?.ok}
+		{#if lookupResult?.ok}
 			<p class="translation-name">({translationName})</p>
 		{/if}
 
-		{#if !parseResult.ok}
-			<p>{errorMessages[parseResult.error]()}</p>
-		{:else if lookupResult === null}
+		{#if lookupResult === null}
 			<p>{m.passage_loading()}</p>
-		{:else if !lookupResult.ok}
-			{#if lookupResult.error === 'chapter-not-found'}
-				<p>{m.passage_chapter_not_found()}</p>
-			{:else}
-				<p>{m.passage_verse_not_found()}</p>
-			{/if}
 		{:else}
 			<p
 				class="passage-text"
