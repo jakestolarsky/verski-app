@@ -54,3 +54,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 # Playwright
 test-results
+
+# Local Bible source files used by conversion scripts
+/bibles/
