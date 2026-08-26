@@ -1,4 +1,3 @@
-
 ![verski logo](assets/art/logo-tagline-dark.svg)
 
 # Description
