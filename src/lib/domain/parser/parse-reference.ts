@@ -3,6 +3,7 @@ import type { BibleReference } from '../bible-reference';
 import { normalizeReferenceInput } from './normalize-reference-input';
 import { matchBookAlias } from './match-book-alias';
 import { validateReference, type ReferenceValidationError } from '../validation/validate-reference';
+import { normalizeBookAlias } from './normalize-book-alias';
 
 export type ParseReferenceError = 'invalid-format' | 'ambiguous-book' | ReferenceValidationError;
 
@@ -66,21 +67,20 @@ function parseReferenceParts(input: string): ReferenceParts | null {
 }
 
 function parseCompactReferenceParts(input: string, books: BibleBook[]): ReferenceParts | null {
-	const normalizedInput = input.toLowerCase();
+	const normalizedInput = normalizeBookAlias(input);
 	const matches = new Map<string, ReferenceParts>();
 
 	for (const book of books) {
 		const aliases = [...book.names, ...book.abbreviations];
 
 		for (const alias of aliases) {
-			const compactAlias = alias.replaceAll(' ', '');
-			const normalizedAlias = compactAlias.toLowerCase();
+			const normalizedAlias = normalizeBookAlias(alias);
 
 			if (!normalizedInput.startsWith(normalizedAlias)) {
 				continue;
 			}
 
-			const passageText = input.slice(compactAlias.length);
+			const passageText = normalizedInput.slice(normalizedAlias.length);
 			const passageParts = parsePassageParts(passageText);
 
 			if (!passageParts) {

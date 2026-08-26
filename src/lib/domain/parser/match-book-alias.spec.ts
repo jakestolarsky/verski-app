@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { johnBook } from '../bible-book';
+import { bibleBooks } from '../bible-book';
+import type { BibleBook } from '../bible-book';
 import { matchBookAlias } from './match-book-alias';
 
-const books = [johnBook];
+const books = bibleBooks.filter((book) => book.id === 'john');
+const johnBook: BibleBook = {
+	id: 'john',
+	names: ['John'],
+	abbreviations: ['Jn', 'J']
+}
 
 describe('matchBookAlias', () => {
 	it('matches a canonical book name', () => {
@@ -19,5 +25,11 @@ describe('matchBookAlias', () => {
 
 	it('returns no matches for an unknown alias', () => {
 		expect(matchBookAlias('Romans', books)).toEqual([]);
+	});
+
+	it('ignores whitespace differences in numbered abbreviations', () => {
+		expect(matchBookAlias('1Sm', bibleBooks).map((book) => book.id)).toEqual(['1-samuel']);
+
+		expect(matchBookAlias('1 Sm', bibleBooks).map((book) => book.id)).toEqual(['1-samuel']);
 	});
 });

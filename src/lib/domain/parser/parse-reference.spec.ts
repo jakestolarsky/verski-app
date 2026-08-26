@@ -210,4 +210,15 @@ describe('parseReference', () => {
 			error: 'ambiguous-book'
 		});
 	});
+
+	it.each(['1 Sm 1:1', '1Sm 1:1', '1Sm1:1'])('parses spacing variants in %s', (input) => {
+		expect(parseReference(input)).toEqual({
+			ok: true,
+			reference: {
+				bookId: '1-samuel',
+				chapter: 1,
+				verseStart: 1
+			}
+		});
+	});
 });

@@ -61,7 +61,7 @@
 		const currentLookupResult = lookupResult;
 
 		if (!currentParseResult?.ok || !currentLookupResult?.ok) {
-			return 'Passage';
+			return m.passage_heading_fallback();
 		}
 
 		const bookName = getBookName(currentLookupResult.passage.bookId);
