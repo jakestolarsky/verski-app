@@ -3,11 +3,11 @@
 import { base, build, files, prerendered, version } from '$service-worker';
 import { BUNDLED_DEFAULT_TRANSLATION_ID } from './lib/domain/translation-catalog';
 import { TRANSLATION_CACHE_NAME } from './lib/platform/translation-cache';
+import { getAppCacheName, getObsoleteAppCacheNames } from './lib/platform/app-cache';
 
 const worker = self as unknown as ServiceWorkerGlobalScope;
 
-const APP_CACHE_PREFIX = 'verski-app-';
-const APP_CACHE = `${APP_CACHE_PREFIX}${version}`;
+const APP_CACHE = getAppCacheName(version);
 
 const TRANSLATION_PATH_PREFIX = `${base}/translations/`;
 const translationCatalogUrl = `${TRANSLATION_PATH_PREFIX}catalog.json`;
@@ -64,12 +64,9 @@ worker.addEventListener('fetch', (event) => {
 
 async function removeOldAppCaches() {
 	const cacheNames = await caches.keys();
+	const obsoleteCacheNames = getObsoleteAppCacheNames(cacheNames, APP_CACHE);
 
-	await Promise.all(
-		cacheNames
-			.filter((cacheName) => cacheName.startsWith(APP_CACHE_PREFIX) && cacheName !== APP_CACHE)
-			.map((cacheName) => caches.delete(cacheName))
-	);
+	await Promise.all(obsoleteCacheNames.map((cacheName) => caches.delete(cacheName)));
 }
 
 async function loadTranslation(request: Request): Promise<Response> {
