@@ -1,13 +1,13 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { execFileSync } from 'node:child_process';
 import packageJson from './package.json' with { type: 'json' };
 
 function getCommitIdentifier(): string {
-	const configuredCommit = process.env.VERSKI_BUILD_COMMIT;
+	const configuredCommit = process.env.VERSKI_BUILD_COMMIT ?? process.env.CF_PAGES_COMMIT_SHA;
 
 	if (configuredCommit) {
 		return configuredCommit.slice(0, 7);

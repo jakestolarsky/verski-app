@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { LookupPassageResult } from '$lib/application/lookup-passage';
-	import type {
-		ParseReferenceResult
-	} from '$lib/domain/parser/parse-reference';
+	import type { ParseReferenceResult } from '$lib/domain/parser/parse-reference';
 	import type { ReadingSettings } from '$lib/domain/user-settings';
 	import * as m from '$lib/paraglide/messages.js';
 
