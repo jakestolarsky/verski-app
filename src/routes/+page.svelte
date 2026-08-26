@@ -27,6 +27,8 @@
 	import { removeInstalledTranslation } from '$lib/application/remove-installed-translation';
 	import { removeCachedTranslationPackage } from '$lib/platform/translation-cache';
 	import { getLocale, setLocale } from '$lib/paraglide/runtime.js';
+	import AppUpdateNotice from '$lib/components/AppUpdateNotice.svelte';
+	import { watchForServiceWorkerUpdate } from '$lib/platform/watch-service-worker-update';
 
 	type BibleLookupWorkspaceHandle = {
 		openChapter: (bookId: string, chapter: number) => Promise<boolean>;
@@ -60,6 +62,7 @@
 	let recentLookupStore = $state<RecentLookupStore | null>(null);
 	let activeReference = $state<BibleReference | null>(null);
 	let offlineStorageStatus = $state<'preparing' | 'ready' | 'unavailable'>('preparing');
+	let appUpdateAvailable = $state(false);
 
 	async function loadTranslation(translationId: string): Promise<TranslationPackage | null> {
 		if (translationId === activeTranslationPackage.manifest.id) {
@@ -120,6 +123,10 @@
 	}
 
 	onMount(() => {
+		const stopWatchingForUpdates = watchForServiceWorkerUpdate(() => {
+			appUpdateAvailable = true;
+		});
+
 		let preparedStorage: PreparedBrowserStorage | null = null;
 		let disposed = false;
 
@@ -197,6 +204,7 @@
 
 		return () => {
 			disposed = true;
+			stopWatchingForUpdates();
 			preparedStorage?.close();
 		};
 	});
@@ -337,6 +345,15 @@
 			/>
 		</div>
 	</header>
+
+	{#if appUpdateAvailable}
+		<AppUpdateNotice
+			locale={userSettings.locale}
+			onDismiss={() => {
+				appUpdateAvailable = false;
+			}}
+		/>
+	{/if}
 
 	{#if offlineStorageStatus === 'unavailable'}
 		<p class="offline-storage-message" role="status">

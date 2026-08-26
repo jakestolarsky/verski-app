@@ -96,5 +96,7 @@
 	"translation_current_label": "Current translation: {name}",
 	"translation_loading": "Loading translation...",
 	"offline_storage_unavailable": "Offline storage could not be restored. The bundled translation is still available, but recent lookups and settings may not be saved.",
-	"lookup_error_dismiss_label": "Dismiss error"
+	"lookup_error_dismiss_label": "Dismiss error",
+	"app_update_available": "A new Verski version is available. Close and reopen the app to use it.",
+	"app_update_dismiss_label": "Dismiss update notification"
 }
