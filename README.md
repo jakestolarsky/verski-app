@@ -30,10 +30,10 @@ reference, press Enter, and immediately read or copy the passage.
 - Persistent themes, reading preferences, and recent lookups.
 - Installable Progressive Web App (PWA).
 
-## Avaiable translations
+## Available translations
 
-- World English Bible (WEB)
-- Uwspółcześniona Biblia Gdańska (UBG)
+- World English Bible ([WEB](https://ebible.org/bible/details.php?all=1&id=engwebp))
+- Uwspółcześniona Biblia Gdańska ([UBG](https://ebible.org/bible/details.php?all=1&id=polubg))
 
 ## Technology
 
@@ -70,6 +70,7 @@ npm run build
 ```
 
 ## License
+
 Original Verski application code is available under the
 MIT License.
 Bible translations, fonts, icons, and other third-party materials retain their
