@@ -59,6 +59,27 @@ The generated Bible translation packages required by the application are
 included in the repository. The original conversion source files are not
 required for a normal development build.
 
+## Install as an app
+
+Open the [live demo](https://verski.pages.dev) once while online.
+
+- On iOS or iPadOS, open the Share menu in Safari and select **Add to Home Screen**.
+- On Android and supported desktop browsers, use the **Install app** option in the browser menu or address bar.
+
+## Offline behavior and limitations
+
+After the first online launch, the application shell and installed Bible
+translations remain available offline. The World English Bible is bundled with
+Verski. Additional translations can be installed from **Settings → System →
+Offline translations**.
+
+Offline data is managed by the browser and may be removed when site data is
+cleared or storage is reclaimed. Reconnect to the internet to recover or
+reinstall a missing translation.
+
+Verski currently includes Protestant Bible translations. Catholic canon metadata
+is supported, but no Catholic Bible translation is bundled yet.
+
 ## Verification
 
 ```bash
