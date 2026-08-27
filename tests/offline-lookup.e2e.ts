@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('starts offline and looks up a cached passage', async ({ context, page }) => {
+test('starts offline, looks up and copies a cached passage', async ({ context, page }) => {
+	await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
 	await page.goto('/');
 
 	await page.evaluate(async () => {
@@ -43,6 +45,14 @@ test('starts offline and looks up a cached passage', async ({ context, page }) =
 	await expect(offlinePassage.getByText(/For God so loved the world/)).toBeVisible({
 		timeout: 15_000
 	});
+
+	await offlinePage.getByRole('button', { name: 'Copy passage' }).click();
+
+	await expect(offlinePage.getByRole('status')).toHaveText('Passage copied.');
+
+	await expect
+		.poll(() => offlinePage.evaluate(() => navigator.clipboard.readText()))
+		.toContain('John 3:16');
 });
 
 test('restores the selected translation after a cold offline start', async ({ context, page }) => {
